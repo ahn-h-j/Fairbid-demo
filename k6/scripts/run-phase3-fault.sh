@@ -102,18 +102,11 @@ echo "============================================="
 echo "  수렴 대기 (1초 간격 폴링)"
 echo "============================================="
 
-MAX_WAIT=300  # 최대 5분 대기
 START_EPOCH=$(date +%s)
 
 while true; do
     NOW_EPOCH=$(date +%s)
     ELAPSED=$((NOW_EPOCH - START_EPOCH))
-
-    if [ $ELAPSED -ge $MAX_WAIT ]; then
-        echo ""
-        echo "  ${MAX_WAIT}초 내 수렴 실패!"
-        break
-    fi
 
     # Redis 입찰 수 집계
     REDIS_COUNT=0
