@@ -79,25 +79,33 @@ public class BidConsistencyChecker {
      */
     @Scheduled(fixedRate = 5000)
     public void checkConsistency() {
+        // Redis 카운트는 DB 장애와 무관하게 항상 갱신 (장애 격리)
+        long redis = 0;
         try {
-            long redis = countRedisBids();
-            long rdb = bidRepositoryPort.countAll();
-            long diff = redis - rdb;
-
+            redis = countRedisBids();
             redisCount.set(redis);
+        } catch (Exception e) {
+            log.error("Redis 입찰 수 조회 실패: {}", e.getMessage());
+        }
+
+        // RDB 카운트 갱신 (DB 다운 시 실패해도 Redis 카운트에 영향 없음)
+        try {
+            long rdb = bidRepositoryPort.countAll();
             rdbCount.set(rdb);
+            long diff = redis - rdb;
             inconsistencyCount.set(diff);
 
             if (diff != 0) {
                 log.warn("Redis-RDB 입찰 불일치 감지: Redis={}, RDB={}, 차이={}", redis, rdb, diff);
             }
-
-            // Stream PENDING 메시지 수 조회
-            checkStreamPending();
         } catch (Exception e) {
-            // DB 다운 시 RDB 조회 실패할 수 있음 - 에러 로그만 남기고 계속 동작
-            log.error("정합성 체크 실패: {}", e.getMessage());
+            // DB 다운 시 - 마지막 RDB 값 기준으로 불일치 갱신
+            inconsistencyCount.set(redis - rdbCount.get());
+            log.error("RDB 입찰 수 조회 실패 (DB 다운 추정): {}", e.getMessage());
         }
+
+        // Stream PENDING 메시지 수 조회
+        checkStreamPending();
     }
 
     /**
