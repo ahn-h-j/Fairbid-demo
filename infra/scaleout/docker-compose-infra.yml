@@ -24,7 +24,13 @@ services:
       - "6379:6379"
     # min-replicas-to-write 1: Slave 연결 없으면 쓰기 거부 → split brain 방지
     # min-replicas-max-lag 10: 복제 지연 10초 이내인 Slave만 카운트
-    command: redis-server --min-replicas-to-write 1 --min-replicas-max-lag 10
+    # replica-announce-ip/port: 외부 App 서버가 Sentinel로부터 받는 주소를 EC2 IP로 설정
+    command: >
+      redis-server
+      --min-replicas-to-write 1
+      --min-replicas-max-lag 10
+      --replica-announce-ip ${INFRA_HOST}
+      --replica-announce-port 6379
     volumes:
       - redis_data:/data
     healthcheck:
@@ -41,7 +47,10 @@ services:
     image: redis:7
     ports:
       - "6380:6379"
-    command: redis-server --replicaof redis 6379
+    command: >
+      redis-server --replicaof redis 6379
+      --replica-announce-ip ${INFRA_HOST}
+      --replica-announce-port 6380
     depends_on:
       redis:
         condition: service_healthy
@@ -58,7 +67,10 @@ services:
     image: redis:7
     ports:
       - "6381:6379"
-    command: redis-server --replicaof redis 6379
+    command: >
+      redis-server --replicaof redis 6379
+      --replica-announce-ip ${INFRA_HOST}
+      --replica-announce-port 6381
     depends_on:
       redis:
         condition: service_healthy
@@ -79,8 +91,11 @@ services:
       - "26379:26379"
     volumes:
       - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+    # announce-ip/port: 외부 App 서버가 Sentinel 주소를 EC2 IP로 인식하도록 설정
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-port 26379' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
     depends_on:
       redis:
@@ -102,6 +117,8 @@ services:
       - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-port 26380' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
     depends_on:
       redis:
@@ -123,6 +140,8 @@ services:
       - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
+             echo 'sentinel announce-port 26381' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
     depends_on:
       redis:
