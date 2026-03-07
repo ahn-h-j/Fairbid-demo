@@ -5,15 +5,14 @@
 # Sentinel 모드에서는 host/port 대신 sentinel.master + sentinel.nodes로 연결한다.
 # Lettuce가 Sentinel의 +switch-master 채널을 구독하여 failover 시 자동 재연결한다.
 #
-# Sentinel 노드는 고정 IP로 지정 (docker-compose 네트워크 설정과 일치)
+# REDIS_SENTINEL_NODES: Sentinel 노드 주소 (콤마 구분)
+#   - 로컬(docker-compose): 172.22.0.20:26379,172.22.0.21:26379,172.22.0.22:26379
+#   - 스케일아웃(외부 연결): {인프라서버IP}:26379,{인프라서버IP}:26380,{인프라서버IP}:26381
 
 spring:
   data:
     redis:
       sentinel:
         master: mymaster
-        nodes:
-          - 172.22.0.20:26379
-          - 172.22.0.21:26379
-          - 172.22.0.22:26379
+        nodes: ${REDIS_SENTINEL_NODES:172.22.0.20:26379,172.22.0.21:26379,172.22.0.22:26379}
       timeout: 3000ms
