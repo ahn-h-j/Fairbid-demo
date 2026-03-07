@@ -90,10 +90,11 @@ services:
     ports:
       - "26379:26379"
     volumes:
-      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
-    # announce-ip/port: 외부 App 서버가 Sentinel 주소를 EC2 IP로 인식하도록 설정
+      - ./sentinel.conf:/etc/redis/sentinel-template.conf:ro
+    # sentinel monitor의 Master IP를 EC2 IP로 치환하고, announce-ip 설정 추가
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             sed -i 's/INFRA_HOST_PLACEHOLDER/${INFRA_HOST}/g' /etc/redis/sentinel.conf &&
              echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
              echo 'sentinel announce-port 26379' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
@@ -114,9 +115,10 @@ services:
     ports:
       - "26380:26379"
     volumes:
-      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+      - ./sentinel.conf:/etc/redis/sentinel-template.conf:ro
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             sed -i 's/INFRA_HOST_PLACEHOLDER/${INFRA_HOST}/g' /etc/redis/sentinel.conf &&
              echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
              echo 'sentinel announce-port 26380' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
@@ -137,9 +139,10 @@ services:
     ports:
       - "26381:26379"
     volumes:
-      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+      - ./sentinel.conf:/etc/redis/sentinel-template.conf:ro
     command: >
       sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             sed -i 's/INFRA_HOST_PLACEHOLDER/${INFRA_HOST}/g' /etc/redis/sentinel.conf &&
              echo 'sentinel announce-ip ${INFRA_HOST}' >> /etc/redis/sentinel.conf &&
              echo 'sentinel announce-port 26381' >> /etc/redis/sentinel.conf &&
              redis-sentinel /etc/redis/sentinel.conf"
