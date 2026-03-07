@@ -1,0 +1,32 @@
+# App 서버용 (Backend만)
+# 오토스케일링 환경에서 각 App EC2 인스턴스에서 실행
+# INFRA_HOST: 인프라 서버의 private IP (예: 172.31.34.73)
+services:
+  backend:
+    build: ../../backend
+    ports:
+      - "8080:8080"
+    environment:
+      # DB: 인프라 서버의 MySQL에 연결
+      SPRING_DATASOURCE_URL: jdbc:mysql://${INFRA_HOST}:3306/fairbid?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USER}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      # Redis: 인프라 서버의 Redis에 연결
+      SPRING_DATA_REDIS_HOST: ${INFRA_HOST}
+      # Sentinel: 인프라 서버의 Sentinel 노드 (포트가 각각 다름)
+      REDIS_SENTINEL_NODES: ${INFRA_HOST}:26379,${INFRA_HOST}:26380,${INFRA_HOST}:26381
+      # OAuth2
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI:-}
+      NAVER_REDIRECT_URI: ${NAVER_REDIRECT_URI:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+      FRONTEND_URL: ${FRONTEND_URL:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}

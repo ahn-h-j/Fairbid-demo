@@ -1,0 +1,177 @@
+# 인프라 서버용 (MySQL + Redis Sentinel + 모니터링)
+# 오토스케일링 환경에서 인프라 전용 EC2에서 실행
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USER}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    # min-replicas-to-write 1: Slave 연결 없으면 쓰기 거부 → split brain 방지
+    # min-replicas-max-lag 10: 복제 지연 10초 이내인 Slave만 카운트
+    command: redis-server --min-replicas-to-write 1 --min-replicas-max-lag 10
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.10
+
+  # Redis Slave (Replication)
+  redis-slave-1:
+    image: redis:7
+    ports:
+      - "6380:6379"
+    command: redis-server --replicaof redis 6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.11
+
+  redis-slave-2:
+    image: redis:7
+    ports:
+      - "6381:6379"
+    command: redis-server --replicaof redis 6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.12
+
+  # ===== Redis Sentinel =====
+  # Sentinel 3대가 Master를 감시하고, 장애 시 quorum(2/3) 투표로 자동 failover 수행.
+  sentinel-1:
+    image: redis:7
+    ports:
+      - "26379:26379"
+    volumes:
+      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             redis-sentinel /etc/redis/sentinel.conf"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.20
+
+  sentinel-2:
+    image: redis:7
+    ports:
+      - "26380:26379"
+    volumes:
+      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             redis-sentinel /etc/redis/sentinel.conf"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.21
+
+  sentinel-3:
+    image: redis:7
+    ports:
+      - "26381:26379"
+    volumes:
+      - ../../redis/sentinel.conf:/etc/redis/sentinel-template.conf:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel-template.conf /etc/redis/sentinel.conf &&
+             redis-sentinel /etc/redis/sentinel.conf"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 172.22.0.22
+
+  # ===== 모니터링 =====
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    ports:
+      - "9595:9090"
+    volumes:
+      - ../../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+
+volumes:
+  mysql_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
