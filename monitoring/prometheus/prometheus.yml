@@ -11,7 +11,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # Spring Boot 애플리케이션 메트릭
+  # Spring Boot 애플리케이션 메트릭 (로컬 docker-compose용)
   - job_name: 'fairbid-backend'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -19,3 +19,14 @@ scrape_configs:
         labels:
           application: 'fairbid'
           environment: 'local'
+
+  # Spring Boot 애플리케이션 메트릭 (ALB 경유, 스케일아웃 환경)
+  # ALB 라운드로빈으로 각 인스턴스 메트릭을 번갈아 수집
+  - job_name: 'fairbid-backend-alb'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['fairbid-alb-490283096.ap-northeast-2.elb.amazonaws.com:80']
+        labels:
+          application: 'fairbid'
+          environment: 'scaleout'
