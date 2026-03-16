@@ -12,7 +12,137 @@
     {
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 1,
-      "title": "🔄 오토스케일링 모니터링",
+      "title": "AWS 인프라",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "orange", "mode": "fixed" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "lineWidth": 3,
+            "pointSize": 8,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "steppedLine": true
+          },
+          "decimals": 0,
+          "unit": "short",
+          "min": 0,
+          "max": 5
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+      "id": 30,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "alias": "Running Instances",
+          "dimensions": { "AutoScalingGroupName": ["fairbid-app-asg"] },
+          "matchExact": true,
+          "metricName": "GroupInServiceInstances",
+          "namespace": "AWS/AutoScaling",
+          "period": "60",
+          "refId": "A",
+          "statistic": "Average"
+        }
+      ],
+      "title": "ASG 인스턴스 수",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+      "id": 31,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "alias": "ASG Avg CPU",
+          "dimensions": { "AutoScalingGroupName": ["fairbid-app-asg"] },
+          "matchExact": true,
+          "metricName": "CPUUtilization",
+          "namespace": "AWS/EC2",
+          "period": "60",
+          "refId": "A",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EC2 CPU (ASG 평균)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
+      "id": 32,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "alias": "Healthy Hosts",
+          "dimensions": { "TargetGroup": ["targetgroup/fairbid-app-tg/ca0e4679a938fb04"], "LoadBalancer": ["app/fairbid-alb/490283096"] },
+          "matchExact": true,
+          "metricName": "HealthyHostCount",
+          "namespace": "AWS/ApplicationELB",
+          "period": "60",
+          "refId": "A",
+          "statistic": "Average"
+        },
+        {
+          "alias": "Request Count",
+          "dimensions": { "LoadBalancer": ["app/fairbid-alb/490283096"] },
+          "matchExact": true,
+          "metricName": "RequestCount",
+          "namespace": "AWS/ApplicationELB",
+          "period": "60",
+          "refId": "B",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "ALB 상태 (Healthy Hosts / Requests)",
+      "type": "timeseries"
+    },
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "id": 2,
+      "title": "App 서버 메트릭 (Prometheus via ALB)",
       "type": "row"
     },
     {
@@ -24,7 +154,6 @@
             "drawStyle": "line",
             "fillOpacity": 20,
             "lineWidth": 2,
-            "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
             "stacking": { "group": "A", "mode": "none" }
@@ -34,8 +163,8 @@
           "max": 100
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
-      "id": 2,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+      "id": 3,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
         "tooltip": { "mode": "multi" }
@@ -48,11 +177,11 @@
         },
         {
           "expr": "process_cpu_usage{environment=\"scaleout\"} * 100",
-          "legendFormat": "Process CPU %",
+          "legendFormat": "JVM Process CPU %",
           "refId": "B"
         }
       ],
-      "title": "CPU 사용률 (App 서버)",
+      "title": "JVM CPU 사용률",
       "type": "timeseries"
     },
     {
@@ -69,8 +198,8 @@
           "unit": "reqps"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
-      "id": 3,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+      "id": 4,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
         "tooltip": { "mode": "multi" }
@@ -82,7 +211,7 @@
           "refId": "A"
         }
       ],
-      "title": "HTTP 요청 처리량 (RPS)",
+      "title": "HTTP RPS",
       "type": "timeseries"
     },
     {
@@ -99,8 +228,8 @@
           "unit": "s"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
-      "id": 4,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "id": 5,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
         "tooltip": { "mode": "multi" }
@@ -127,87 +256,6 @@
           "color": { "mode": "palette-classic" },
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 20,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "unit": "bytes"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
-      "id": 5,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "expr": "jvm_memory_used_bytes{environment=\"scaleout\", area=\"heap\"}",
-          "legendFormat": "Heap Used ({{id}})",
-          "refId": "A"
-        },
-        {
-          "expr": "jvm_memory_max_bytes{environment=\"scaleout\", area=\"heap\"}",
-          "legendFormat": "Heap Max ({{id}})",
-          "refId": "B"
-        }
-      ],
-      "title": "JVM Heap 메모리",
-      "type": "timeseries"
-    },
-    {
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 },
-      "id": 10,
-      "title": "🔌 연결 & 스레드",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
-      "id": 11,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "expr": "tomcat_threads_current_threads{environment=\"scaleout\"}",
-          "legendFormat": "Current Threads",
-          "refId": "A"
-        },
-        {
-          "expr": "tomcat_threads_busy_threads{environment=\"scaleout\"}",
-          "legendFormat": "Busy Threads",
-          "refId": "B"
-        },
-        {
-          "expr": "tomcat_threads_config_max_threads{environment=\"scaleout\"}",
-          "legendFormat": "Max Threads",
-          "refId": "C"
-        }
-      ],
-      "title": "Tomcat 스레드",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
             "fillOpacity": 10,
             "lineWidth": 2,
             "showPoints": "never"
@@ -216,104 +264,25 @@
         }
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
-      "id": 12,
+      "id": 6,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
         "tooltip": { "mode": "multi" }
       },
       "targets": [
         {
-          "expr": "hikaricp_connections_active{environment=\"scaleout\"}",
-          "legendFormat": "Active DB Connections",
+          "expr": "tomcat_threads_busy_threads{environment=\"scaleout\"}",
+          "legendFormat": "Busy Threads",
           "refId": "A"
         },
         {
-          "expr": "hikaricp_connections_idle{environment=\"scaleout\"}",
-          "legendFormat": "Idle DB Connections",
-          "refId": "B"
-        },
-        {
-          "expr": "hikaricp_connections_max{environment=\"scaleout\"}",
-          "legendFormat": "Max DB Connections",
-          "refId": "C"
-        }
-      ],
-      "title": "DB 커넥션 풀 (HikariCP)",
-      "type": "timeseries"
-    },
-    {
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
-      "id": 20,
-      "title": "📊 입찰 메트릭",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
-      "id": 21,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "expr": "rate(fairbid_bid_total{environment=\"scaleout\", result=\"success\"}[1m])",
-          "legendFormat": "입찰 성공/min",
-          "refId": "A"
-        },
-        {
-          "expr": "rate(fairbid_bid_total{environment=\"scaleout\", result=\"fail\"}[1m])",
-          "legendFormat": "입찰 실패/min",
+          "expr": "tomcat_threads_config_max_threads{environment=\"scaleout\"}",
+          "legendFormat": "Max Threads",
           "refId": "B"
         }
       ],
-      "title": "입찰 처리율",
+      "title": "Tomcat 스레드",
       "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": {
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 10 },
-              { "color": "red", "value": 50 }
-            ]
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
-      "id": 22,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "expr": "fairbid_bid_inconsistency_count{environment=\"scaleout\"}",
-          "legendFormat": "Redis-RDB 불일치",
-          "refId": "A"
-        }
-      ],
-      "title": "Redis-RDB 입찰 불일치",
-      "type": "gauge"
     }
   ],
   "schemaVersion": 38,
@@ -326,5 +295,5 @@
   "timezone": "Asia/Seoul",
   "title": "FairBid - 오토스케일링 모니터링",
   "uid": "fairbid-scaleout",
-  "version": 1
+  "version": 2
 }
