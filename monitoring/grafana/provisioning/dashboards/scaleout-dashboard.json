@@ -51,6 +51,8 @@
           "namespace": "AWS/AutoScaling",
           "period": "60",
           "refId": "A",
+          "region": "ap-northeast-2",
+          "queryMode": "Metrics",
           "statistic": "Average"
         }
       ],
@@ -88,6 +90,8 @@
           "namespace": "AWS/EC2",
           "period": "60",
           "refId": "A",
+          "region": "ap-northeast-2",
+          "queryMode": "Metrics",
           "statistic": "Average"
         }
       ],
@@ -123,6 +127,8 @@
           "namespace": "AWS/ApplicationELB",
           "period": "60",
           "refId": "A",
+          "region": "ap-northeast-2",
+          "queryMode": "Metrics",
           "statistic": "Average"
         },
         {
@@ -133,6 +139,8 @@
           "namespace": "AWS/ApplicationELB",
           "period": "60",
           "refId": "B",
+          "region": "ap-northeast-2",
+          "queryMode": "Metrics",
           "statistic": "Sum"
         }
       ],
