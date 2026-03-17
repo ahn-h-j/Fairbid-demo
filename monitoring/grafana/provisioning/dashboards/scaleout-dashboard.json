@@ -11,146 +11,8 @@
   "panels": [
     {
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
-      "id": 1,
-      "title": "AWS 인프라",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "fixedColor": "orange", "mode": "fixed" },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 30,
-            "lineWidth": 3,
-            "pointSize": 8,
-            "showPoints": "always",
-            "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "steppedLine": true
-          },
-          "decimals": 0,
-          "unit": "short",
-          "min": 0,
-          "max": 5
-        }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
-      "id": 30,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
-      },
-      "targets": [
-        {
-          "alias": "Running Instances",
-          "dimensions": { "AutoScalingGroupName": ["fairbid-app-asg"] },
-          "matchExact": true,
-          "metricName": "GroupInServiceInstances",
-          "namespace": "AWS/AutoScaling",
-          "period": "60",
-          "refId": "A",
-          "region": "ap-northeast-2",
-          "queryMode": "Metrics",
-          "statistic": "Average"
-        }
-      ],
-      "title": "ASG 인스턴스 수",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 20,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
-      "id": 31,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "alias": "ASG Avg CPU",
-          "dimensions": { "AutoScalingGroupName": ["fairbid-app-asg"] },
-          "matchExact": true,
-          "metricName": "CPUUtilization",
-          "namespace": "AWS/EC2",
-          "period": "60",
-          "refId": "A",
-          "region": "ap-northeast-2",
-          "queryMode": "Metrics",
-          "statistic": "Average"
-        }
-      ],
-      "title": "EC2 CPU (ASG 평균)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "cloudwatch", "uid": "c15bb665-b08a-454b-9a26-4fb5ce246272" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
-      "id": 32,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "alias": "Healthy Hosts",
-          "dimensions": { "TargetGroup": ["targetgroup/fairbid-app-tg/ca0e4679a938fb04"], "LoadBalancer": ["app/fairbid-alb/490283096"] },
-          "matchExact": true,
-          "metricName": "HealthyHostCount",
-          "namespace": "AWS/ApplicationELB",
-          "period": "60",
-          "refId": "A",
-          "region": "ap-northeast-2",
-          "queryMode": "Metrics",
-          "statistic": "Average"
-        },
-        {
-          "alias": "Request Count",
-          "dimensions": { "LoadBalancer": ["app/fairbid-alb/490283096"] },
-          "matchExact": true,
-          "metricName": "RequestCount",
-          "namespace": "AWS/ApplicationELB",
-          "period": "60",
-          "refId": "B",
-          "region": "ap-northeast-2",
-          "queryMode": "Metrics",
-          "statistic": "Sum"
-        }
-      ],
-      "title": "ALB 상태 (Healthy Hosts / Requests)",
-      "type": "timeseries"
-    },
-    {
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
       "id": 2,
-      "title": "App 서버 메트릭 (Prometheus via ALB)",
+      "title": "App 서버 메트릭",
       "type": "row"
     },
     {
@@ -171,7 +33,7 @@
           "max": 100
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
       "id": 3,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -206,7 +68,7 @@
           "unit": "reqps"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
       "id": 4,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -236,7 +98,7 @@
           "unit": "s"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
       "id": 5,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -271,7 +133,7 @@
           "unit": "short"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
       "id": 6,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
