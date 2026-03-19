@@ -35,3 +35,29 @@ variable "public_key" {
   description = "EC2 SSH 접속용 public key (ssh-keygen -y -f key.pem 으로 추출)"
   type        = string
 }
+
+# =============================================================================
+# 스케일아웃 변수
+# =============================================================================
+variable "app_ami_id" {
+  description = "App 서버용 AMI ID (Docker + 코드가 포함된 골든 이미지)"
+  type        = string
+}
+
+variable "asg_min_size" {
+  description = "ASG 최소 인스턴스 수"
+  type        = number
+  default     = 1
+}
+
+variable "asg_max_size" {
+  description = "ASG 최대 인스턴스 수"
+  type        = number
+  default     = 4
+}
+
+variable "asg_desired_capacity" {
+  description = "ASG 초기 인스턴스 수"
+  type        = number
+  default     = 1
+}
