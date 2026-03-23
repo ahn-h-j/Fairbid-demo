@@ -2,6 +2,7 @@
 # 오토스케일링 환경에서 인프라 전용 EC2에서 실행
 services:
   mysql:
+    restart: always
     image: mysql:8.0
     ports:
       - "3306:3306"
@@ -19,6 +20,7 @@ services:
       retries: 10
 
   redis:
+    restart: always
     image: redis:7
     ports:
       - "6379:6379"
@@ -44,6 +46,7 @@ services:
 
   # Redis Slave (Replication)
   redis-slave-1:
+    restart: always
     image: redis:7
     ports:
       - "6380:6379"
@@ -64,6 +67,7 @@ services:
         ipv4_address: 172.22.0.11
 
   redis-slave-2:
+    restart: always
     image: redis:7
     ports:
       - "6381:6379"
@@ -86,6 +90,7 @@ services:
   # ===== Redis Sentinel =====
   # Sentinel 3대가 Master를 감시하고, 장애 시 quorum(2/3) 투표로 자동 failover 수행.
   sentinel-1:
+    restart: always
     image: redis:7
     ports:
       - "26379:26379"
@@ -111,6 +116,7 @@ services:
         ipv4_address: 172.22.0.20
 
   sentinel-2:
+    restart: always
     image: redis:7
     ports:
       - "26380:26379"
@@ -135,6 +141,7 @@ services:
         ipv4_address: 172.22.0.21
 
   sentinel-3:
+    restart: always
     image: redis:7
     ports:
       - "26381:26379"
@@ -160,6 +167,7 @@ services:
 
   # ===== 모니터링 =====
   prometheus:
+    restart: always
     image: prom/prometheus:v2.47.0
     ports:
       - "9595:9090"
@@ -172,6 +180,7 @@ services:
       - '--web.enable-lifecycle'
 
   grafana:
+    restart: always
     image: grafana/grafana:10.1.0
     ports:
       - "3001:3000"

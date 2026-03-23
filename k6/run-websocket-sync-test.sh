@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # =============================================================================
 # WebSocket 메시지 동기화 테스트 실행 스크립트
 #
@@ -17,9 +17,11 @@ ALB_URL="http://fairbid-alb-490283096.ap-northeast-2.elb.amazonaws.com"
 ASG_NAME="fairbid-app-asg"
 MODE="${1:-single}"
 
-# AWS CLI 경로
-export PATH="/c/Program Files/Amazon/AWSCLIV2:$PATH"
-AWS_CMD="/c/Program Files/Amazon/AWSCLIV2/aws"
+# AWS CLI
+if ! command -v aws &> /dev/null; then
+    echo "❌ AWS CLI가 설치되어 있지 않습니다."
+    exit 1
+fi
 
 echo "========================================"
 echo " WebSocket 메시지 동기화 테스트"
@@ -29,14 +31,17 @@ echo ""
 
 if [ "$MODE" = "multi" ]; then
     echo "[$(date '+%H:%M:%S')] 멀티 서버 모드: ASG desired=2로 설정"
-    "$AWS_CMD" autoscaling set-desired-capacity \
+    if ! aws autoscaling set-desired-capacity \
         --auto-scaling-group-name $ASG_NAME \
         --desired-capacity 2 \
-        --region ap-northeast-2
+        --region ap-northeast-2 2>&1; then
+        echo "❌ ASG desired capacity 설정 실패. AWS CLI 경로를 확인하세요."
+        exit 1
+    fi
 
     echo "[$(date '+%H:%M:%S')] 2대가 InService 될 때까지 대기..."
     while true; do
-        IN_SERVICE=$("$AWS_CMD" autoscaling describe-auto-scaling-groups \
+        IN_SERVICE=$(aws autoscaling describe-auto-scaling-groups \
             --auto-scaling-group-names $ASG_NAME \
             --region ap-northeast-2 \
             --query "AutoScalingGroups[0].Instances[?LifecycleState=='InService'] | length(@)" \
@@ -57,7 +62,7 @@ fi
 
 # 현재 ASG 상태 출력
 echo "[$(date '+%H:%M:%S')] === ASG 상태 ==="
-"$AWS_CMD" autoscaling describe-auto-scaling-groups --auto-scaling-group-names $ASG_NAME \
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $ASG_NAME \
     --region ap-northeast-2 \
     --query "AutoScalingGroups[0].{Desired:DesiredCapacity,InService:length(Instances[?LifecycleState=='InService'])}" \
     --output table 2>/dev/null
@@ -65,9 +70,9 @@ echo ""
 
 # ALB 타겟 health 상태
 echo "[$(date '+%H:%M:%S')] === ALB Target Health ==="
-TG_ARN=$("$AWS_CMD" elbv2 describe-target-groups --names fairbid-app-tg \
+TG_ARN=$(aws elbv2 describe-target-groups --names fairbid-app-tg \
     --region ap-northeast-2 --query "TargetGroups[0].TargetGroupArn" --output text 2>/dev/null)
-"$AWS_CMD" elbv2 describe-target-health --target-group-arn "$TG_ARN" \
+aws elbv2 describe-target-health --target-group-arn "$TG_ARN" \
     --region ap-northeast-2 \
     --query "TargetHealthDescriptions[].{Target:Target.Id,Health:TargetHealth.State}" \
     --output table 2>/dev/null
@@ -81,7 +86,7 @@ echo ""
 
 # 결과 후 ASG 상태
 echo "[$(date '+%H:%M:%S')] === 테스트 후 ASG 상태 ==="
-"$AWS_CMD" autoscaling describe-auto-scaling-groups --auto-scaling-group-names $ASG_NAME \
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $ASG_NAME \
     --region ap-northeast-2 \
     --query "AutoScalingGroups[0].{Desired:DesiredCapacity,InService:length(Instances[?LifecycleState=='InService'])}" \
     --output table 2>/dev/null
@@ -91,7 +96,7 @@ if [ "$MODE" = "multi" ]; then
     echo "[$(date '+%H:%M:%S')] 테스트 완료. desired=1로 리셋할까요? (y/n)"
     read -r answer
     if [ "$answer" = "y" ]; then
-        "$AWS_CMD" autoscaling set-desired-capacity \
+        aws autoscaling set-desired-capacity \
             --auto-scaling-group-name $ASG_NAME \
             --desired-capacity 1 \
             --region ap-northeast-2
