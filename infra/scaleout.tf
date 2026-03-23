@@ -249,17 +249,56 @@ resource "aws_autoscaling_group" "app" {
 }
 
 # =============================================================================
-# Auto Scaling Policy (CPU 50% Target Tracking)
+# Auto Scaling Policy (메인: ALB 요청 수 기반 Target Tracking)
+# - 인스턴스당 1분간 요청 10,000개 초과 시 확장
+# - VU 100 → 분당 ~12,000 → 2대 / VU 200 → ~24,000 → 3대 / VU 300 → ~36,000 → 4대
 # =============================================================================
-resource "aws_autoscaling_policy" "cpu_target_tracking" {
-  name                   = "fairbid-cpu-target-tracking"
-  autoscaling_group_name = aws_autoscaling_group.app.name
-  policy_type            = "TargetTrackingScaling"
+resource "aws_autoscaling_policy" "request_count_target_tracking" {
+  name                      = "fairbid-request-target-tracking"
+  autoscaling_group_name    = aws_autoscaling_group.app.name
+  policy_type               = "TargetTrackingScaling"
+  estimated_instance_warmup = 120 # 인스턴스 부팅 + 앱 시작 대기 (2분)
 
   target_tracking_configuration {
     predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "${aws_lb.app.arn_suffix}/${aws_lb_target_group.app.arn_suffix}"
     }
-    target_value = 50.0
+    target_value = 5000
+  }
+}
+
+# =============================================================================
+# Auto Scaling Policy (보조: CPU Step Scaling - 비상 안전망)
+# - CPU 80% 이상 시 +1대 추가 (Target Tracking과 충돌 방지를 위해 Step Scaling 사용)
+# - 평소에는 RequestCount 정책이 주도, CPU 비정상 급등 시에만 발동
+# =============================================================================
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  alarm_name          = "fairbid-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 80
+  alarm_description   = "CPU 80% 초과 시 스케일아웃 (비상 안전망)"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.app.name
+  }
+
+  alarm_actions = [aws_autoscaling_policy.cpu_step_scaling.arn]
+}
+
+resource "aws_autoscaling_policy" "cpu_step_scaling" {
+  name                   = "fairbid-cpu-step-scaling"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  policy_type            = "StepScaling"
+  adjustment_type        = "ChangeInCapacity"
+
+  step_adjustment {
+    scaling_adjustment          = 1  # +1대만 추가
+    metric_interval_lower_bound = 0
   }
 }
