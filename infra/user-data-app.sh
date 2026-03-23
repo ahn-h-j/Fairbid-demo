@@ -1,10 +1,10 @@
 #!/bin/bash
 # =============================================================================
 # App 서버 시작 스크립트 (ASG Launch Template용)
-# AMI에 Docker + 코드가 포함되어 있으므로 pull → build → run
+# ECR에서 빌드된 이미지를 pull → run (빌드 없이 30초 내 시작)
 # =============================================================================
 
-# AWS CLI 설치 (SSM Parameter Store 조회에 필요)
+# AWS CLI 설치 (ECR 로그인 + SSM 조회에 필요)
 if ! command -v aws &> /dev/null; then
     apt-get update -qq && apt-get install -y -qq awscli > /dev/null 2>&1
 fi
@@ -14,12 +14,12 @@ git config --system --add safe.directory /home/ubuntu/Fairbid
 
 cd /home/ubuntu/Fairbid
 
-# 기존 컨테이너 전부 중지 (AMI에 남아있는 것들)
+# 기존 컨테이너 전부 중지
 docker compose down 2>/dev/null
 docker stop $(docker ps -aq) 2>/dev/null
 docker rm $(docker ps -aq) 2>/dev/null
 
-# 최신 코드 pull
+# 최신 코드 pull (compose 파일, .env 등 설정 파일 업데이트용)
 git pull origin main
 
 # SSM Parameter Store에서 인프라 서버 IP 조회
@@ -45,5 +45,9 @@ fi
 echo "[INFO] INFRA_HOST=$INFRA_HOST"
 echo "[INFO] SPRING_PROFILES=$(grep SPRING_PROFILES .env)"
 
-# App만 실행 (인프라 서버 연결)
-docker compose -f infra/scaleout/docker-compose-app.yml --env-file .env up -d --build
+# ECR 로그인 + 이미지 pull
+aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 216989097509.dkr.ecr.ap-northeast-2.amazonaws.com
+docker pull 216989097509.dkr.ecr.ap-northeast-2.amazonaws.com/fairbid-backend:latest
+
+# App 실행 (빌드 없이 pull한 이미지로 바로 시작)
+docker compose -f infra/scaleout/docker-compose-app.yml --env-file .env up -d

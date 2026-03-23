@@ -3,7 +3,7 @@
 # INFRA_HOST: 인프라 서버의 private IP (예: 172.31.34.73)
 services:
   backend:
-    build: ../../backend
+    image: 216989097509.dkr.ecr.ap-northeast-2.amazonaws.com/fairbid-backend:latest
     ports:
       - "8080:8080"
     environment:

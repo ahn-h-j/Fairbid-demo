@@ -6,25 +6,51 @@ on:
       - main
     paths:
       - 'backend/**'
-      - 'frontend/**'
   workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: fairbid-backend
+  ASG_NAME: fairbid-app-asg
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # ASG Instance Refresh로 롤링 배포
-      # 새 인스턴스는 user-data에서 git pull → docker compose up --build 수행
-      - name: Trigger ASG Instance Refresh
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # AWS 인증
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ECR 로그인
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Docker 이미지 빌드 + ECR push
+      - name: Build and push Docker image
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest ./backend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "✅ 이미지 push 완료: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      # ASG Instance Refresh로 롤링 배포
+      # 새 인스턴스는 user-data에서 ECR pull → docker run 수행
+      - name: Trigger ASG Instance Refresh
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name fairbid-app-asg \
+            --auto-scaling-group-name $ASG_NAME \
             --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 120}'
 
           echo "✅ Instance Refresh 시작됨"
-          echo "새 인스턴스가 최신 코드로 자동 배포됩니다."
