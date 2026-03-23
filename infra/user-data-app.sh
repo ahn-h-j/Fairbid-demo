@@ -4,9 +4,13 @@
 # ECR에서 빌드된 이미지를 pull → run (빌드 없이 30초 내 시작)
 # =============================================================================
 
-# AWS CLI 설치 (ECR 로그인 + SSM 조회에 필요)
+# AWS CLI v2 설치 (ECR 로그인 + SSM 조회에 필요)
 if ! command -v aws &> /dev/null; then
-    apt-get update -qq && apt-get install -y -qq awscli > /dev/null 2>&1
+    apt-get update -qq && apt-get install -y -qq unzip > /dev/null 2>&1
+    curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+    unzip -q /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install > /dev/null 2>&1
+    rm -rf /tmp/awscliv2.zip /tmp/aws
 fi
 
 # git safe directory 설정
