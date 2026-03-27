@@ -41,12 +41,16 @@ else
     echo "INFRA_HOST=$INFRA_HOST" >> .env
 fi
 
-# load-test 프로필 추가 (k6 부하 테스트용 X-User-Id 인증)
-if ! grep -q "load-test" .env; then
-    sed -i 's/SPRING_PROFILES_ACTIVE=sentinel/SPRING_PROFILES_ACTIVE=sentinel,load-test/' .env
+# SERVER_ROLE 설정 (Terraform templatefile에서 주입)
+SERVER_ROLE="${server_role}"
+if grep -q "^SERVER_ROLE=" .env; then
+    sed -i "s/^SERVER_ROLE=.*/SERVER_ROLE=$SERVER_ROLE/" .env
+else
+    echo "SERVER_ROLE=$SERVER_ROLE" >> .env
 fi
 
 echo "[INFO] INFRA_HOST=$INFRA_HOST"
+echo "[INFO] SERVER_ROLE=$SERVER_ROLE"
 echo "[INFO] SPRING_PROFILES=$(grep SPRING_PROFILES .env)"
 
 # ECR 로그인 + 이미지 pull

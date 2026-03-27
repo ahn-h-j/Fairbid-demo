@@ -18,9 +18,14 @@ output "alb_dns_name" {
   value       = aws_lb.app.dns_name
 }
 
-output "asg_name" {
-  description = "Auto Scaling Group 이름"
-  value       = aws_autoscaling_group.app.name
+output "rest_asg_name" {
+  description = "REST Auto Scaling Group 이름"
+  value       = aws_autoscaling_group.rest.name
+}
+
+output "websocket_asg_name" {
+  description = "WebSocket Auto Scaling Group 이름"
+  value       = aws_autoscaling_group.websocket.name
 }
 
 output "nameservers" {

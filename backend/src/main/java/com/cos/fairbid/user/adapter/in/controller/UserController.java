@@ -1,5 +1,6 @@
 package com.cos.fairbid.user.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.auth.infrastructure.security.CookieUtils;
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
+@EnabledOnRole({"api", "all"})
 public class UserController {
 
     private final CompleteOnboardingUseCase completeOnboardingUseCase;

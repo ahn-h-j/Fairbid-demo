@@ -57,7 +57,28 @@ variable "asg_max_size" {
 }
 
 variable "asg_desired_capacity" {
-  description = "ASG 초기 인스턴스 수"
+  description = "REST ASG 초기 인스턴스 수"
+  type        = number
+  default     = 1
+}
+
+# =============================================================================
+# WebSocket ASG 변수
+# =============================================================================
+variable "ws_asg_min_size" {
+  description = "WebSocket ASG 최소 인스턴스 수"
+  type        = number
+  default     = 1
+}
+
+variable "ws_asg_max_size" {
+  description = "WebSocket ASG 최대 인스턴스 수"
+  type        = number
+  default     = 4
+}
+
+variable "ws_asg_desired_capacity" {
+  description = "WebSocket ASG 초기 인스턴스 수"
   type        = number
   default     = 1
 }

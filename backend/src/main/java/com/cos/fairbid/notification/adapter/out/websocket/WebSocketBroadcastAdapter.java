@@ -9,11 +9,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * WebSocket을 통한 경매 브로드캐스트 어댑터
- * AuctionBroadcastPort를 구현하여 실제 WebSocket 전송 수행
+ * WebSocket을 통한 경매 브로드캐스트 어댑터 (단일 서버용, 현재 미사용)
+ *
+ * 스케일아웃 환경에서는 RedisPubSubBroadcastAdapter가 AuctionBroadcastPort를 대체한다.
+ * 단일 서버에서만 사용할 경우 @Component를 다시 활성화하면 된다.
  */
 @Slf4j
-@Component
+// @Component — RedisPubSubBroadcastAdapter로 교체됨
 @RequiredArgsConstructor
 public class WebSocketBroadcastAdapter implements AuctionBroadcastPort {
 

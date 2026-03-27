@@ -1,5 +1,6 @@
 package com.cos.fairbid.bid.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
 import com.cos.fairbid.bid.adapter.in.dto.BidResponse;
 import com.cos.fairbid.bid.adapter.in.dto.PlaceBidRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auctions/{auctionId}/bids")
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class BidController {
 
     private final PlaceBidUseCase placeBidUseCase;

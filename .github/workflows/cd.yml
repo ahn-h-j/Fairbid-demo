@@ -11,7 +11,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: fairbid-backend
-  ASG_NAME: fairbid-app-asg
+  REST_ASG_NAME: fairbid-rest-asg
+  WS_ASG_NAME: fairbid-websocket-asg
 
 jobs:
   deploy:
@@ -45,12 +46,16 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "✅ 이미지 push 완료: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # ASG Instance Refresh로 롤링 배포
-      # 새 인스턴스는 user-data에서 ECR pull → docker run 수행
-      - name: Trigger ASG Instance Refresh
+      # REST + WebSocket ASG 모두 Instance Refresh
+      # 같은 이미지를 사용하므로 양쪽 다 롤링 배포
+      - name: Trigger ASG Instance Refresh (REST + WebSocket)
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name $ASG_NAME \
+            --auto-scaling-group-name $REST_ASG_NAME \
             --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 120}'
+          echo "✅ REST Instance Refresh 시작됨"
 
-          echo "✅ Instance Refresh 시작됨"
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name $WS_ASG_NAME \
+            --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 120}'
+          echo "✅ WebSocket Instance Refresh 시작됨"

@@ -30,6 +30,13 @@ echo "========================================"
 echo ""
 
 if [ "$MODE" = "multi" ]; then
+    # 스케일링 정책이 desired를 덮어쓰지 않도록 일시 중지
+    echo "[$(date '+%H:%M:%S')] 스케일링 정책 일시 중지"
+    aws autoscaling suspend-processes \
+        --auto-scaling-group-name $ASG_NAME \
+        --scaling-processes AlarmNotification \
+        --region ap-northeast-2 2>/dev/null
+
     echo "[$(date '+%H:%M:%S')] 멀티 서버 모드: ASG desired=2로 설정"
     if ! aws autoscaling set-desired-capacity \
         --auto-scaling-group-name $ASG_NAME \
@@ -54,9 +61,23 @@ if [ "$MODE" = "multi" ]; then
         sleep 15
     done
 
-    # ALB health check 통과 대기 (추가 30초)
-    echo "[$(date '+%H:%M:%S')] ALB health check 통과 대기 (30초)..."
-    sleep 30
+    # ALB health check 통과 대기 (healthy 2대 확인)
+    TG_ARN=$(aws elbv2 describe-target-groups --names fairbid-app-tg \
+        --region ap-northeast-2 --query "TargetGroups[0].TargetGroupArn" --output text 2>/dev/null)
+
+    echo "[$(date '+%H:%M:%S')] ALB healthy 2대 될 때까지 대기..."
+    while true; do
+        HEALTHY=$(aws elbv2 describe-target-health --target-group-arn "$TG_ARN" \
+            --region ap-northeast-2 \
+            --query "TargetHealthDescriptions[?TargetHealth.State=='healthy'] | length(@)" \
+            --output text 2>/dev/null)
+
+        echo "  ALB healthy: $HEALTHY / 2"
+        if [ "$HEALTHY" -ge 2 ] 2>/dev/null; then
+            break
+        fi
+        sleep 15
+    done
     echo ""
 fi
 
@@ -93,6 +114,13 @@ aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $ASG_NAM
 echo ""
 
 if [ "$MODE" = "multi" ]; then
+    # 스케일링 정책 재개
+    echo "[$(date '+%H:%M:%S')] 스케일링 정책 재개"
+    aws autoscaling resume-processes \
+        --auto-scaling-group-name $ASG_NAME \
+        --scaling-processes AlarmNotification \
+        --region ap-northeast-2 2>/dev/null
+
     echo "[$(date '+%H:%M:%S')] 테스트 완료. desired=1로 리셋할까요? (y/n)"
     read -r answer
     if [ "$answer" = "y" ]; then

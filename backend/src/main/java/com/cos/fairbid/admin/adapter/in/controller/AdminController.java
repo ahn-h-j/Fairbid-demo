@@ -1,5 +1,6 @@
 package com.cos.fairbid.admin.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
 import com.cos.fairbid.admin.application.dto.AdminUserResult;
 import com.cos.fairbid.admin.application.dto.DailyAuctionStatsResult;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+@EnabledOnRole({"api", "all"})
 public class AdminController {
 
     /**

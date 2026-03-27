@@ -1,5 +1,6 @@
 package com.cos.fairbid.auction.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auction.adapter.in.dto.AuctionListResponse;
 import com.cos.fairbid.auction.adapter.in.dto.AuctionResponse;
 import com.cos.fairbid.auction.adapter.in.dto.CreateAuctionRequest;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auctions")
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class AuctionController {
 
     private final CreateAuctionUseCase createAuctionUseCase;

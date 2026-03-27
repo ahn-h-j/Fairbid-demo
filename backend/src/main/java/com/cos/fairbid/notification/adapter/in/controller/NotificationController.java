@@ -1,5 +1,6 @@
 package com.cos.fairbid.notification.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
 import com.cos.fairbid.common.response.ApiResponse;
 import com.cos.fairbid.notification.application.port.in.NotificationQueryUseCase;
@@ -26,6 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 @Validated
+@EnabledOnRole({"api", "all"})
 public class NotificationController {
 
     private final NotificationQueryUseCase notificationQueryUseCase;

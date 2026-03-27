@@ -30,3 +30,5 @@ services:
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      # 서버 역할 분리 (all: 모놀리스, api: REST 전용, ws: WebSocket 전용)
+      SERVER_ROLE: ${SERVER_ROLE:-all}

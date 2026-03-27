@@ -36,6 +36,11 @@ spring:
 
 server:
   port: 8080
+  # 서버 역할 분리 (REST/WebSocket 독립 스케일링)
+  # - all: 모든 빈 활성화 (기본값, 로컬 개발)
+  # - api: REST Controller + Redis Pub/Sub Publisher만 활성화
+  # - ws: WebSocket + Redis Pub/Sub Subscriber만 활성화
+  role: ${SERVER_ROLE:all}
 
 # 프론트엔드 정적 리소스 경로
 spring.web.resources:
@@ -51,7 +56,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: health, info, prometheus, metrics, wsconnections
   endpoint:
     health:
       show-details: always

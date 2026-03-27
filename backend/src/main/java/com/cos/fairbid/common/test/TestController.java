@@ -1,5 +1,6 @@
 package com.cos.fairbid.common.test;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.auction.domain.Auction;
@@ -29,6 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class TestController {
 
     private static final String AUCTION_KEY_PREFIX = "auction:";

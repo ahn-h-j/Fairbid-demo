@@ -1,5 +1,6 @@
 package com.cos.fairbid.bid.adapter.in.stream;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.bid.application.port.out.BidRepositoryPort;
 import com.cos.fairbid.bid.domain.Bid;
@@ -22,6 +23,7 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 @Slf4j
 public class BidStreamMessageHandler {
 

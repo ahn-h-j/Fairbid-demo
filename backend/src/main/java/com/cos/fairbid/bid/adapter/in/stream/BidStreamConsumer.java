@@ -1,5 +1,6 @@
 package com.cos.fairbid.bid.adapter.in.stream;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -40,6 +41,7 @@ import java.util.UUID;
  */
 @Component
 @Slf4j
+@EnabledOnRole({"api", "all"})
 public class BidStreamConsumer implements DisposableBean {
 
     private static final String STREAM_KEY = RedisBidStreamAdapter.STREAM_KEY;

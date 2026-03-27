@@ -1,5 +1,6 @@
 package com.cos.fairbid.bid.adapter.in.monitoring;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
 import com.cos.fairbid.bid.application.port.out.BidRepositoryPort;
 import io.micrometer.core.instrument.Gauge;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Component
 @Profile("load-test")
+@EnabledOnRole({"api", "all"})
 @Slf4j
 public class BidConsistencyChecker {
 

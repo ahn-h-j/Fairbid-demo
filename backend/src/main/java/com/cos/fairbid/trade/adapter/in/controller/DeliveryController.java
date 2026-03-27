@@ -1,5 +1,6 @@
 package com.cos.fairbid.trade.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
 import com.cos.fairbid.common.response.ApiResponse;
 import com.cos.fairbid.trade.adapter.in.dto.AddressRequest;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/trades/{tradeId}/delivery")
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class DeliveryController {
 
     private final DeliveryUseCase deliveryUseCase;

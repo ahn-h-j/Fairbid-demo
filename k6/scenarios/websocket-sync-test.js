@@ -38,7 +38,7 @@ const wsServerCount = new Gauge('ws_server_count');          // 연결된 서버
 
 // ── 테스트 설정 ──
 const SUBSCRIBER_COUNT = 20;  // 경매 구독자 수
-const BID_COUNT = 5;          // 입찰 횟수
+const BID_COUNT = 1;          // 입찰 1회만 (서버 간 동기화 실패를 증명하려면 1회여야 함)
 const WAIT_FOR_MESSAGE_MS = 5000; // 메시지 대기 시간 (ms)
 
 export const options = {

@@ -1,5 +1,6 @@
 package com.cos.fairbid.auth.adapter.in.controller;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auth.adapter.in.dto.TokenResponse;
 import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
 import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
@@ -32,6 +33,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class AuthController {
 
     private static final String REFRESH_TOKEN_COOKIE = "refresh_token";

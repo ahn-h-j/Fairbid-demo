@@ -1,5 +1,6 @@
 package com.cos.fairbid.notification.adapter.out.websocket;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -9,9 +10,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 /**
  * WebSocket STOMP 설정
  * 클라이언트는 /ws 엔드포인트로 연결하고, /topic/auctions/{auctionId}를 구독
+ *
+ * server.role=ws 또는 all(기본)에서만 활성화.
+ * API 전용 서버에서는 WebSocket 브로커를 띄울 필요가 없다.
  */
 @Configuration
 @EnableWebSocketMessageBroker
+@EnabledOnRole({"ws", "all"})
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     /**

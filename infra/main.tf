@@ -99,7 +99,12 @@ resource "aws_instance" "fairbid" {
   })
 
   tags = {
-    Name = "fairbid-server"
+    Name = "fairbid-infra"
+  }
+
+  # AMI 업데이트로 인한 인스턴스 교체 방지 (인프라 서버는 stateful)
+  lifecycle {
+    ignore_changes = [ami, user_data]
   }
 }
 

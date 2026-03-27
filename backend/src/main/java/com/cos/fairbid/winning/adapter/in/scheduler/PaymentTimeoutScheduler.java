@@ -1,5 +1,6 @@
 package com.cos.fairbid.winning.adapter.in.scheduler;
 
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
@@ -19,10 +20,13 @@ import java.util.List;
  * 응답 마감 임박 시 리마인더 알림을 발송한다
  *
  * Trade 기반 시스템 (24시간 응답 기한)
+ *
+ * server.role=api 또는 all에서만 활성화.
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@EnabledOnRole({"api", "all"})
 public class PaymentTimeoutScheduler {
 
     private final ProcessNoShowUseCase processNoShowUseCase;
