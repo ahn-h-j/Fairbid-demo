@@ -89,7 +89,7 @@ export default function AuctionListPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="경매 검색…"
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
                 aria-label="경매 검색"
               />
             </div>
@@ -106,7 +106,7 @@ export default function AuctionListPage() {
             <select
               value={params.status}
               onChange={(e) => updateParams({ status: e.target.value })}
-              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer"
+              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors duration-200 cursor-pointer"
               aria-label="상태 필터"
             >
               {/* 기본값: 진행중인 경매 (BIDDING + INSTANT_BUY_PENDING) */}
@@ -119,7 +119,7 @@ export default function AuctionListPage() {
             <select
               value={params.category}
               onChange={(e) => updateParams({ category: e.target.value })}
-              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer"
+              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors duration-200 cursor-pointer"
               aria-label="카테고리 필터"
             >
               <option value="">전체 카테고리</option>
@@ -131,7 +131,7 @@ export default function AuctionListPage() {
             <select
               value={params.sort}
               onChange={(e) => updateParams({ sort: e.target.value })}
-              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer"
+              className="px-3 py-2.5 bg-gray-50 border-0 rounded-xl text-[13px] text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors duration-200 cursor-pointer"
               aria-label="정렬 기준"
             >
               <option value="">최신순</option>

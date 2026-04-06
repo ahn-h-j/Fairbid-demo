@@ -128,7 +128,7 @@ export default function ImageGallery({ images = [], alt = '상품 이미지' }) 
               key={url}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden transition-all ${
+              className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden transition-[border-color,opacity] duration-200 ${
                 activeIndex === index
                   ? 'ring-2 ring-blue-500 ring-offset-1'
                   : 'ring-1 ring-gray-200 hover:ring-gray-300 opacity-70 hover:opacity-100'

@@ -190,7 +190,7 @@ export default function AuctionCreatePage() {
               value={formData.title}
               onChange={handleChange}
               placeholder="경매 상품 제목을 입력하세요"
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
               required
               autoComplete="off"
             />
@@ -208,7 +208,7 @@ export default function AuctionCreatePage() {
               onChange={handleChange}
               placeholder="상품에 대한 상세 설명을 입력하세요"
               rows={4}
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 resize-none focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 resize-none focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
             />
           </div>
 
@@ -222,7 +222,7 @@ export default function AuctionCreatePage() {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer appearance-none"
+              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors duration-200 cursor-pointer appearance-none"
               required
               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundPosition: 'right 12px center', backgroundSize: '16px', backgroundRepeat: 'no-repeat' }}
             >
@@ -252,7 +252,7 @@ export default function AuctionCreatePage() {
                   value={formatNumberInput(formData.startPrice)}
                   onChange={handlePriceChange}
                   placeholder="0"
-                  className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+                  className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
                   required
                   inputMode="numeric"
                 />
@@ -273,7 +273,7 @@ export default function AuctionCreatePage() {
                   value={formatNumberInput(formData.instantBuyPrice)}
                   onChange={handlePriceChange}
                   placeholder="0"
-                  className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+                  className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
                   inputMode="numeric"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">원</span>
@@ -291,7 +291,7 @@ export default function AuctionCreatePage() {
             {DURATIONS.map(({ value, label }) => (
               <label
                 key={value}
-                className={`relative flex items-center justify-center py-3.5 px-4 rounded-xl cursor-pointer transition-all btn-press ${
+                className={`relative flex items-center justify-center py-3.5 px-4 rounded-xl cursor-pointer transition-colors duration-200 btn-press ${
                   formData.duration === value
                     ? 'bg-gray-900 text-white shadow-sm'
                     : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
@@ -318,7 +318,7 @@ export default function AuctionCreatePage() {
 
           <div className="space-y-3">
             {/* 직거래 옵션 */}
-            <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all ${
+            <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors duration-200 ${
               formData.directTradeAvailable ? 'bg-blue-50 ring-1 ring-blue-200' : 'bg-gray-50 hover:bg-gray-100'
             }`}>
               <input
@@ -347,14 +347,14 @@ export default function AuctionCreatePage() {
                   value={formData.directTradeLocation}
                   onChange={handleChange}
                   placeholder="예: 강남역 2번 출구, 홍대입구역 등"
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 transition-colors duration-200"
                 />
                 <p className="text-[11px] text-gray-400 mt-1.5 ml-1">구매자에게 표시될 거래 희망 장소입니다</p>
               </div>
             )}
 
             {/* 택배 옵션 */}
-            <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all ${
+            <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors duration-200 ${
               formData.deliveryAvailable ? 'bg-blue-50 ring-1 ring-blue-200' : 'bg-gray-50 hover:bg-gray-100'
             }`}>
               <input
@@ -376,7 +376,7 @@ export default function AuctionCreatePage() {
         <button
           type="submit"
           disabled={submitting || isUploading}
-          className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all btn-press shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 btn-press shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
         >
           {submitting ? (
             <>

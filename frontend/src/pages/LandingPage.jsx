@@ -42,7 +42,7 @@ export default function LandingPage() {
             {/* CTA 버튼 */}
             <Link
               to="/auctions"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-600 text-white text-lg font-semibold rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover:-translate-y-0.5"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-600 text-white text-lg font-semibold rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5"
             >
               경매 둘러보기
             </Link>
@@ -335,7 +335,7 @@ export default function LandingPage() {
           </p>
           <Link
             to="/auctions"
-            className="inline-block px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+            className="inline-block px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5"
           >
             경매 둘러보기
           </Link>

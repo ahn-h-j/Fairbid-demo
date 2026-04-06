@@ -1,7 +1,6 @@
 package com.cos.fairbid.trade.application.service;
 
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
-import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
 import com.cos.fairbid.trade.application.port.in.TradeCommandUseCase;
 import com.cos.fairbid.trade.application.port.out.DeliveryInfoRepositoryPort;

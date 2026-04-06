@@ -208,7 +208,7 @@ function MethodSelectionUI({ tradeId, onAction, submitting }) {
         <button
           onClick={() => onAction(() => selectTradeMethod(tradeId, 'DIRECT'))}
           disabled={submitting}
-          className="p-4 bg-gray-50 rounded-xl hover:bg-blue-50 hover:ring-1 hover:ring-blue-200 transition-all text-center disabled:opacity-50"
+          className="p-4 bg-gray-50 rounded-xl hover:bg-blue-50 hover:ring-1 hover:ring-blue-200 transition-colors duration-200 text-center disabled:opacity-50"
         >
           <div className="text-2xl mb-2">🤝</div>
           <p className="text-[14px] font-semibold text-gray-900">직거래</p>
@@ -217,7 +217,7 @@ function MethodSelectionUI({ tradeId, onAction, submitting }) {
         <button
           onClick={() => onAction(() => selectTradeMethod(tradeId, 'DELIVERY'))}
           disabled={submitting}
-          className="p-4 bg-gray-50 rounded-xl hover:bg-blue-50 hover:ring-1 hover:ring-blue-200 transition-all text-center disabled:opacity-50"
+          className="p-4 bg-gray-50 rounded-xl hover:bg-blue-50 hover:ring-1 hover:ring-blue-200 transition-colors duration-200 text-center disabled:opacity-50"
         >
           <div className="text-2xl mb-2">📦</div>
           <p className="text-[14px] font-semibold text-gray-900">택배</p>

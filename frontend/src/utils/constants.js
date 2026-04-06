@@ -44,12 +44,3 @@ export const BID_TYPES = {
 export const TIMER_WARNING_THRESHOLD = 300;  // 5분
 export const TIMER_DANGER_THRESHOLD = 60;    // 1분
 
-/**
- * 거래(Transaction) 상태별 라벨 및 스타일
- */
-export const TRANSACTION_STATUSES = {
-  AWAITING_PAYMENT: { label: '결제 대기', className: 'bg-yellow-100 text-yellow-800' },
-  PAID: { label: '결제 완료', className: 'bg-green-100 text-green-800' },
-  NO_SHOW: { label: '노쇼', className: 'bg-red-100 text-red-800' },
-  CANCELLED: { label: '취소됨', className: 'bg-gray-100 text-gray-500' },
-};

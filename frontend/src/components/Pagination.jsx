@@ -21,7 +21,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0}
-        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all btn-press"
+        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200 btn-press"
         aria-label="이전 페이지"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -35,7 +35,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
           key={page}
           type="button"
           onClick={() => onPageChange(page)}
-          className={`w-9 h-9 flex items-center justify-center rounded-xl text-[13px] font-semibold transition-all btn-press ${
+          className={`w-9 h-9 flex items-center justify-center rounded-xl text-[13px] font-semibold transition-colors duration-200 btn-press ${
             page === currentPage
               ? 'bg-gray-900 text-white shadow-sm'
               : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
@@ -52,7 +52,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages - 1}
-        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all btn-press"
+        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200 btn-press"
         aria-label="다음 페이지"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

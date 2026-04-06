@@ -6,7 +6,6 @@ import com.cos.fairbid.notification.dto.BidUpdateMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
 
 /**
  * WebSocket을 통한 경매 브로드캐스트 어댑터 (단일 서버용, 현재 미사용)

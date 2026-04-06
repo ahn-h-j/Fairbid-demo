@@ -5,6 +5,7 @@ import com.cos.fairbid.bid.domain.exception.BidTooLowException;
 import com.cos.fairbid.bid.domain.exception.AuctionEndedException;
 import com.cos.fairbid.bid.domain.exception.InstantBuyException;
 import com.cos.fairbid.bid.domain.exception.SelfBidNotAllowedException;
+
 import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

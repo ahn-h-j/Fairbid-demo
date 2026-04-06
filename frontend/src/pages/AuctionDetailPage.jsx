@@ -324,7 +324,7 @@ export default function AuctionDetailPage() {
             type="button"
             onClick={handleOneTouchBid}
             disabled={bidLoading}
-            className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 btn-press"
+            className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-[background,box-shadow] duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 btn-press"
           >
             {bidLoading ? '입찰 중…' : `원터치 입찰 (${formatPrice(auction.nextMinBidPrice)})`}
           </button>
@@ -337,7 +337,7 @@ export default function AuctionDetailPage() {
                 value={formatNumberInput(bidAmount)}
                 onChange={(e) => setBidAmount(parseNumberInput(e.target.value))}
                 placeholder={`최소 ${formatPrice(auction.nextMinBidPrice)}`}
-                className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-all"
+                className="w-full pl-4 pr-10 py-3 bg-gray-50 border-0 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 input-glow transition-colors duration-200"
                 disabled={bidLoading}
                 inputMode="numeric"
                 aria-label="직접 입찰 금액"
@@ -347,7 +347,7 @@ export default function AuctionDetailPage() {
             <button
               type="submit"
               disabled={bidLoading || !bidAmount}
-              className="px-6 py-3 bg-gray-900 text-white text-[13px] font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all btn-press shadow-sm"
+              className="px-6 py-3 bg-gray-900 text-white text-[13px] font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200 btn-press shadow-sm"
             >
               입찰
             </button>
@@ -364,7 +364,7 @@ export default function AuctionDetailPage() {
                 type="button"
                 onClick={handleInstantBuy}
                 disabled={bidLoading || !auction.instantBuyEnabled}
-                className={`w-full py-3.5 text-[14px] font-semibold rounded-xl transition-all btn-press ${
+                className={`w-full py-3.5 text-[14px] font-semibold rounded-xl transition-colors duration-200 btn-press ${
                   auction.instantBuyEnabled
                     ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:from-orange-600 hover:to-amber-600'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
@@ -538,7 +538,7 @@ function EndedAuctionSection({ auction, user }) {
           </p>
           <Link
             to="/trades"
-            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[14px] font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/20 hover:shadow-green-500/30 btn-press"
+            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[14px] font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-[background,box-shadow] duration-200 shadow-lg shadow-green-500/20 hover:shadow-green-500/30 btn-press"
           >
             거래 진행하기
           </Link>
@@ -564,7 +564,7 @@ function EndedAuctionSection({ auction, user }) {
           </p>
           <Link
             to="/trades"
-            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[14px] font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/20 hover:shadow-green-500/30 btn-press"
+            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[14px] font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-[background,box-shadow] duration-200 shadow-lg shadow-green-500/20 hover:shadow-green-500/30 btn-press"
           >
             거래 진행하기
           </Link>
@@ -627,7 +627,7 @@ function EndedAuctionSection({ auction, user }) {
           {hasFinalPrice && (
             <Link
               to="/trades"
-              className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 btn-press"
+              className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[14px] font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-[background,box-shadow] duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 btn-press"
             >
               거래 진행하기
             </Link>

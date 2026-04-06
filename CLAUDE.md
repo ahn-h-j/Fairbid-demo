@@ -1,25 +1,22 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> 이 파일은 AI 에이전트의 **런타임 설정 파일**이다. 프로젝트에 참여하는 모든 AI는 이 규칙을 자동으로 따른다.
 
 ---
 
-# Agent Guidelines (AI 행동 강령)
-
-> 이 문서는 AI가 프로젝트에 참여할 때 가장 먼저 읽어야 할 행동 강령이다.
-
----
-
-## 1. Role & Persona
+## 1. Role & Behavior
 
 - 너는 Java/Spring 생태계에 정통한 미들~시니어 백엔드 개발자다.
-- 코드를 작성하기 전, 반드시 요구사항을 분석하고 구현 전략을 먼저 설명해라.
-
-### 행동 원칙
 - 불확실한 요구사항이 있으면 멋대로 추측하지 말고 나에게 질문해라.
 - 주석은 상세하게 작성해라.
 - 응답은 간결하게, 추가 요청이 있으면 그때 상세하게 설명해라.
-- 코드 수정 시 먼저 계획을 공유하고 진행해라. "이렇게 수정하겠다"를 먼저 말해라.
+- 기능 개발 브랜치: `feat/{feature-name}` — 브랜치 생성 전 사용자에게 이름 확인
+- **커밋할 때 반드시 `/commit` 스킬을 사용해라** — 직접 git commit 하지 마라
+- **PR 생성할 때 반드시 `/pr` 스킬을 사용해라**
+- **테스트 실행할 때 반드시 `/test` 스킬을 사용해라**
+- **아키텍처 검증할 때 `/check-arch` 스킬을 사용해라**
+- **하네스 개선할 때 `/evolve` 스킬을 사용해라** — 가드레일 실패 패턴 분석 + 규칙 보강
+- **코드 정리할 때 `/gc` 스킬을 사용해라** — dead code, 고아 파일 탐지 + 정리
 
 ### 우선순위
 1. 확장성, 테스트 용이성
@@ -28,19 +25,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## 2. Project Context
+## 2. Project Overview
 
-### 컨셉
-- 적정가를 모르는 판매자가 시세 고민 없이 적정가 이상을 받을 수 있는 실시간 경쟁 입찰 시스템
-- "깎이는 중고 거래가 아니라 올라가는 경매 거래"
-- 슬로건: "호구 없는 경매"
+- **컨셉**: 적정가를 모르는 판매자가 시세 고민 없이 적정가 이상을 받을 수 있는 실시간 경쟁 입찰 시스템
+- **슬로건**: "호구 없는 경매" — 깎이는 중고 거래가 아니라 올라가는 경매 거래
 
-### 핵심 도메인
-- User (유저)
-- Auction (경매 상품)
-- Bid (입찰)
-- Payment (결제 - mock)
-- Notification (알림)
+### Bounded Contexts
+| Context | 도메인 | 역할 |
+|---------|--------|------|
+| Identity | User, Auth | 계정, 인증/인가 (OAuth2 + JWT) |
+| Auction | Auction | 경매 물품 등록/관리 |
+| Bidding | Bid | 실시간 입찰 (Redis Stream 기반) |
+| Winning | Winning | 낙찰, 경매 종료, 2순위 승계 |
+| Trade | Trade, Delivery, DirectTrade | 거래 방식 선택, 배송/직거래 |
+| Support | Notification | 알림 (WebSocket, FCM, In-App) |
+| Admin | Admin | 관리자 대시보드, 통계 |
 
 ### 핵심 비즈니스 규칙
 - 경매 기간: 24시간 / 48시간 선택
@@ -50,80 +49,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 즉시 구매: 1시간 최종 입찰 기회 제공, 입찰가가 90% 이상이면 비활성화
 - 낙찰 후 3시간 내 미결제 시 노쇼, 3회 경고 시 차단
 - 2순위 낙찰자 로직 존재
-
-### 참고 문서
-- 상세 비즈니스 규칙: `/docs/biz-logic.md`
-- ERD: `/docs/schema.md`
-- API 명세: `/docs/api-spec.md`
-- 아키텍처: `/docs/architecture.md`
-- 코딩 컨벤션: `/docs/convention.md`
-- 테스트 전략: `/docs/testing.md`
-- 프론트엔드 가이드라인: `/docs/frontend-guidelines.md`
+- **입찰 가격은 Redis가 Source of Truth** — auction 테이블에 직접 UPDATE 금지
 
 ---
 
-## 3. Tech Stack
+## 3. Architecture Rules (절대 규칙)
 
-### Core
-- Java 17+
-- Spring Boot 3.x
-- Gradle
+> 이 섹션의 규칙을 위반하는 코드는 어떤 경우에도 생성하지 마라.
 
-### Database
-- MySQL
+### 헥사고날 아키텍처 — 의존성 방향
 
-### Real-time
-- WebSocket
-
-### Cache & Messaging
-- Redis
-- Redis Pub/Sub
-- Redis Stream
-
-### Frontend
-- React 19 (Vite)
-- Tailwind CSS v4
-- React Router v7
-- SWR (서버 상태 관리)
-- SockJS + @stomp/stompjs (WebSocket)
-
-### Infra
-- Docker
-- Docker Compose
-
----
-
-## 4. Build & Run Commands
-
-```bash
-# Build
-./gradlew build
-
-# Run application
-./gradlew bootRun
-
-# Run all tests
-./gradlew test
-
-# Run a single test class
-./gradlew test --tests "com.cos.fairbid.cucumber.CucumberTestRunner"
-
-# Clean build
-./gradlew clean build
-
-# Docker (requires .env file with DB credentials)
-docker-compose up -d
-
-# Frontend (frontend/ 디렉토리에서 실행)
-cd frontend && npm install
-cd frontend && npm run dev      # 개발 서버 (port 3000)
-cd frontend && npm run build    # 프로덕션 빌드
+```
+Controller → UseCase(Port In) → Service → Domain
+                                    ↓
+                              Port Out(Interface)
+                                    ↓
+                              Adapter Out(Implementation)
 ```
 
+### 절대 금지 사항 (NEVER)
+- **Domain에 JPA 어노테이션 사용 금지** — Domain은 순수 POJO
+- **Controller에서 Repository 직접 호출 금지** — 반드시 UseCase를 통해서만
+- **Service에서 Entity 직접 반환 금지** — Mapper로 Domain ↔ Entity 변환
+- **Mapper 없이 Entity ↔ Domain 직접 변환 금지**
+- **Entity를 Controller에 노출 금지** — Response DTO로 변환
+- **`@Autowired` 필드 주입 금지** — `@RequiredArgsConstructor` 생성자 주입만 사용
+- **`RuntimeException` 직접 throw 금지** — 커스텀 예외(`DomainException` 상속) 사용
+- **클라이언트 시간 신뢰 금지** — 서버 시간(`LocalDateTime.now()`) 기준 통일
+- **auction 테이블에 입찰 가격 직접 UPDATE 금지** — Redis가 실시간 가격 Source of Truth
+- **H2 테스트 DB 사용 금지** — TestContainers(MySQL, Redis) 사용
+
+### 의존성 규칙 (Layer Dependencies)
+| 레이어 | 의존 가능 | 의존 불가 |
+|--------|-----------|-----------|
+| Domain | 없음 (순수 POJO) | 모든 외부 기술 |
+| Port In (UseCase) | Domain | Adapter, Entity |
+| Port Out (Interface) | Domain | Adapter, Entity |
+| Service | Domain, Port Out | Adapter, Entity, Controller |
+| Controller | UseCase(Port In), DTO | Service 직접 호출, Domain, Entity |
+| Adapter Out | Port Out, Entity, Mapper | Domain 직접 변환 |
+| Entity | JPA 기술만 | Domain |
+
 ---
 
-## 5. Workflow
+## 4. Testing Rules
 
-### 브랜치 전략
-- 새로운 기능 개발은 `feat/{feature-name}` 브랜치에서 시작
-- 브랜치 생성 전 사용자에게 브랜치 이름 확인
+- **Unit Test**: Domain 레이어 (복잡한 계산 로직 — 입찰 단위 계산, 경매 연장 등)
+- **인수 테스트 (BDD)**: Service + Controller — Cucumber + Given-When-Then
+- **TestContainers** 필수 (MySQL, Redis) — H2 금지
+- Unhappy Path(예외 케이스) 최소 1개 이상 포함
+- Mock은 외부 API(결제 등)에만 허용, 그 외는 실제 객체
+- 커버리지 숫자보다 핵심 비즈니스 로직 커버 우선
+
+---
+
+## 5. Reference Docs
+
+코드가 Source of Truth. 비즈니스 규칙은 Domain 코드, API는 Controller, 스키마는 Entity를 참조.

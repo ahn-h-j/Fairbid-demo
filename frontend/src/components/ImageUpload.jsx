@@ -177,7 +177,7 @@ export default function ImageUpload({ images = [], onChange, maxImages = 5, onUp
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+          className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors duration-200 ${
             dragOver
               ? 'border-blue-400 bg-blue-50'
               : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'

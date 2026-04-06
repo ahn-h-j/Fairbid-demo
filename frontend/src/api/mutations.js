@@ -35,34 +35,3 @@ export async function placeBid(auctionId, bidData) {
   });
 }
 
-/**
- * 결제 처리 API 호출
- *
- * @param {string|number} transactionId - 거래 ID
- * @returns {Promise<object>} 결제 처리 결과
- */
-export async function processPayment(transactionId) {
-  return apiRequest(`/transactions/${transactionId}/payment`, {
-    method: 'POST',
-  });
-}
-
-/**
- * 거래 상세 조회 API 호출
- *
- * @param {string|number} transactionId - 거래 ID
- * @returns {Promise<object>} 거래 상세 정보
- */
-export async function getTransaction(transactionId) {
-  return apiRequest(`/transactions/${transactionId}`);
-}
-
-/**
- * 경매의 거래 정보 조회 API 호출
- *
- * @param {string|number} auctionId - 경매 ID
- * @returns {Promise<object>} 거래 상세 정보
- */
-export async function getTransactionByAuctionId(auctionId) {
-  return apiRequest(`/transactions/auction/${auctionId}`);
-}
