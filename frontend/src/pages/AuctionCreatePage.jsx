@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createAuction } from '../api/mutations';
+import AiAssistButton from '../components/AiAssistButton';
 import Alert from '../components/Alert';
 import ImageUpload from '../components/ImageUpload';
 import Spinner from '../components/Spinner';
@@ -30,6 +31,15 @@ export default function AuctionCreatePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(null);
   const [createdAuction, setCreatedAuction] = useState(null);
+  // AI 추천 결과 (low/mid/high 칩으로 시작가 빠르게 전환할 수 있게 보관)
+  const [aiSuggestedPrices, setAiSuggestedPrices] = useState(null);
+  // AI 추천 정확도를 높이기 위한 구조화 힌트 (Auction 등록 데이터와는 별도, 폼 제출에는 영향 없음)
+  const [aiHints, setAiHints] = useState({
+    productInfo: '',   // 상품 정보 (브랜드/모델/사이즈/사양)
+    purchasedAt: '',   // 구매 시기
+    condition: '',     // 사용 상태 (select)
+    extraNote: '',     // 추가 정보 (구성품/흠집/특이사항)
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +87,66 @@ export default function AuctionCreatePage() {
    */
   const handleImagesChange = (imageUrls) => {
     setFormData((prev) => ({ ...prev, imageUrls }));
+  };
+
+  /**
+   * AI 어시스턴트 응답 처리.
+   * - 시작가는 mid 값으로 자동 채움
+   * - 설명이 이미 입력되어 있으면 덮어쓰기 전 confirm
+   * - low/mid/high 는 칩으로 노출해 사용자가 클릭으로 전환 가능
+   *
+   * @param {{suggestedPrices: {low:number, mid:number, high:number}, generatedDescription: string}} result
+   */
+  const handleAiResult = (result) => {
+    const { suggestedPrices, generatedDescription } = result;
+
+    setAiSuggestedPrices(suggestedPrices);
+
+    setFormData((prev) => {
+      const next = { ...prev, startPrice: String(suggestedPrices.mid) };
+
+      const existingDescription = (prev.description ?? '').trim();
+      const shouldOverwriteDescription =
+        !existingDescription ||
+        // eslint-disable-next-line no-alert
+        window.confirm('이미 입력하신 설명이 있습니다. AI가 생성한 설명으로 덮어쓸까요?');
+
+      if (shouldOverwriteDescription) {
+        next.description = generatedDescription;
+      }
+      return next;
+    });
+    setError(null);
+  };
+
+  /**
+   * AI 추천 가격 칩 선택 → 시작가 전환
+   * @param {number} price
+   */
+  const handlePriceChipClick = (price) => {
+    setFormData((prev) => ({ ...prev, startPrice: String(price) }));
+  };
+
+  /**
+   * AI 힌트 입력 핸들러
+   */
+  const handleAiHintChange = (e) => {
+    const { name, value } = e.target;
+    setAiHints((prev) => ({ ...prev, [name]: value }));
+  };
+
+  /**
+   * 구조화된 힌트를 자연어 memo 문자열로 조립한다.
+   * AI 가 더 정확한 추천을 할 수 있도록 라벨이 달린 형태로 전달한다.
+   * 모든 필드가 비어있으면 빈 문자열을 반환 (AiAssistButton 이 알아서 처리).
+   */
+  const buildAiMemo = () => {
+    const lines = [];
+    if (aiHints.productInfo.trim()) lines.push(`상품 정보: ${aiHints.productInfo.trim()}`);
+    if (aiHints.purchasedAt.trim()) lines.push(`구매 시기: ${aiHints.purchasedAt.trim()}`);
+    if (aiHints.condition) lines.push(`상태: ${aiHints.condition}`);
+    if (aiHints.extraNote.trim()) lines.push(`추가 정보: ${aiHints.extraNote.trim()}`);
+    return lines.join('\n');
   };
 
   const handleSubmit = async (e) => {
@@ -234,6 +304,94 @@ export default function AuctionCreatePage() {
           </div>
         </div>
 
+        {/* AI 추천 섹션 — 이미지만 있으면 호출 가능, title/category 와 독립 */}
+        <div className="bg-white rounded-2xl p-5 sm:p-6 ring-1 ring-black/[0.04] space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[13px] font-bold text-gray-500 uppercase tracking-wider">AI 추천</h2>
+            <span className="text-[11px] text-gray-400">정보를 자세히 채울수록 추천이 정확해져요</span>
+          </div>
+
+          {/* 구조화 힌트 입력 — 모든 카테고리에 통하는 일반화된 필드 */}
+          <div>
+            <label htmlFor="ai-hint-productInfo" className="block text-[12px] font-semibold text-gray-700 mb-1">
+              상품 정보
+            </label>
+            <input
+              id="ai-hint-productInfo"
+              name="productInfo"
+              type="text"
+              value={aiHints.productInfo}
+              onChange={handleAiHintChange}
+              placeholder="예: 맥북 프로 14 M3 / 나이키 에어포스1 270mm / 한샘 4단 책장 100×180"
+              className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-lg text-[13px] text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+              autoComplete="off"
+            />
+            <p className="text-[11px] text-gray-400 mt-1">브랜드, 모델, 사이즈, 사양 등을 자세히 적을수록 추천이 정확해져요</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="ai-hint-purchasedAt" className="block text-[12px] font-semibold text-gray-700 mb-1">
+                구매 시기
+              </label>
+              <input
+                id="ai-hint-purchasedAt"
+                name="purchasedAt"
+                type="text"
+                value={aiHints.purchasedAt}
+                onChange={handleAiHintChange}
+                placeholder="예: 2024년 1월"
+                className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-lg text-[13px] text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ai-hint-condition" className="block text-[12px] font-semibold text-gray-700 mb-1">
+                사용 상태
+              </label>
+              <select
+                id="ai-hint-condition"
+                name="condition"
+                value={aiHints.condition}
+                onChange={handleAiHintChange}
+                className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-lg text-[13px] text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 cursor-pointer appearance-none"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundPosition: 'right 10px center', backgroundSize: '14px', backgroundRepeat: 'no-repeat' }}
+              >
+                <option value="">선택 안 함</option>
+                <option value="새것 (미개봉)">새것 (미개봉)</option>
+                <option value="거의 새것 (사용 흔적 거의 없음)">거의 새것</option>
+                <option value="양호 (가벼운 사용감)">양호</option>
+                <option value="사용감 있음 (작은 흠집)">사용감 있음</option>
+                <option value="노후 (기능 정상)">노후 (기능 정상)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="ai-hint-extraNote" className="block text-[12px] font-semibold text-gray-700 mb-1">
+              추가 정보 <span className="text-gray-400 font-normal text-[10px]">(선택)</span>
+            </label>
+            <textarea
+              id="ai-hint-extraNote"
+              name="extraNote"
+              value={aiHints.extraNote}
+              onChange={handleAiHintChange}
+              placeholder="구성품, 흠집/수리 이력, 특이사항 등 자유롭게"
+              rows={2}
+              className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-lg text-[13px] text-gray-900 placeholder-gray-400 resize-none focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+            />
+          </div>
+
+          <AiAssistButton
+            category={formData.category}
+            memo={buildAiMemo()}
+            imageUrls={formData.imageUrls}
+            onResult={handleAiResult}
+            disabled={submitting || isUploading}
+          />
+        </div>
+
         {/* 가격 설정 섹션 */}
         <div className="bg-white rounded-2xl p-5 sm:p-6 ring-1 ring-black/[0.04] space-y-4">
           <h2 className="text-[13px] font-bold text-gray-500 uppercase tracking-wider">가격 설정</h2>
@@ -258,6 +416,35 @@ export default function AuctionCreatePage() {
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">원</span>
               </div>
+
+              {/* AI 추천 가격 칩 — 클릭 시 시작가로 즉시 적용 */}
+              {aiSuggestedPrices ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {[
+                    { key: 'low', label: '보수', value: aiSuggestedPrices.low },
+                    { key: 'mid', label: '적정', value: aiSuggestedPrices.mid },
+                    { key: 'high', label: '공격', value: aiSuggestedPrices.high },
+                  ].map(({ key, label, value }) => {
+                    const isActive = String(value) === String(formData.startPrice);
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => handlePriceChipClick(value)}
+                        aria-pressed={isActive}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                          isActive
+                            ? 'bg-indigo-500 text-white'
+                            : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                        }`}
+                        style={{ transition: 'background-color 150ms, color 150ms' }}
+                      >
+                        {label} {formatPrice(value)}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
 
             {/* 즉시 구매가 */}

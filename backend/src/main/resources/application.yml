@@ -99,3 +99,21 @@ app:
     secure: ${COOKIE_SECURE:true}
   admin:
     emails: ${ADMIN_EMAILS:}  # 콤마 구분 이메일 목록 (예: admin@test.com,admin2@test.com)
+
+# AI 경매 어시스턴트 (Anthropic Claude)
+# - api-key 미설정 시 /api/v1/ai/auction-assist 호출 시 503 으로 떨어진다
+# - v1 은 캐싱 없이 매 요청마다 Claude API 를 그대로 호출한다
+#   (프롬프트 캐싱과 Redis 시세 캐싱은 v2 도입 예정)
+# - web_search: Claude 가 한국 중고 시세를 실시간 조회해 가격 정확도를 높임
+#   호출당 비용이 약 2배(17원 → 40원) 늘지만 학습 데이터 시점 이후 시세 변동 반영 가능
+ai:
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${ANTHROPIC_MODEL:claude-sonnet-4-5}
+    base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
+    anthropic-version: 2023-06-01
+    connect-timeout-ms: 5000
+    read-timeout-ms: 60000
+    max-tokens: 2000
+    web-search-enabled: ${ANTHROPIC_WEB_SEARCH_ENABLED:true}
+    web-search-max-uses: ${ANTHROPIC_WEB_SEARCH_MAX_USES:2}

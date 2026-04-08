@@ -1,0 +1,259 @@
+package com.cos.fairbid.ai.adapter.out.claude;
+
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest;
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageResponse;
+import com.cos.fairbid.ai.application.dto.AiAssistCommand;
+import com.cos.fairbid.ai.application.port.out.AiClientPort;
+import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.SuggestedPrices;
+import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
+import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
+import com.cos.fairbid.ai.domain.exception.InvalidImageException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
+
+/**
+ * Anthropic Claude Messages API 어댑터 (AiClientPort 구현).
+ *
+ * - RestClient 동기 호출 (기존 OAuth 클라이언트와 동일 패턴)
+ * - 프롬프트 캐싱은 ClaudePromptBuilder 가 담당하고, 여기서는 단순 호출/응답 매핑만 처리
+ * - 외부 API 오류는 도메인 예외(AiServiceUnavailable / AiGenerationFailed / InvalidImage) 로 변환
+ */
+@Slf4j
+@Component
+public class ClaudeApiAdapter implements AiClientPort {
+
+    private static final String MESSAGES_PATH = "/v1/messages";
+
+    private final RestClient restClient;
+    private final AnthropicProperties properties;
+    private final ClaudePromptBuilder promptBuilder;
+    private final ObjectMapper objectMapper;
+
+    public ClaudeApiAdapter(
+            AnthropicProperties properties,
+            ClaudePromptBuilder promptBuilder,
+            ObjectMapper objectMapper
+    ) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(properties.getConnectTimeoutMs());
+        factory.setReadTimeout(properties.getReadTimeoutMs());
+
+        this.restClient = RestClient.builder()
+                .baseUrl(properties.getBaseUrl())
+                .requestFactory(factory)
+                .build();
+        this.properties = properties;
+        this.promptBuilder = promptBuilder;
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public AiAssistResult generate(AiAssistCommand command) {
+        ClaudeMessageRequest request = promptBuilder.build(command);
+        ClaudeMessageResponse response = callApi(request);
+
+        logUsage(response);
+
+        String rawText = extractText(response);
+        return parseResult(rawText);
+    }
+
+    /**
+     * Anthropic Messages API 호출. HTTP/네트워크 오류는 도메인 예외로 변환한다.
+     */
+    private ClaudeMessageResponse callApi(ClaudeMessageRequest request) {
+        try {
+            ClaudeMessageResponse response = restClient.post()
+                    .uri(MESSAGES_PATH)
+                    .header("x-api-key", properties.getApiKey())
+                    .header("anthropic-version", properties.getAnthropicVersion())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(request)
+                    .retrieve()
+                    .body(ClaudeMessageResponse.class);
+
+            if (response == null) {
+                log.warn("Anthropic 응답 본문이 null");
+                throw AiGenerationFailedException.of();
+            }
+            return response;
+        } catch (RestClientResponseException e) {
+            throw mapHttpError(e);
+        } catch (ResourceAccessException e) {
+            // 타임아웃 / 연결 실패
+            log.warn("Claude API 네트워크 오류: {}", e.getMessage());
+            throw AiServiceUnavailableException.withCause(e);
+        }
+    }
+
+    /**
+     * HTTP 에러를 도메인 예외로 매핑.
+     * - 5xx → 서비스 장애
+     * - 4xx + image 관련 메시지 → 이미지 오류
+     * - 그 외 4xx → 생성 실패
+     */
+    private RuntimeException mapHttpError(RestClientResponseException e) {
+        HttpStatusCode status = e.getStatusCode();
+        String body = e.getResponseBodyAsString();
+        log.warn("Claude API HTTP 에러: status={}, body={}", status.value(), body);
+
+        if (status.is5xxServerError() || status.value() == HttpStatus.TOO_MANY_REQUESTS.value()) {
+            return AiServiceUnavailableException.withCause(e);
+        }
+
+        if (status.is4xxClientError() && isImageRelatedError(body)) {
+            return InvalidImageException.of();
+        }
+
+        return AiGenerationFailedException.withCause(e);
+    }
+
+    private boolean isImageRelatedError(String body) {
+        if (body == null) {
+            return false;
+        }
+        String lower = body.toLowerCase();
+        return lower.contains("image") || lower.contains("source") || lower.contains("url");
+    }
+
+    /**
+     * 응답에서 최종 text 블록을 꺼낸다.
+     *
+     * 웹 서치 활성화 시 응답에는 여러 블록이 순차적으로 섞여 들어온다:
+     *   server_tool_use → web_search_tool_result → text(중간 추론) → ... → text(최종 답변)
+     *
+     * 최종 JSON 응답은 마지막 text 블록에 들어 있으므로 첫 번째가 아닌 마지막 text 를 사용한다.
+     */
+    private String extractText(ClaudeMessageResponse response) {
+        if (response.content() == null || response.content().isEmpty()) {
+            log.warn("Claude 응답 content 가 비어있음");
+            throw AiGenerationFailedException.of();
+        }
+        return response.content().stream()
+                .filter(block -> "text".equals(block.type()))
+                .map(ClaudeMessageResponse.ContentBlock::text)
+                .filter(text -> text != null && !text.isBlank())
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> {
+                    log.warn("Claude 응답에 text 블록이 없음");
+                    return AiGenerationFailedException.of();
+                });
+    }
+
+    /**
+     * Claude 가 출력한 JSON 문자열을 파싱해 도메인 객체로 변환한다.
+     *
+     * Claude 는 항상 JSON 으로 응답하되, status 필드로 성공/실패를 구분한다:
+     *   - status="success": suggestedPrices + generatedDescription 이 채워져 있음 → 정상 반환
+     *   - status!="success" (need_more_info, mismatch, image_unreadable 등):
+     *       userMessage 필드에 Claude 가 자기 말로 쓴 한국어 안내문이 있음 → 그대로 사용자에게 노출
+     *
+     * 내부 실패 사유(파싱 실패 / 필드 누락)는 로그에만 남긴다.
+     */
+    private AiAssistResult parseResult(String rawText) {
+        String json = stripCodeFence(rawText).trim();
+        ParsedPayload parsed;
+        try {
+            parsed = objectMapper.readValue(json, ParsedPayload.class);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            log.warn("Claude 응답 JSON 파싱 실패 - raw: {}", json);
+            throw AiGenerationFailedException.withCause(e);
+        }
+
+        if (parsed == null || parsed.status() == null || parsed.status().isBlank()) {
+            log.warn("Claude 응답에 status 필드 없음 - raw: {}", json);
+            throw AiGenerationFailedException.of();
+        }
+
+        // 실패 분기 — Claude 가 직접 작성한 userMessage 를 사용자에게 그대로 전달
+        if (!"success".equalsIgnoreCase(parsed.status())) {
+            String userMessage = parsed.userMessage();
+            if (userMessage == null || userMessage.isBlank()) {
+                log.warn("Claude 실패 응답에 userMessage 누락 - status={}, raw={}", parsed.status(), json);
+                throw AiGenerationFailedException.of();
+            }
+            log.info("Claude 실패 응답 - status={}, userMessage={}", parsed.status(), userMessage);
+            throw AiGenerationFailedException.fromAi(userMessage);
+        }
+
+        // 성공 분기
+        if (parsed.suggestedPrices() == null
+                || parsed.suggestedPrices().low() == null
+                || parsed.suggestedPrices().mid() == null
+                || parsed.suggestedPrices().high() == null
+                || parsed.generatedDescription() == null) {
+            log.warn("Claude 성공 응답 필수 필드 누락 - raw: {}", json);
+            throw AiGenerationFailedException.of();
+        }
+
+        SuggestedPrices prices = new SuggestedPrices(
+                parsed.suggestedPrices().low(),
+                parsed.suggestedPrices().mid(),
+                parsed.suggestedPrices().high()
+        );
+        return new AiAssistResult(prices, parsed.generatedDescription());
+    }
+
+    /**
+     * 응답 텍스트가 ```json ... ``` 으로 감싸져 있으면 fence 를 제거한다.
+     */
+    private String stripCodeFence(String text) {
+        String trimmed = text.trim();
+        if (!trimmed.startsWith("```")) {
+            return trimmed;
+        }
+        int firstNewline = trimmed.indexOf('\n');
+        if (firstNewline < 0) {
+            return trimmed;
+        }
+        String withoutOpener = trimmed.substring(firstNewline + 1);
+        int closingFence = withoutOpener.lastIndexOf("```");
+        if (closingFence < 0) {
+            return withoutOpener;
+        }
+        return withoutOpener.substring(0, closingFence);
+    }
+
+    private void logUsage(ClaudeMessageResponse response) {
+        ClaudeMessageResponse.Usage usage = response.usage();
+        if (usage == null) {
+            return;
+        }
+        log.info("Claude 토큰 사용량 - input={}, output={}",
+                usage.inputTokens(),
+                usage.outputTokens());
+    }
+
+    /**
+     * Claude JSON 출력 파싱용 내부 record.
+     *
+     * status 가 "success" 면 suggestedPrices + generatedDescription 를 사용한다.
+     * status 가 그 외(need_more_info, mismatch, image_unreadable 등) 면 userMessage 를 사용자에게 노출한다.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record ParsedPayload(
+            String status,
+            ParsedPrices suggestedPrices,
+            String generatedDescription,
+            String userMessage
+    ) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record ParsedPrices(
+            Long low,
+            Long mid,
+            Long high
+    ) {
+    }
+}
