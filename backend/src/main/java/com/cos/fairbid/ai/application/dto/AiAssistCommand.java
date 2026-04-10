@@ -1,8 +1,8 @@
 package com.cos.fairbid.ai.application.dto;
 
-import com.cos.fairbid.auction.domain.Category;
-
 import java.util.List;
+
+import com.cos.fairbid.auction.domain.Category;
 
 /**
  * AI 경매 어시스턴트 호출 Command.

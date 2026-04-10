@@ -1,22 +1,24 @@
 package com.cos.fairbid.ai.adapter.out.claude;
 
-import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest;
-import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.ContentItem;
-import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.Message;
-import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.Tool;
-import com.cos.fairbid.ai.application.dto.AiAssistCommand;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest;
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.ContentItem;
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.Message;
+import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest.Tool;
+import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 
 /**
  * Claude Messages API 요청을 조립한다.
@@ -93,7 +95,7 @@ public class ClaudePromptBuilder {
             sb.append("- 카테고리: ").append(command.category().name()).append('\n');
         } else {
             sb.append("- 카테고리: 미지정 (이미지와 상품 정보를 보고 추론하세요. ")
-              .append("ELECTRONICS / FASHION / HOME / SPORTS / HOBBY / OTHER 중 하나)\n");
+                .append("ELECTRONICS / FASHION / HOME / SPORTS / HOBBY / OTHER 중 하나)\n");
         }
 
         if (command.memo() != null && !command.memo().isBlank()) {

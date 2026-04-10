@@ -1,6 +1,6 @@
 ---
 name: gc
-description: 하네스 위생(가비지 컬렉션). 에이전트가 남긴 기술 부채(dead code, 나쁜 패턴 전파, CLAUDE.md 불일치 등)를 탐지하고 정리를 제안한다. 코드베이스가 지저분해졌을 때, 리팩토링 후 잔재를 정리할 때 사용한다.
+description: 하네스 위생(가비지 컬렉션). dead code 정리 + CLAUDE.md ↔ 코드 불일치 탐지. 코드베이스가 지저분해졌을 때, 리팩토링 후 잔재를 정리할 때 사용한다.
 disable-model-invocation: false
 allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 argument-hint: [검사할 영역: backend | frontend | all (기본)]
@@ -8,7 +8,7 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 
 # 하네스 위생 (Garbage Collection) 스킬
 
-> 쓰레기를 치우고, 퍼진 나쁜 패턴을 잡고, 규칙과 코드의 불일치를 바로잡는다.
+> 쓰레기를 치우고, 규칙과 코드의 불일치를 바로잡는다.
 
 ## Step 1: 검사 대상 결정
 
@@ -54,42 +54,6 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 
 ---
 
-## Part B: 나쁜 패턴 전파 탐지 (퍼진 오염 잡기)
-
-> AI는 기존 코드를 보고 따라한다. 나쁜 패턴이 코드에 있으면 복제된다.
-
-### B-1. 가드레일 규칙 위반이 코드에 남아있는지 검사
-
-| 검사 | 방법 |
-|------|------|
-| `@Autowired` 필드 주입 | Grep: `@Autowired` in `**/*.java` |
-| `RuntimeException` 직접 throw | Grep: `throw new RuntimeException` in `**/*.java` |
-| `System.out/err` 사용 | Grep: `System.out\|System.err` in `**/*.java` |
-| Domain에 JPA 어노테이션 | Grep: `@Entity\|@Table\|@Column` in `**/domain/**/*.java` (adapter 제외) |
-| Service에서 Entity 직접 사용 | Grep: `adapter.out.persistence.entity` in `**/service/**/*.java` |
-| 프론트: `div onClick` | Grep: `<div.*onClick` in `**/*.jsx` |
-| 프론트: `transition: all` | Grep: `transition.*all` in `**/*.jsx` |
-| 프론트: `img` without alt | Grep: `<img` without `alt` in `**/*.jsx` |
-
-### B-2. 위반 발견 시
-
-각 위반에 대해:
-1. **코드 수정** — 위반 코드를 올바른 패턴으로 변경
-2. **가드레일 확인** — 이 위반을 잡는 가드레일이 이미 있는지 확인
-3. **가드레일 미비 시** → `/evolve`에 넘길 항목으로 기록
-   - `docs/harness/feedback-log.md`에 append:
-   ```
-   ### [날짜]
-   - **단계**: GC 스캔
-   - **도구**: /gc
-   - **위반**: [위반 내용]
-   - **파일**: [파일 목록]
-   - **조치**: 코드 수정 완료, 가드레일 규칙 추가 필요
-   - **상태**: open
-   ```
-
----
-
 ## Part C: CLAUDE.md ↔ 실제 코드 불일치 탐지
 
 > 규칙이 있는데 코드가 안 따르거나, 코드가 바뀌었는데 규칙이 안 바뀐 경우.
@@ -106,7 +70,7 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 
 ---
 
-## Step 4: 결과 출력
+## Step 2: 결과 출력
 
 ```
 ## GC 스캔 결과
@@ -117,25 +81,17 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 | dead class | SomeOldService.java | 어디서도 참조되지 않음 |
 | 고아 Entity | OldEntity.java | 대응하는 Domain 없음 |
 
-### Part B: 나쁜 패턴 전파
-| 위반 | 파일 | 현재 가드레일 |
-|------|------|-------------|
-| @Autowired 사용 | UserService.java:15 | Checkstyle에 있음 (왜 남아있지?) |
-| class DTO | BidResponse.java | 규칙은 있지만 가드레일 없음 |
-
-### Part C: 규칙 ↔ 코드 불일치
+### Part B: 규칙 ↔ 코드 불일치
 | 불일치 | 상세 |
 |--------|------|
 | Bounded Contexts 테이블 | Chat 도메인이 추가됐는데 CLAUDE.md에 없음 |
 
 ### 요약
 - Dead code 정리 대상: N개
-- 나쁜 패턴 수정 대상: N개
 - 규칙 불일치 수정 대상: N개
-- /evolve에 넘길 항목: N개 (가드레일 추가 필요)
 ```
 
-## Step 5: 정리 (사용자 승인 후)
+## Step 3: 정리 (사용자 승인 후)
 
 **반드시 사용자에게 정리 목록을 보여주고 승인을 받은 후에 실행한다.**
 
@@ -143,11 +99,7 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 - 파일 전체가 dead → 파일 삭제
 - 파일 일부가 dead → 해당 부분만 제거
 
-### Part B 정리: 나쁜 패턴 수정
-- 위반 코드를 올바른 패턴으로 변경
-- 가드레일 미비 항목은 feedback-log.md에 기록 (다음 /evolve에서 처리)
-
-### Part C 정리: 규칙 업데이트
+### Part B 정리: 규칙 업데이트
 - CLAUDE.md / backend/CLAUDE.md / frontend/CLAUDE.md 업데이트
 
 ### 검증
@@ -155,18 +107,14 @@ argument-hint: [검사할 영역: backend | frontend | all (기본)]
 - 삭제/수정 후 빌드 체크: `npm run build` (프론트엔드)
 - **컴파일/빌드 실패 시 롤백하고 사용자에게 보고**
 
-## Step 6: 완료 요약
+## Step 4: 완료 요약
 
 ```
 ## GC 완료
 
 ### 정리된 항목
 - Dead code: N개 삭제
-- 나쁜 패턴: N개 수정
 - 규칙 불일치: N개 업데이트
-
-### /evolve 대기 항목
-- [가드레일 추가 필요한 항목 목록]
 
 ### 검증
 - 백엔드 컴파일: ✅/❌

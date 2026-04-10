@@ -1,7 +1,8 @@
 package com.cos.fairbid.ai.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * AI가 이미지 URL을 분석할 수 없을 때 발생.

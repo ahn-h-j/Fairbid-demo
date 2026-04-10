@@ -1,12 +1,14 @@
 package com.cos.fairbid.ai.application.service;
 
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 import com.cos.fairbid.ai.application.port.in.GenerateAuctionAssistUseCase;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
 import com.cos.fairbid.ai.domain.AiAssistResult;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 /**
  * AI 경매 어시스턴트 UseCase 구현.

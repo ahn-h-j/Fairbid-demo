@@ -1,7 +1,8 @@
 package com.cos.fairbid.ai.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * AI 서비스(Claude API)를 일시적으로 사용할 수 없을 때 발생.

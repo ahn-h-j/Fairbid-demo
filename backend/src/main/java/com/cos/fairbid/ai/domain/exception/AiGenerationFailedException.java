@@ -1,7 +1,8 @@
 package com.cos.fairbid.ai.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * AI 응답 본문 파싱/스키마 검증에 실패했을 때 발생.

@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   backend:
@@ -61,29 +60,6 @@ jobs:
             backend/build/reports/tests/
             backend/build/reports/cucumber/
 
-      # 테스트 실패 시 GitHub Issue 자동 생성 (피드백 루프)
-      - name: Create issue on test failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
-            const branch = context.ref.replace('refs/heads/', '');
-            const sha = context.sha.substring(0, 7);
-
-            await github.rest.issues.create({
-              owner,
-              repo,
-              title: `[CI 실패] 테스트 실패 (${branch} @ ${sha})`,
-              body: `## CI 테스트 실패\n\n` +
-                    `- **브랜치**: \`${branch}\`\n` +
-                    `- **커밋**: \`${sha}\`\n` +
-                    `- **실행 로그**: ${runUrl}\n` +
-                    `- **상태**: open\n\n` +
-                    `> 이 Issue는 CI 실패 시 자동 생성됩니다. \`/evolve\` 스킬이 이 Issue를 분석합니다.`,
-              labels: ['harness-failure']
-            });
 
   docker:
     runs-on: ubuntu-latest

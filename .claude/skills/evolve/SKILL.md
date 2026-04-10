@@ -11,16 +11,12 @@ allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 
 ## Step 1: 실패 데이터 수집
 
-### 1-1. 로컬 피드백 로그 읽기
+### 1-1. 피드백 로그 읽기
 - `docs/harness/feedback-log.md` 파일을 읽는다
 - **상태: open** 인 항목만 추출한다
 
-### 1-2. GitHub Issue (CI 실패) 읽기
-- `gh issue list --label harness-failure --state open` 실행
-- 각 Issue의 내용을 `gh issue view {번호}` 로 읽는다
-
-### 1-3. 데이터 없으면 종료
-- open 상태인 로컬 로그도 없고, harness-failure Issue도 없으면:
+### 1-2. 데이터 없으면 종료
+- open 상태인 항목이 없으면:
 - "현재 분석할 실패 데이터가 없습니다." 출력 후 종료
 
 ## Step 2: 패턴 분석
@@ -68,8 +64,7 @@ allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 - 승인된 변경 사항을 실제 파일에 반영한다
 
 ### 4-2. 로그 정리
-- 반영된 로컬 로그 항목의 상태를 `open` → `resolved` 로 변경한다
-- 반영된 GitHub Issue를 close한다: `gh issue close {번호}`
+- 반영된 항목의 상태를 `open` → `resolved` 로 변경한다
 
 ### 4-3. 결과 요약
 ```
@@ -80,6 +75,5 @@ allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 - [변경 2]
 
 ### 정리된 로그
-- 로컬: N개 항목 resolved
-- GitHub Issue: N개 closed
+- N개 항목 resolved
 ```

@@ -1,5 +1,19 @@
 package com.cos.fairbid.ai.adapter.out.claude;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest;
 import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageResponse;
 import com.cos.fairbid.ai.application.dto.AiAssistCommand;
@@ -9,17 +23,6 @@ import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
 import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
 import com.cos.fairbid.ai.domain.exception.InvalidImageException;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 /**
  * Anthropic Claude Messages API 어댑터 (AiClientPort 구현).
@@ -87,12 +90,12 @@ public class ClaudeApiAdapter implements AiClientPort {
                 throw AiGenerationFailedException.of();
             }
             return response;
-        } catch (RestClientResponseException e) {
-            throw mapHttpError(e);
-        } catch (ResourceAccessException e) {
+        } catch (RestClientResponseException ex) {
+            throw mapHttpError(ex);
+        } catch (ResourceAccessException ex) {
             // 타임아웃 / 연결 실패
-            log.warn("Claude API 네트워크 오류: {}", e.getMessage());
-            throw AiServiceUnavailableException.withCause(e);
+            log.warn("Claude API 네트워크 오류: {}", ex.getMessage());
+            throw AiServiceUnavailableException.withCause(ex);
         }
     }
 
@@ -102,20 +105,20 @@ public class ClaudeApiAdapter implements AiClientPort {
      * - 4xx + image 관련 메시지 → 이미지 오류
      * - 그 외 4xx → 생성 실패
      */
-    private RuntimeException mapHttpError(RestClientResponseException e) {
-        HttpStatusCode status = e.getStatusCode();
-        String body = e.getResponseBodyAsString();
+    private RuntimeException mapHttpError(RestClientResponseException ex) {
+        HttpStatusCode status = ex.getStatusCode();
+        String body = ex.getResponseBodyAsString();
         log.warn("Claude API HTTP 에러: status={}, body={}", status.value(), body);
 
         if (status.is5xxServerError() || status.value() == HttpStatus.TOO_MANY_REQUESTS.value()) {
-            return AiServiceUnavailableException.withCause(e);
+            return AiServiceUnavailableException.withCause(ex);
         }
 
         if (status.is4xxClientError() && isImageRelatedError(body)) {
             return InvalidImageException.of();
         }
 
-        return AiGenerationFailedException.withCause(e);
+        return AiGenerationFailedException.withCause(ex);
     }
 
     private boolean isImageRelatedError(String body) {
@@ -165,9 +168,9 @@ public class ClaudeApiAdapter implements AiClientPort {
         ParsedPayload parsed;
         try {
             parsed = objectMapper.readValue(json, ParsedPayload.class);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+        } catch (com.fasterxml.jackson.core.JsonProcessingException ex) {
             log.warn("Claude 응답 JSON 파싱 실패 - raw: {}", json);
-            throw AiGenerationFailedException.withCause(e);
+            throw AiGenerationFailedException.withCause(ex);
         }
 
         if (parsed == null || parsed.status() == null || parsed.status().isBlank()) {

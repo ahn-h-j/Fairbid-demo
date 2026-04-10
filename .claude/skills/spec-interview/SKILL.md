@@ -1,112 +1,114 @@
 ---
 name: spec-interview
-description: Conducts a deep, multi-round interview to clarify ambiguous requirements and produces a structured specification document. Automatically discovers requirement files and asks probing, non-obvious questions across technical implementation, UX/UI, trade-offs, edge cases, and architectural decisions.
+description: 기능 구현 전 설계 파트너. 요구사항을 질문으로 구체화하고, SPEC 문서 + 시퀀스 다이어그램 + 작업 분해를 산출한다. 새 기능 설계할 때, 요구사항이 모호할 때 사용한다.
+disable-model-invocation: false
+allowed-tools: Bash, Read, Glob, Grep, Edit, Write, AskUserQuestion
+argument-hint: [기능 설명 (예: "2순위 자동 승계", "채팅 기능")]
 ---
 
-# Spec Interview
+# 기능 설계 스킬
+
+> 같이 설계하고, 문서로 남기고, 작업을 쪼갠다.
 
 $ARGUMENTS
 
-## Step 1: 요구사항 문서 탐색
+## Step 1: 컨텍스트 파악
 
-Glob으로 아래 패턴 검색:
-- `**/SPEC.md`, `**/spec.md`
-- `**/PRD.md`, `**/prd.md`
-- `**/REQUIREMENTS.md`, `**/requirements.md`
-- `**/docs/requirements/**`, `**/docs/specs/**`
+### 1-1. 기존 설계 자산 확인
+- `docs/feature/` 하위 mmd 파일 목록 확인 (기존 시퀀스 다이어그램 패턴 파악)
+- CLAUDE.md 핵심 비즈니스 규칙 확인
+- backend/CLAUDE.md 패키지 구조 + 코드 생성 패턴 확인
+- 관련 도메인 코드가 이미 있으면 읽기
+- **기존 mmd 중 이번 기능으로 수정이 필요한 것이 있는지 확인**
 
-발견된 파일 + 사용자 지정 파일 모두 Read.
+### 1-2. 어떤 Bounded Context에 속하는지 판단
+- 기존: Identity, Auction, Bidding, Winning, Trade, Support, Admin
+- 새 컨텍스트가 필요하면 사용자에게 확인
 
-## Step 2: 갭 분석
+## Step 2: 설계 인터뷰
 
-문서 분석 후 내부적으로 식별:
-- 명시 vs 가정 구분
-- 논리적 모순
-- 구현 차단 누락 정보
-- 암묵적 제약 (성능, 확장성, 호환성)
-- 다의적 용어
+AskUserQuestion으로 질문. **멍청한 질문 금지 — 코드와 문서를 읽고 나서 질문한다.**
 
-## Step 3: 인터뷰 실행
-
-AskUserQuestion으로 라운드별 3-4개 질문.
+### 질문 영역
+- **핵심 흐름**: 누가 → 뭘 하면 → 뭐가 일어나는지 (Happy Path)
+- **상태 전이**: 어떤 상태가 있고, 뭘 하면 어디로 바뀌는지
+- **엣지케이스**: 동시에 요청하면? 시간 초과하면? 취소하면?
+- **보안/권한**: 누가 호출할 수 있는지, 타인 리소�� 접근 가능 여부, ROLE 제한
+- **다른 도메인과 연결**: 기존 도메인에 영향 주는 부분 있는지
+- **프론트엔드**: UI가 필요하면 어떤 페이지/컴포넌트인지
 
 ### 질문 규칙
-- 문서에 있는 내용 재질문 금지
-- 갭/모순/모호함에서 도출
-- 트레이드오프 노출 ("X와 Y 충돌 시 우선순위?")
-- 엣지케이스 탐색 ("...일 때 어떻게?")
-- 기술적 불가능 도전
+- 이미 CLAUDE.md나 코드에 답이 있는 건 묻지 마라
+- 선택지를 제시하고 고르게 해라 ("A vs B 중 어떤 방식?")
+- 트레이드오프를 명시해라 ("A는 단순하지만 확장성 떨어짐, B는 복잡하지만 유연")
+- 한 번에 너무 많이 묻지 마라 — 대화가 부담스러워진다
 
-### 인터뷰 영역
-- **핵심 의도**: 진짜 해결할 문제? 올바른 접근?
-- **기술 아키텍처**: 데이터 모델, 상태 관리, API, 시스템 경계
-- **UX/UI**: 인터랙션, 에러/로딩/빈 상태, 접근성
-- **엣지케이스/실패**: 뭐가 깨지나? 동시성?
-- **트레이드오프**: 성능 vs 정확성, 속도 vs 품질
-- **보안/프라이버시**: 데이터 노출, 인증 경계
-- **확장성/성능**: 예상 부하, 병목
-- **통합/의존성**: 외부 시스템, 버전 호환, 폴백
-- **마이그레이션**: 현재 → 목표, 하위 호환
+### 종료
+- 종료 조건이 충족되면 **사용자에게 "설계 충분한지" 확인**한 뒤 산출물 작성으로 넘어간다
+- 조건: Happy Path + 엣지케이스 명확, 상태 전이 확정, API 윤곽, 권한 모델, 타 도메인 영향 확인
 
-### 인터뷰 플로우
-1. 가장 중요한 모호함부터
-2. 관련 질문 그룹핑
-3. 답변에서 새 모호함 발견 시 추적
-4. 커버된 영역 / 미해결 영역 추적
+## Step 3: 산출물 작성
 
-### 종료 조건
-- 모든 구현 결정에 명확한 답
-- 논리적 모순 해소
-- 엣지케이스 동작 정의
-- 트레이드오프 우선순위 명시
-- 추가 질문 없이 구현 가능
+인터뷰 완료 후 아래 3가지를 생성한다.
 
-## Step 4: 스펙 문서 작성
+### 3-1. SPEC 문서
 
-인터뷰 완료 후 `SPEC.md` 생성 (원본 문서와 동일 디렉토리).
+`docs/spec/{기능명}-SPEC.md` 에 생성:
 
 ```markdown
-# {프로젝트/기능} Specification
+# {기능명} Specification
 
-## 1. Overview
-- Problem statement
-- Solution summary
-- Success criteria
+## 개요
+- 해결할 문제
+- 핵심 동작 요약
 
-## 2. Functional Requirements
-### 2.1 Core Features
-- 기능 + 수용 기준
-### 2.2 User Flows
-- 단계별 인터랙션
-### 2.3 Edge Cases & Error Handling
-- 예외 시나리오 동작
+## 비즈니스 규칙
+- 불변 규칙 (구현이 바뀌어도 깨지면 안 됨)
+- 제약 조건 (시간 제한, 횟수 제한 등)
 
-## 3. Technical Architecture
-### 3.1 System Design
-- 아키텍처 결정, 컴포넌트 경계
-### 3.2 Data Model
-- 엔티티, 관계
-### 3.3 API Design
-- 엔드포인트, 컨트랙트, 에러
-### 3.4 State Management
-- 클라이언트/서버 상태 경계
+## 상태 전이
+- 상태 목록
+- 전이 조건
 
-## 4. UX/UI Specification
-### 4.1 Interaction Patterns
-### 4.2 States (loading, empty, error, success)
-### 4.3 Accessibility
+## API 설계 (엔드포인트 + 핵심 제약만)
+| Method | Endpoint | 설명 | 권한 |
+|--------|----------|------|------|
 
-## 5. Non-Functional Requirements
-### 5.1 Performance
-### 5.2 Security
-### 5.3 Scalability
+## 엣지케이스
+| 시나리오 | 동작 |
+|----------|------|
 
-## 6. Constraints & Trade-offs
-- 결정 사항 + 근거
-- 의도적 제외 + 이유
+## 영향 범위
+- 변경되는 기존 도메인 / 기존 mmd 수정 필요 여부
+- 새로 추가되는 것
+- 프론트엔드 변경
 
-## 7. Open Questions
-- 향후 명확화 필요 항목
+## 결정 사항
+- [결정] — [이유]
+- [의도적 제외] — [이유]
 ```
 
-비관련 섹션은 생략. 모든 내용은 원본 문서 또는 인터뷰 답변에서 추적 가능해야 함.
+### 3-2. 시퀀스 다이어그램
+
+`docs/feature/{도메인}/{기능명}.mmd` 에 생성 (또는 기존 mmd 수정).
+
+기존 mmd 파일의 스타일을 따른다:
+- `sequenceDiagram` + `autonumber`
+- `rect rgb(...)` 로 단계 구분
+- `alt/else` 로 분기
+- `Note` 로 비즈니스 규칙 표기
+- 참여자 네이밍: 한글 역할명 + 영문 클래스명
+
+### 3-3. 작업 분해
+
+SPEC 문서 하단에 추가. **기능 규모에 맞게 작업을 나눈다** — 고정 템플릿이 아니라 실제 구현량에 따라 판단.
+
+원칙:
+- 의존성 순서: domain → infra → application → api → test → frontend
+- 각 작업은 AI가 한 번에 집중할 수 있는 크기 (하나의 커밋 단위)
+- 작은 기능��면 2-3개로 충분, 큰 기능이면 레이어 내에서도 분리
+- 새 도메인이면 하네스 업데이트 작업 포함 (CLAUDE.md Bounded Contexts + code-reviewer 체크리스트)
+
+## Step 4: 사용자 확인
+
+산출물을 보여주고 승인/수정 요청을 받는다. 승인 후 파일 저장.

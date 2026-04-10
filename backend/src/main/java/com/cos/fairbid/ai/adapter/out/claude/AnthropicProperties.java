@@ -1,9 +1,10 @@
 package com.cos.fairbid.ai.adapter.out.claude;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Anthropic Claude API 설정 프로퍼티.

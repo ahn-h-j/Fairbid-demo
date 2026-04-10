@@ -1,12 +1,13 @@
 package com.cos.fairbid.ai.adapter.in.dto;
 
-import com.cos.fairbid.ai.application.dto.AiAssistCommand;
-import com.cos.fairbid.auction.domain.Category;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
+import com.cos.fairbid.ai.application.dto.AiAssistCommand;
+import com.cos.fairbid.auction.domain.Category;
 
 /**
  * AI 경매 어시스턴트 요청 DTO.

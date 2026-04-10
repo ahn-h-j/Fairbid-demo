@@ -1,5 +1,14 @@
 package com.cos.fairbid.ai.adapter.in.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.ai.adapter.in.dto.AiAssistRequest;
 import com.cos.fairbid.ai.adapter.in.dto.AiAssistResponse;
 import com.cos.fairbid.ai.application.port.in.GenerateAuctionAssistUseCase;
@@ -7,13 +16,6 @@ import com.cos.fairbid.ai.domain.AiAssistResult;
 import com.cos.fairbid.common.annotation.RequireOnboarding;
 import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.common.response.ApiResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * AI 경매 어시스턴트 REST Controller.
