@@ -230,9 +230,7 @@ export default function MyPage() {
               )}
             </dd>
           </div>
-          {nicknameError && (
-            <p className="text-xs text-red-600 text-right">{nicknameError}</p>
-          )}
+          {nicknameError && <p className="text-xs text-red-600 text-right">{nicknameError}</p>}
 
           {/* 이메일 */}
           <div className="flex items-center justify-between">
@@ -267,15 +265,21 @@ export default function MyPage() {
             <p className="text-xs text-gray-500 mt-1">판매 완료</p>
           </div>
           <div className="bg-violet-50 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-violet-600">{profile?.stats?.totalPurchases ?? 0}</p>
+            <p className="text-2xl font-bold text-violet-600">
+              {profile?.stats?.totalPurchases ?? 0}
+            </p>
             <p className="text-xs text-gray-500 mt-1">구매 완료</p>
           </div>
           <div className="bg-blue-50 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-blue-600">{formatPrice(profile?.stats?.totalSalesAmount)}원</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {formatPrice(profile?.stats?.totalSalesAmount)}원
+            </p>
             <p className="text-xs text-gray-500 mt-1">판매 금액</p>
           </div>
           <div className="bg-violet-50 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-violet-600">{formatPrice(profile?.stats?.totalPurchaseAmount)}원</p>
+            <p className="text-2xl font-bold text-violet-600">
+              {formatPrice(profile?.stats?.totalPurchaseAmount)}원
+            </p>
             <p className="text-xs text-gray-500 mt-1">구매 금액</p>
           </div>
         </div>
@@ -296,7 +300,7 @@ export default function MyPage() {
           )}
         </div>
 
-        {isEditingAddress ? (
+        {isEditingAddress && (
           <div className="space-y-3">
             <div>
               <label className="block text-xs text-gray-500 mb-1">수령인</label>
@@ -313,7 +317,12 @@ export default function MyPage() {
               <input
                 type="tel"
                 value={addressForm.recipientPhone}
-                onChange={(e) => setAddressForm({ ...addressForm, recipientPhone: formatPhoneInput(e.target.value) })}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    recipientPhone: formatPhoneInput(e.target.value),
+                  })
+                }
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 placeholder="010-1234-5678"
               />
@@ -348,9 +357,7 @@ export default function MyPage() {
                 placeholder="101동 202호"
               />
             </div>
-            {addressError && (
-              <p className="text-xs text-red-600">{addressError}</p>
-            )}
+            {addressError && <p className="text-xs text-red-600">{addressError}</p>}
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -383,13 +390,22 @@ export default function MyPage() {
               </button>
             </div>
           </div>
-        ) : profile?.shippingAddress ? (
+        )}
+        {!isEditingAddress && profile?.shippingAddress && (
           <div className="text-sm text-gray-700 space-y-1">
-            <p className="font-semibold">{profile.shippingAddress.recipientName} ({profile.shippingAddress.recipientPhone})</p>
-            <p>{profile.shippingAddress.postalCode && `[${profile.shippingAddress.postalCode}] `}{profile.shippingAddress.address}</p>
-            {profile.shippingAddress.addressDetail && <p>{profile.shippingAddress.addressDetail}</p>}
+            <p className="font-semibold">
+              {profile.shippingAddress.recipientName} ({profile.shippingAddress.recipientPhone})
+            </p>
+            <p>
+              {profile.shippingAddress.postalCode && `[${profile.shippingAddress.postalCode}] `}
+              {profile.shippingAddress.address}
+            </p>
+            {profile.shippingAddress.addressDetail && (
+              <p>{profile.shippingAddress.addressDetail}</p>
+            )}
           </div>
-        ) : (
+        )}
+        {!isEditingAddress && !profile?.shippingAddress && (
           <p className="text-sm text-gray-400">등록된 배송지가 없습니다.</p>
         )}
       </section>
@@ -409,7 +425,7 @@ export default function MyPage() {
           )}
         </div>
 
-        {isEditingBank ? (
+        {isEditingBank && (
           <div className="space-y-3">
             <div>
               <label className="block text-xs text-gray-500 mb-1">은행명</label>
@@ -441,9 +457,7 @@ export default function MyPage() {
                 placeholder="홍길동"
               />
             </div>
-            {bankError && (
-              <p className="text-xs text-red-600">{bankError}</p>
-            )}
+            {bankError && <p className="text-xs text-red-600">{bankError}</p>}
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -469,14 +483,18 @@ export default function MyPage() {
               </button>
             </div>
           </div>
-        ) : profile?.bankAccount ? (
+        )}
+        {!isEditingBank && profile?.bankAccount && (
           <div className="text-sm text-gray-700 space-y-1">
             <p className="font-semibold">{profile.bankAccount.bankName}</p>
             <p>{profile.bankAccount.accountNumber}</p>
             <p className="text-gray-500">{profile.bankAccount.accountHolder}</p>
           </div>
-        ) : (
-          <p className="text-sm text-gray-400">등록된 계좌가 없습니다. 판매 시 구매자에게 계좌를 알려주려면 등록해주세요.</p>
+        )}
+        {!isEditingBank && !profile?.bankAccount && (
+          <p className="text-sm text-gray-400">
+            등록된 계좌가 없습니다. 판매 시 구매자에게 계좌를 알려주려면 등록해주세요.
+          </p>
         )}
       </section>
 
@@ -509,9 +527,7 @@ export default function MyPage() {
             <p className="text-sm text-gray-500 mb-4">
               정말 탈퇴하시겠습니까? 탈퇴 후 계정을 복구할 수 없습니다.
             </p>
-            {deleteError && (
-              <p className="text-xs text-red-600 mb-4">{deleteError}</p>
-            )}
+            {deleteError && <p className="text-xs text-red-600 mb-4">{deleteError}</p>}
             <div className="flex gap-3">
               <button
                 type="button"

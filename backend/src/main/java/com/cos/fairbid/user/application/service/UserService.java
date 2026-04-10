@@ -1,16 +1,22 @@
 package com.cos.fairbid.user.application.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auth.application.port.out.RefreshTokenPort;
 import com.cos.fairbid.auth.application.port.out.TokenProviderPort;
 import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
 import com.cos.fairbid.user.application.port.in.CheckNicknameUseCase;
 import com.cos.fairbid.user.application.port.in.CompleteOnboardingUseCase;
 import com.cos.fairbid.user.application.port.in.DeactivateAccountUseCase;
+import com.cos.fairbid.user.application.port.in.GetMyProfileUseCase;
+import com.cos.fairbid.user.application.port.in.GetTradeStatsUseCase;
 import com.cos.fairbid.user.application.port.in.UpdateBankAccountUseCase;
 import com.cos.fairbid.user.application.port.in.UpdateNicknameUseCase;
 import com.cos.fairbid.user.application.port.in.UpdateShippingAddressUseCase;
-import com.cos.fairbid.user.application.port.in.GetMyProfileUseCase;
-import com.cos.fairbid.user.application.port.in.GetTradeStatsUseCase;
 import com.cos.fairbid.user.application.port.out.LoadUserPort;
 import com.cos.fairbid.user.application.port.out.SaveUserPort;
 import com.cos.fairbid.user.domain.User;
@@ -18,10 +24,6 @@ import com.cos.fairbid.user.domain.exception.AlreadyOnboardedException;
 import com.cos.fairbid.user.domain.exception.NicknameDuplicateException;
 import com.cos.fairbid.user.domain.exception.PhoneNumberDuplicateException;
 import com.cos.fairbid.user.domain.exception.UserNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 사용자 서비스

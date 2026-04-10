@@ -15,6 +15,9 @@ PROTECTED_PATTERNS="SecurityConfig|JwtTokenProvider|JwtProperties|RedisSentinelC
 # 보호 대상: 핵심 설정 파일
 PROTECTED_CONFIGS="application[.]yml|application-sentinel[.]yml|docker-compose[.]yml|Dockerfile|[.]github/workflows/"
 
+# 보호 대상: 가드레일 설정 파일 (에이전트가 규칙을 약화시키는 것 방지)
+PROTECTED_GUARDRAILS="HexagonalArchitectureTest[.]java|checkstyle[.]xml|naver-checkstyle-suppressions[.]xml|exclude-filter[.]xml|eslint[.]config[.]js|[.]prettierrc|protect-files[.]sh|protect-deps[.]sh"
+
 log_failure() {
     local REASON="$1"
     local TS
@@ -41,6 +44,13 @@ if echo "$FILE" | grep -qE "$PROTECTED_CONFIGS"; then
     log_failure "핵심 설정 파일 수정 시도"
     echo "핵심 설정 파일입니다: $FILE"
     echo "설정 변경은 의도치 않은 장애를 유발할 수 있습니다. 정말 수정이 필요한가요?"
+    exit 1
+fi
+
+if echo "$FILE" | grep -qE "$PROTECTED_GUARDRAILS"; then
+    log_failure "가드레일 설정 파일 수정 시도"
+    echo "가드레일 파일입니다: $FILE"
+    echo "이 파일을 수정하면 코드 품질 검증 체계가 약화됩니다. 정말 수정이 필요한가요?"
     exit 1
 fi
 

@@ -1,5 +1,11 @@
 package com.cos.fairbid.trade.application.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
 import com.cos.fairbid.trade.application.port.in.TradeCommandUseCase;
@@ -13,10 +19,6 @@ import com.cos.fairbid.trade.domain.exception.InvalidTradeStatusException;
 import com.cos.fairbid.trade.domain.exception.NotTradeParticipantException;
 import com.cos.fairbid.trade.domain.exception.TradeNotFoundException;
 import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 거래 명령 서비스

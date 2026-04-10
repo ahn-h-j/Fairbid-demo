@@ -1,13 +1,14 @@
 package com.cos.fairbid.auction.application.port.out;
 
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import com.cos.fairbid.auction.domain.Category;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.AuctionStatus;
+import com.cos.fairbid.auction.domain.Category;
 
 /**
  * 경매 저장소 아웃바운드 포트

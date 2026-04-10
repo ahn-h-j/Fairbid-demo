@@ -1,12 +1,10 @@
 package com.cos.fairbid.bid.adapter.in.stream;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.data.domain.Range;
 import org.springframework.data.redis.RedisSystemException;
@@ -24,10 +22,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * Redis Stream 기반 입찰 RDB 동기화 컨슈머

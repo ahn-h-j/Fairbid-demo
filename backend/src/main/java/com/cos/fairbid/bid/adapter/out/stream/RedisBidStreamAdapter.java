@@ -1,18 +1,20 @@
 package com.cos.fairbid.bid.adapter.out.stream;
 
-import com.cos.fairbid.bid.application.port.out.BidStreamPort;
-import com.cos.fairbid.bid.domain.Bid;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.connection.stream.StringRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.bid.application.port.out.BidStreamPort;
+import com.cos.fairbid.bid.domain.Bid;
 
 /**
  * Redis Stream 기반 입찰 RDB 동기화 메시지 발행 어댑터

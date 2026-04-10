@@ -1,6 +1,8 @@
 package com.cos.fairbid.trade.adapter.out.persistence.entity;
 
-import com.cos.fairbid.trade.domain.DirectTradeStatus;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,8 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import com.cos.fairbid.trade.domain.DirectTradeStatus;
 
 /**
  * 직거래 정보 JPA 엔티티

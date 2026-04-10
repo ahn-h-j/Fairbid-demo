@@ -1,9 +1,9 @@
 package com.cos.fairbid.user.adapter.in.dto;
 
-import com.cos.fairbid.common.pagination.CursorPage;
-
 import java.util.List;
 import java.util.function.Function;
+
+import com.cos.fairbid.common.pagination.CursorPage;
 
 /**
  * 커서 기반 페이지네이션 응답 DTO

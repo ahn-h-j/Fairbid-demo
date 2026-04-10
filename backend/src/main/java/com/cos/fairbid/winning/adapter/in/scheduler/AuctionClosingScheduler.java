@@ -1,11 +1,13 @@
 package com.cos.fairbid.winning.adapter.in.scheduler;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
 
 /**
  * 경매 종료 스케줄러

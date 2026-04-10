@@ -1,8 +1,8 @@
 package com.cos.fairbid.trade.application.port.out;
 
-import com.cos.fairbid.trade.domain.DeliveryInfo;
-
 import java.util.Optional;
+
+import com.cos.fairbid.trade.domain.DeliveryInfo;
 
 /**
  * 택배 배송 정보 저장소 아웃바운드 포트

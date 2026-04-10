@@ -1,8 +1,9 @@
 package com.cos.fairbid.winning.adapter.out.persistence.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.cos.fairbid.winning.adapter.out.persistence.entity.WinningEntity;
 import com.cos.fairbid.winning.domain.Winning;
-import org.springframework.stereotype.Component;
 
 /**
  * Winning Entity ↔ Domain 변환 매퍼

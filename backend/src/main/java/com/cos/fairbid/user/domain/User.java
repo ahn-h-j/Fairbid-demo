@@ -1,9 +1,9 @@
 package com.cos.fairbid.user.domain;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 /**
  * User 도메인 모델

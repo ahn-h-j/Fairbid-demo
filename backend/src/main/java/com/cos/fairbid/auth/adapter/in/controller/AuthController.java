@@ -1,19 +1,7 @@
 package com.cos.fairbid.auth.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.auth.adapter.in.dto.TokenResponse;
-import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
-import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
-import com.cos.fairbid.auth.application.port.in.RefreshTokenUseCase;
-import com.cos.fairbid.auth.infrastructure.security.CookieUtils;
-import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
-import com.cos.fairbid.common.response.ApiResponse;
-import com.cos.fairbid.user.domain.OAuthProvider;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -24,7 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auth.adapter.in.dto.TokenResponse;
+import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
+import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
+import com.cos.fairbid.auth.application.port.in.RefreshTokenUseCase;
+import com.cos.fairbid.auth.infrastructure.security.CookieUtils;
+import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
+import com.cos.fairbid.user.domain.OAuthProvider;
 
 /**
  * 인증 컨트롤러

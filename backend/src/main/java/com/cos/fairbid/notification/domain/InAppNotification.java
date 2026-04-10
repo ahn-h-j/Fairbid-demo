@@ -1,10 +1,10 @@
 package com.cos.fairbid.notification.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * 인앱 알림 도메인 객체
@@ -48,7 +48,9 @@ public class InAppNotification {
     /**
      * 새 알림을 생성한다 (거래 관련)
      */
-    public static InAppNotification create(NotificationType type, String title, String body, Long auctionId, Long tradeId) {
+    public static InAppNotification create(
+            NotificationType type, String title, String body,
+            Long auctionId, Long tradeId) {
         return InAppNotification.builder()
                 .id(UUID.randomUUID().toString())
                 .type(type)

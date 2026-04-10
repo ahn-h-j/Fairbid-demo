@@ -1,14 +1,15 @@
 package com.cos.fairbid.user.adapter.out.persistence.repository;
 
-import com.cos.fairbid.user.adapter.out.persistence.entity.UserEntity;
-import com.cos.fairbid.user.domain.OAuthProvider;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import com.cos.fairbid.user.adapter.out.persistence.entity.UserEntity;
+import com.cos.fairbid.user.domain.OAuthProvider;
 
 /**
  * User Spring Data JPA Repository
@@ -35,8 +36,8 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
      * 닉네임 또는 이메일로 유저를 검색한다.
      * 관리자 유저 목록 조회에 사용한다.
      */
-    @Query("SELECT u FROM UserEntity u WHERE " +
-            "(:keyword IS NULL OR :keyword = '' OR " +
-            "u.nickname LIKE %:keyword% OR u.email LIKE %:keyword%)")
+    @Query("SELECT u FROM UserEntity u WHERE "
+            + "(:keyword IS NULL OR :keyword = '' OR "
+            + "u.nickname LIKE %:keyword% OR u.email LIKE %:keyword%)")
     Page<UserEntity> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

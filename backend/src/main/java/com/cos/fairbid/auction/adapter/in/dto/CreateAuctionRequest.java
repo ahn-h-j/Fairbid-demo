@@ -1,15 +1,16 @@
 package com.cos.fairbid.auction.adapter.in.dto;
 
-import com.cos.fairbid.auction.application.port.in.CreateAuctionUseCase.CreateAuctionCommand;
-import com.cos.fairbid.auction.domain.AuctionDuration;
-import com.cos.fairbid.auction.domain.Category;
+import java.util.List;
+import java.util.Objects;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 
-import java.util.List;
-import java.util.Objects;
+import com.cos.fairbid.auction.application.port.in.CreateAuctionUseCase.CreateAuctionCommand;
+import com.cos.fairbid.auction.domain.AuctionDuration;
+import com.cos.fairbid.auction.domain.Category;
 
 /**
  * 경매 생성 요청 DTO

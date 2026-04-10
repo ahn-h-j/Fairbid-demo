@@ -1,9 +1,10 @@
 package com.cos.fairbid.auction.domain.event;
 
-import com.cos.fairbid.auction.domain.Auction;
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.auction.domain.Auction;
 
 /**
  * 경매 생성 이벤트

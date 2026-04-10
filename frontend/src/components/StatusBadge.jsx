@@ -57,10 +57,14 @@ export default function StatusBadge({ status }) {
   const isLive = status === 'BIDDING';
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide ${style.bg} ${style.text} ring-1 ${style.ring} ${isLive ? 'animate-glow-green' : ''}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide ${style.bg} ${style.text} ring-1 ${style.ring} ${isLive ? 'animate-glow-green' : ''}`}
+    >
       <span className="relative flex h-1.5 w-1.5">
         {isLive ? (
-          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${style.dot}`} />
+          <span
+            className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${style.dot}`}
+          />
         ) : null}
         <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${style.dot}`} />
       </span>

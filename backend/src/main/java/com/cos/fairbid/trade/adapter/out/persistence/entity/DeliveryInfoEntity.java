@@ -1,6 +1,5 @@
 package com.cos.fairbid.trade.adapter.out.persistence.entity;
 
-import com.cos.fairbid.trade.domain.DeliveryStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import com.cos.fairbid.trade.domain.DeliveryStatus;
 
 /**
  * 택배 배송 정보 JPA 엔티티

@@ -45,5 +45,5 @@ public interface BidCachePort {
             Integer extensionCount,
             Long scheduledEndTimeMs,
             Boolean instantBuyActivated
-    ) {}
+    ) { }
 }

@@ -1,11 +1,12 @@
 package com.cos.fairbid.common.aop;
 
-import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
-import com.cos.fairbid.user.domain.exception.OnboardingRequiredException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.user.domain.exception.OnboardingRequiredException;
 
 /**
  * 온보딩 상태 검사 AOP Aspect

@@ -1,9 +1,10 @@
 package com.cos.fairbid.admin.application.port.in;
 
-import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
-import com.cos.fairbid.auction.domain.AuctionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
+import com.cos.fairbid.auction.domain.AuctionStatus;
 
 /**
  * 관리자 경매 관리 UseCase

@@ -1,8 +1,9 @@
 package com.cos.fairbid.auth.infrastructure.security;
 
-import com.cos.fairbid.common.exception.UnauthorizedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.cos.fairbid.common.exception.UnauthorizedException;
 
 /**
  * Security 유틸리티 클래스

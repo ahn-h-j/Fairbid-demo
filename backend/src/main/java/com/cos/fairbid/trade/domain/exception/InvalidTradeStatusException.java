@@ -1,8 +1,9 @@
 package com.cos.fairbid.trade.domain.exception;
 
+import org.springframework.http.HttpStatus;
+
 import com.cos.fairbid.common.exception.DomainException;
 import com.cos.fairbid.trade.domain.TradeStatus;
-import org.springframework.http.HttpStatus;
 
 /**
  * 거래 상태가 유효하지 않을 때 발생하는 예외

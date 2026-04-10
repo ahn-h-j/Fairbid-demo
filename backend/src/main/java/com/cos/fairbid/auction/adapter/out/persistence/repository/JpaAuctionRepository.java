@@ -1,24 +1,25 @@
 package com.cos.fairbid.auction.adapter.out.persistence.repository;
 
-import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
-import com.cos.fairbid.auction.domain.AuctionStatus;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
+import com.cos.fairbid.auction.domain.AuctionStatus;
 
 /**
  * 경매 JPA Repository
  * Spring Data JPA 인터페이스
  * JpaSpecificationExecutor: 동적 쿼리 지원
  */
-public interface JpaAuctionRepository extends JpaRepository<AuctionEntity, Long>, JpaSpecificationExecutor<AuctionEntity> {
+public interface JpaAuctionRepository
+        extends JpaRepository<AuctionEntity, Long>, JpaSpecificationExecutor<AuctionEntity> {
 
     /**
      * 종료 시간이 도래한 진행 중인 경매 목록을 조회한다
@@ -39,7 +40,9 @@ public interface JpaAuctionRepository extends JpaRepository<AuctionEntity, Long>
      * Lua 스크립트 입찰 처리 후 DB 동기화용
      */
     @Modifying
-    @Query("UPDATE AuctionEntity a SET a.currentPrice = :currentPrice, a.totalBidCount = :totalBidCount, a.bidIncrement = :bidIncrement WHERE a.id = :auctionId")
+    @Query("UPDATE AuctionEntity a SET a.currentPrice = :currentPrice, "
+            + "a.totalBidCount = :totalBidCount, a.bidIncrement = :bidIncrement "
+            + "WHERE a.id = :auctionId")
     void updateCurrentPrice(
             @Param("auctionId") Long auctionId,
             @Param("currentPrice") Long currentPrice,
@@ -57,10 +60,10 @@ public interface JpaAuctionRepository extends JpaRepository<AuctionEntity, Long>
      * @param pageable 페이지 크기 지정용
      * @return 경매 엔티티 목록
      */
-    @Query("SELECT a FROM AuctionEntity a WHERE a.sellerId = :sellerId " +
-            "AND (:status IS NULL OR a.status = :status) " +
-            "AND (:cursor IS NULL OR a.id < :cursor) " +
-            "ORDER BY a.id DESC")
+    @Query("SELECT a FROM AuctionEntity a WHERE a.sellerId = :sellerId "
+            + "AND (:status IS NULL OR a.status = :status) "
+            + "AND (:cursor IS NULL OR a.id < :cursor) "
+            + "ORDER BY a.id DESC")
     List<AuctionEntity> findBySellerIdWithCursor(
             @Param("sellerId") Long sellerId,
             @Param("status") AuctionStatus status,
@@ -73,15 +76,15 @@ public interface JpaAuctionRepository extends JpaRepository<AuctionEntity, Long>
      * Lua 스크립트 즉시 구매 처리 후 DB 동기화용
      */
     @Modifying
-    @Query("UPDATE AuctionEntity a SET " +
-            "a.status = 'INSTANT_BUY_PENDING', " +
-            "a.currentPrice = :currentPrice, " +
-            "a.totalBidCount = :totalBidCount, " +
-            "a.bidIncrement = :bidIncrement, " +
-            "a.instantBuyerId = :instantBuyerId, " +
-            "a.instantBuyActivatedTime = :instantBuyActivatedTime, " +
-            "a.scheduledEndTime = :scheduledEndTime " +
-            "WHERE a.id = :auctionId")
+    @Query("UPDATE AuctionEntity a SET "
+            + "a.status = 'INSTANT_BUY_PENDING', "
+            + "a.currentPrice = :currentPrice, "
+            + "a.totalBidCount = :totalBidCount, "
+            + "a.bidIncrement = :bidIncrement, "
+            + "a.instantBuyerId = :instantBuyerId, "
+            + "a.instantBuyActivatedTime = :instantBuyActivatedTime, "
+            + "a.scheduledEndTime = :scheduledEndTime "
+            + "WHERE a.id = :auctionId")
     void updateInstantBuyActivated(
             @Param("auctionId") Long auctionId,
             @Param("currentPrice") Long currentPrice,

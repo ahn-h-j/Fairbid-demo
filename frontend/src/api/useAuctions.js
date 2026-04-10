@@ -26,8 +26,8 @@ export function useAuctions({ keyword, status, category, sort, page = 0, size = 
   const key = queryString ? `/auctions?${queryString}` : '/auctions';
 
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
-    refreshInterval: 30000,    // 30초마다 자동 갱신
-    revalidateOnFocus: true,   // 탭 복귀 시 재검증
+    refreshInterval: 30000, // 30초마다 자동 갱신
+    revalidateOnFocus: true, // 탭 복귀 시 재검증
   });
 
   return {

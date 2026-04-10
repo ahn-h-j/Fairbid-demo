@@ -1,10 +1,12 @@
 package com.cos.fairbid.winning.adapter.out.event;
 
-import com.cos.fairbid.winning.application.event.AuctionClosedEvent;
-import com.cos.fairbid.winning.application.port.out.AuctionClosedEventPublisherPort;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.winning.application.event.AuctionClosedEvent;
+import com.cos.fairbid.winning.application.port.out.AuctionClosedEventPublisherPort;
 
 /**
  * 경매 종료 이벤트 발행 어댑터

@@ -1,8 +1,8 @@
 package com.cos.fairbid.bid.application.port.out;
 
-import com.cos.fairbid.bid.domain.Bid;
-
 import java.util.List;
+
+import com.cos.fairbid.bid.domain.Bid;
 
 /**
  * 입찰 저장소 아웃바운드 포트

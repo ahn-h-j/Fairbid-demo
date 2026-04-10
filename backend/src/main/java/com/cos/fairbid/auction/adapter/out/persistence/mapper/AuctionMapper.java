@@ -1,10 +1,11 @@
 package com.cos.fairbid.auction.adapter.out.persistence.mapper;
 
-import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
-import com.cos.fairbid.auction.domain.Auction;
+import java.util.Collections;
+
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
+import com.cos.fairbid.auction.domain.Auction;
 
 /**
  * 경매 Entity ↔ Domain 변환 Mapper

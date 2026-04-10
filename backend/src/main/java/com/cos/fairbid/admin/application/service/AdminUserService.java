@@ -1,13 +1,15 @@
 package com.cos.fairbid.admin.application.service;
 
-import com.cos.fairbid.admin.application.dto.AdminUserResult;
-import com.cos.fairbid.admin.application.port.in.ManageUserUseCase;
-import com.cos.fairbid.user.application.port.out.LoadUserPort;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.admin.application.dto.AdminUserResult;
+import com.cos.fairbid.admin.application.port.in.ManageUserUseCase;
+import com.cos.fairbid.user.application.port.out.LoadUserPort;
 
 /**
  * 관리자 유저 관리 서비스

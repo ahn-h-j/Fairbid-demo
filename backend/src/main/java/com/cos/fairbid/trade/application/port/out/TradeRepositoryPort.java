@@ -1,9 +1,9 @@
 package com.cos.fairbid.trade.application.port.out;
 
-import com.cos.fairbid.trade.domain.Trade;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.cos.fairbid.trade.domain.Trade;
 
 /**
  * 거래 저장소 아웃바운드 포트

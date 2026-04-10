@@ -137,7 +137,7 @@ export function AuthProvider({ children }) {
       restoreSession,
       logout,
     }),
-    [authState, user, updateAuthFromToken, restoreSession, logout]
+    [authState, user, updateAuthFromToken, restoreSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

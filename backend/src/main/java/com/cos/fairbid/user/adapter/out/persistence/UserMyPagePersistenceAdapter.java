@@ -1,5 +1,15 @@
 package com.cos.fairbid.user.adapter.out.persistence;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
 import com.cos.fairbid.auction.adapter.out.persistence.repository.JpaAuctionRepository;
 import com.cos.fairbid.auction.domain.AuctionStatus;
@@ -10,14 +20,6 @@ import com.cos.fairbid.user.application.port.out.LoadUserAuctionsPort;
 import com.cos.fairbid.user.application.port.out.LoadUserBidsPort;
 import com.cos.fairbid.winning.adapter.out.persistence.entity.WinningEntity;
 import com.cos.fairbid.winning.adapter.out.persistence.repository.JpaWinningRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 마이페이지 영속성 어댑터

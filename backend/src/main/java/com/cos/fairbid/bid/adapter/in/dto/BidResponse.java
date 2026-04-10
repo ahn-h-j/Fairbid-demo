@@ -1,10 +1,11 @@
 package com.cos.fairbid.bid.adapter.in.dto;
 
-import com.cos.fairbid.bid.domain.Bid;
-import com.cos.fairbid.bid.domain.BidType;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.bid.domain.Bid;
+import com.cos.fairbid.bid.domain.BidType;
 
 /**
  * 입찰 응답 DTO

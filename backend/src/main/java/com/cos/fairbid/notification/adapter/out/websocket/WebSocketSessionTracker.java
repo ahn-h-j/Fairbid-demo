@@ -1,12 +1,13 @@
 package com.cos.fairbid.notification.adapter.out.websocket;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * WebSocket STOMP 세션 수 추적

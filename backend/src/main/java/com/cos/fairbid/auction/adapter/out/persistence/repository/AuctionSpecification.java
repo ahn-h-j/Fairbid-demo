@@ -1,13 +1,15 @@
 package com.cos.fairbid.auction.adapter.out.persistence.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.Predicate;
+
 import com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity;
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.auction.domain.Category;
-import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.jpa.domain.Specification;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 경매 목록 조회용 동적 쿼리 Specification

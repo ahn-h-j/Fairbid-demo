@@ -52,8 +52,19 @@ export default function AuctionCard({ auction }) {
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full">
             <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-2">
-              <svg className="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-7 h-7 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <span className="text-[11px] text-gray-300 font-medium">이미지 없음</span>
@@ -69,8 +80,19 @@ export default function AuctionCard({ auction }) {
         {isClosingSoon ? (
           <div className="absolute bottom-3 right-3">
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-500/90 text-white text-[11px] font-bold rounded-lg shadow-sm backdrop-blur-sm">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               마감 임박
             </span>
@@ -88,17 +110,32 @@ export default function AuctionCard({ auction }) {
         {/* 가격 + 입찰수 */}
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-0.5">현재가</p>
+            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-0.5">
+              현재가
+            </p>
             <p className="text-[17px] font-bold text-gray-900 tabular-nums leading-tight">
               {formatPrice(currentPrice ?? startPrice)}
             </p>
           </div>
-          {(totalBidCount > 0) ? (
+          {totalBidCount > 0 ? (
             <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-lg">
-              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              <svg
+                className="w-3 h-3 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
               </svg>
-              <span className="text-[11px] font-semibold text-gray-500 tabular-nums">{totalBidCount}회</span>
+              <span className="text-[11px] font-semibold text-gray-500 tabular-nums">
+                {totalBidCount}회
+              </span>
             </div>
           ) : null}
         </div>

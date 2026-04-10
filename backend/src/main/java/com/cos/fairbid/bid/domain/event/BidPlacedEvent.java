@@ -1,8 +1,8 @@
 package com.cos.fairbid.bid.domain.event;
 
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import lombok.Getter;
 
 /**
  * 입찰 완료 이벤트

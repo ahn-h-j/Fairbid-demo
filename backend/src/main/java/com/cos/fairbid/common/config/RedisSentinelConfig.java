@@ -1,14 +1,15 @@
 package com.cos.fairbid.common.config;
 
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.ReadFrom;
-import io.lettuce.core.TimeoutOptions;
+import java.time.Duration;
+
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.time.Duration;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
+import io.lettuce.core.TimeoutOptions;
 
 /**
  * Redis Sentinel 전용 Lettuce 클라이언트 설정 (HA Step 3)

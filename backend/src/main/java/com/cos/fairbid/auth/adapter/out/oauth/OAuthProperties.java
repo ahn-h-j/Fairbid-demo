@@ -1,9 +1,10 @@
 package com.cos.fairbid.auth.adapter.out.oauth;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * OAuth2 클라이언트 설정 프로퍼티

@@ -63,14 +63,10 @@ export default function SplashScreen({ onComplete, minDisplayTime = 1500 }) {
         </div>
 
         {/* 브랜드명 */}
-        <h1 className="text-4xl font-bold text-white tracking-tight drop-shadow-lg">
-          FairBid
-        </h1>
+        <h1 className="text-4xl font-bold text-white tracking-tight drop-shadow-lg">FairBid</h1>
 
         {/* 슬로건 */}
-        <p className="text-white/80 text-lg font-medium tracking-wide">
-          호구 없는 경매
-        </p>
+        <p className="text-white/80 text-lg font-medium tracking-wide">호구 없는 경매</p>
 
         {/* 로딩 인디케이터 */}
         <div className="mt-8 flex gap-2">
@@ -88,9 +84,7 @@ export default function SplashScreen({ onComplete, minDisplayTime = 1500 }) {
       </div>
 
       {/* 하단 버전 정보 */}
-      <div className="absolute bottom-8 text-white/50 text-sm">
-        v1.0.0
-      </div>
+      <div className="absolute bottom-8 text-white/50 text-sm">v1.0.0</div>
     </div>
   );
 }

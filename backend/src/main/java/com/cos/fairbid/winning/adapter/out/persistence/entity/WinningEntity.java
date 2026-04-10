@@ -1,6 +1,10 @@
 package com.cos.fairbid.winning.adapter.out.persistence.entity;
 
-import com.cos.fairbid.winning.domain.WinningStatus;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -14,10 +18,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.winning.domain.WinningStatus;
 
 /**
  * 낙찰 JPA 엔티티

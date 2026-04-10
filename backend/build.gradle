@@ -3,17 +3,42 @@ plugins {
     id 'org.springframework.boot' version '3.5.9'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'checkstyle'
+    id 'com.github.spotbugs' version '6.1.3'
 }
 
-// Checkstyle 설정 (커밋 전 가드레일)
+// Checkstyle 설정 (네이버 코딩 컨벤션 기반 + FairBid 커스텀 규칙)
 checkstyle {
     toolVersion = '10.21.4'
     configFile = file("${projectDir}/config/checkstyle/checkstyle.xml")
+    configDirectory = file("${projectDir}/config/checkstyle")
     maxWarnings = 0  // 경고도 허용하지 않음
 }
 
 // 테스트 코드는 Checkstyle 검사 제외 (Cucumber Steps에서 @Autowired 허용)
 tasks.named('checkstyleTest') {
+    enabled = false
+}
+
+// SpotBugs 설정 (버그 패턴 탐지: null 참조, 리소스 누수 등)
+spotbugs {
+    toolVersion = '4.9.3'
+}
+
+spotbugsMain {
+    effort = com.github.spotbugs.snom.Effort.valueOf('MAX')
+    reportLevel = com.github.spotbugs.snom.Confidence.valueOf('MEDIUM')
+    excludeFilter = file("${projectDir}/config/spotbugs/exclude-filter.xml")
+}
+
+// SpotBugs 리포트 설정, 테스트 코드 제외
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+tasks.named('spotbugsTest') {
     enabled = false
 }
 

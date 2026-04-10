@@ -1,7 +1,8 @@
 package com.cos.fairbid.auth.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * Refresh Token 재사용 감지 예외

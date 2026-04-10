@@ -80,13 +80,10 @@ export default function ImageUpload({ images = [], onChange, maxImages = 5, onUp
       formData.append('folder', 'fairbid/auctions');
 
       try {
-        const response = await fetch(
-          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        });
 
         if (!response.ok) {
           throw new Error('업로드 실패');
@@ -165,9 +162,7 @@ export default function ImageUpload({ images = [], onChange, maxImages = 5, onUp
     <div className="space-y-3">
       {/* 에러 메시지 */}
       {error ? (
-        <div className="text-[12px] text-red-500 bg-red-50 px-3 py-2 rounded-lg">
-          {error}
-        </div>
+        <div className="text-[12px] text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</div>
       ) : null}
 
       {/* 업로드 영역 */}
@@ -205,9 +200,7 @@ export default function ImageUpload({ images = [], onChange, maxImages = 5, onUp
           {uploading ? (
             <div className="flex flex-col items-center gap-2">
               <Spinner size="md" />
-              <span className="text-[13px] text-gray-500">
-                업로드 중… {uploadProgress}%
-              </span>
+              <span className="text-[13px] text-gray-500">업로드 중… {uploadProgress}%</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2">
@@ -229,9 +222,7 @@ export default function ImageUpload({ images = [], onChange, maxImages = 5, onUp
                 <p className="text-[13px] font-medium text-gray-600">
                   클릭하거나 드래그하여 이미지 업로드
                 </p>
-                <p className="text-[11px] text-gray-400 mt-1">
-                  최대 {maxImages}장, 10MB 이하
-                </p>
+                <p className="text-[11px] text-gray-400 mt-1">최대 {maxImages}장, 10MB 이하</p>
               </div>
             </div>
           )}

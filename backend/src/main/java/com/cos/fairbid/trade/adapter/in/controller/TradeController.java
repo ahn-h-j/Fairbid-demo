@@ -1,7 +1,21 @@
 package com.cos.fairbid.trade.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.common.response.ApiResponse;
 import com.cos.fairbid.trade.adapter.in.dto.SelectMethodRequest;
 import com.cos.fairbid.trade.adapter.in.dto.TradeDetailResponse;
@@ -17,18 +31,6 @@ import com.cos.fairbid.trade.domain.Trade;
 import com.cos.fairbid.trade.domain.exception.NotTradeParticipantException;
 import com.cos.fairbid.user.application.port.in.GetMyProfileUseCase;
 import com.cos.fairbid.user.domain.User;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 거래 API 컨트롤러
@@ -93,7 +95,8 @@ public class TradeController {
             }
         }
 
-        TradeDetailResponse response = TradeDetailResponse.from(trade, directTradeInfo, deliveryInfo, sellerBankAccount);
+        TradeDetailResponse response = TradeDetailResponse.from(
+                trade, directTradeInfo, deliveryInfo, sellerBankAccount);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

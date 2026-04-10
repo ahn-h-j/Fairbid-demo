@@ -1,5 +1,16 @@
 package com.cos.fairbid.admin.application.service;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
 import com.cos.fairbid.admin.application.port.in.ManageAuctionUseCase;
 import com.cos.fairbid.auction.application.port.in.GetAuctionListUseCase;
@@ -7,15 +18,6 @@ import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.user.application.port.out.LoadUserPort;
 import com.cos.fairbid.user.domain.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 관리자 경매 관리 서비스

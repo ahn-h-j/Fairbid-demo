@@ -74,7 +74,9 @@ public interface PushNotificationPort {
      * @param auctionTitle 경매 제목
      * @param isDirect     직거래 여부 (true: 직거래, false: 택배)
      */
-    void sendMethodSelectedNotification(Long sellerId, Long auctionId, Long tradeId, String auctionTitle, boolean isDirect);
+    void sendMethodSelectedNotification(
+            Long sellerId, Long auctionId, Long tradeId,
+            String auctionTitle, boolean isDirect);
 
     /**
      * 거래 일정 제안 알림을 발송한다

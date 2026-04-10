@@ -19,36 +19,37 @@ export function useWebSocket(auctionId, { onBidUpdate, onAuctionClosed } = {}) {
   // 콜백 ref로 관리하여 재구독 방지
   const onBidUpdateRef = useRef(onBidUpdate);
   const onAuctionClosedRef = useRef(onAuctionClosed);
-  useEffect(() => { onBidUpdateRef.current = onBidUpdate; }, [onBidUpdate]);
-  useEffect(() => { onAuctionClosedRef.current = onAuctionClosed; }, [onAuctionClosed]);
+  useEffect(() => {
+    onBidUpdateRef.current = onBidUpdate;
+  }, [onBidUpdate]);
+  useEffect(() => {
+    onAuctionClosedRef.current = onAuctionClosed;
+  }, [onAuctionClosed]);
 
   const connect = useCallback(() => {
     if (!auctionId) return;
 
     const client = new Client({
       webSocketFactory: () => new SockJS('/ws'),
-      reconnectDelay: 5000,      // 5초 후 자동 재연결
-      debug: () => {},           // 프로덕션에서 디버그 로그 비활성화
+      reconnectDelay: 5000, // 5초 후 자동 재연결
+      debug: () => {}, // 프로덕션에서 디버그 로그 비활성화
 
       onConnect: () => {
         // 경매 토픽 구독
-        subscriptionRef.current = client.subscribe(
-          `/topic/auctions/${auctionId}`,
-          (message) => {
-            try {
-              const data = JSON.parse(message.body);
+        subscriptionRef.current = client.subscribe(`/topic/auctions/${auctionId}`, (message) => {
+          try {
+            const data = JSON.parse(message.body);
 
-              if (data.type === 'AUCTION_CLOSED') {
-                onAuctionClosedRef.current?.(data);
-              } else if (data.currentPrice !== undefined) {
-                // currentPrice 필드가 있으면 입찰 업데이트
-                onBidUpdateRef.current?.(data);
-              }
-            } catch (err) {
-              console.error('[WebSocket] 메시지 파싱 오류:', err);
+            if (data.type === 'AUCTION_CLOSED') {
+              onAuctionClosedRef.current?.(data);
+            } else if (data.currentPrice !== undefined) {
+              // currentPrice 필드가 있으면 입찰 업데이트
+              onBidUpdateRef.current?.(data);
             }
+          } catch (err) {
+            console.error('[WebSocket] 메시지 파싱 오류:', err);
           }
-        );
+        });
       },
 
       onStompError: (frame) => {

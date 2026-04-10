@@ -39,14 +39,10 @@ export default function useInfiniteScroll(baseEndpoint, params = {}, pageSize = 
     return `${baseEndpoint}?${searchParams.toString()}`;
   };
 
-  const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
-    getKey,
-    fetcher,
-    {
-      revalidateFirstPage: true,
-      revalidateOnFocus: true,
-    }
-  );
+  const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(getKey, fetcher, {
+    revalidateFirstPage: true,
+    revalidateOnFocus: true,
+  });
 
   // params 변경 시 페이지네이션을 첫 페이지로 리셋
   const prevParamsRef = useRef(params);
@@ -63,7 +59,7 @@ export default function useInfiniteScroll(baseEndpoint, params = {}, pageSize = 
   const items = data ? data.flatMap((page) => page.items || []) : [];
 
   // 더 불러올 데이터가 있는지 확인 (백엔드의 hasNext 필드 사용)
-  const hasMore = data ? data[data.length - 1]?.hasNext ?? false : false;
+  const hasMore = data ? (data[data.length - 1]?.hasNext ?? false) : false;
 
   // 추가 로딩 중 여부
   const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');

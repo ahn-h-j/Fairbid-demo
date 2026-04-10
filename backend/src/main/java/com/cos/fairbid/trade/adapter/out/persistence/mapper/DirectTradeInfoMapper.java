@@ -1,8 +1,9 @@
 package com.cos.fairbid.trade.adapter.out.persistence.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.cos.fairbid.trade.adapter.out.persistence.entity.DirectTradeInfoEntity;
 import com.cos.fairbid.trade.domain.DirectTradeInfo;
-import org.springframework.stereotype.Component;
 
 /**
  * 직거래 정보 Entity ↔ Domain 변환 Mapper

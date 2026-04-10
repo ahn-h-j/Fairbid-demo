@@ -1,22 +1,5 @@
 package com.cos.fairbid.auction.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.auction.adapter.in.dto.AuctionListResponse;
-import com.cos.fairbid.auction.adapter.in.dto.AuctionResponse;
-import com.cos.fairbid.auction.adapter.in.dto.CreateAuctionRequest;
-import com.cos.fairbid.auction.application.port.in.CreateAuctionUseCase;
-import com.cos.fairbid.auction.application.port.in.GetAuctionDetailUseCase;
-import com.cos.fairbid.auction.application.port.in.GetAuctionListUseCase;
-import com.cos.fairbid.auction.application.port.in.GetUserWinningInfoUseCase;
-import com.cos.fairbid.auction.application.port.in.GetUserWinningInfoUseCase.UserWinningInfo;
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import com.cos.fairbid.auction.domain.Category;
-import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
-import com.cos.fairbid.common.annotation.RequireOnboarding;
-import com.cos.fairbid.common.response.ApiResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +13,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.auction.adapter.in.dto.AuctionListResponse;
+import com.cos.fairbid.auction.adapter.in.dto.AuctionResponse;
+import com.cos.fairbid.auction.adapter.in.dto.CreateAuctionRequest;
+import com.cos.fairbid.auction.application.port.in.CreateAuctionUseCase;
+import com.cos.fairbid.auction.application.port.in.GetAuctionDetailUseCase;
+import com.cos.fairbid.auction.application.port.in.GetAuctionListUseCase;
+import com.cos.fairbid.auction.application.port.in.GetUserWinningInfoUseCase;
+import com.cos.fairbid.auction.application.port.in.GetUserWinningInfoUseCase.UserWinningInfo;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.AuctionStatus;
+import com.cos.fairbid.auction.domain.Category;
+import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.common.annotation.RequireOnboarding;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
 
 /**
  * 경매 REST Controller

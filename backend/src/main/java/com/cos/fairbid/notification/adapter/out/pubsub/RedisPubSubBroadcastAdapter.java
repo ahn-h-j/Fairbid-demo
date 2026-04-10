@@ -1,15 +1,18 @@
 package com.cos.fairbid.notification.adapter.out.pubsub;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.notification.application.port.out.AuctionBroadcastPort;
 import com.cos.fairbid.notification.dto.AuctionClosedMessage;
 import com.cos.fairbid.notification.dto.BidUpdateMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
 
 /**
  * Redis Pub/Sub을 통한 경매 브로드캐스트 어댑터 (발행 전용)

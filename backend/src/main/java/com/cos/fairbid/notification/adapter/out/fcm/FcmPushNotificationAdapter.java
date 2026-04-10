@@ -1,11 +1,13 @@
 package com.cos.fairbid.notification.adapter.out.fcm;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.notification.application.port.out.NotificationStoragePort;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
 import com.cos.fairbid.notification.domain.InAppNotification;
 import com.cos.fairbid.notification.domain.NotificationType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 /**
  * FCM Push 알림 어댑터
@@ -75,7 +77,9 @@ public class FcmPushNotificationAdapter implements PushNotificationPort {
     }
 
     @Override
-    public void sendMethodSelectedNotification(Long sellerId, Long auctionId, Long tradeId, String auctionTitle, boolean isDirect) {
+    public void sendMethodSelectedNotification(
+            Long sellerId, Long auctionId, Long tradeId,
+            String auctionTitle, boolean isDirect) {
         NotificationType type = NotificationType.METHOD_SELECTED;
         String title = type.getTitle();
         // isDirect를 amount 파라미터로 전달 (1=직거래, 2=택배)
@@ -94,7 +98,9 @@ public class FcmPushNotificationAdapter implements PushNotificationPort {
     }
 
     @Override
-    public void sendArrangementCounterProposedNotification(Long userId, Long auctionId, Long tradeId, String auctionTitle) {
+    public void sendArrangementCounterProposedNotification(
+            Long userId, Long auctionId, Long tradeId,
+            String auctionTitle) {
         NotificationType type = NotificationType.ARRANGEMENT_COUNTER_PROPOSED;
         String title = type.getTitle();
         String body = type.formatBody(auctionTitle, null);
@@ -112,7 +118,9 @@ public class FcmPushNotificationAdapter implements PushNotificationPort {
     }
 
     @Override
-    public void sendDeliveryAddressSubmittedNotification(Long sellerId, Long auctionId, Long tradeId, String auctionTitle) {
+    public void sendDeliveryAddressSubmittedNotification(
+            Long sellerId, Long auctionId, Long tradeId,
+            String auctionTitle) {
         NotificationType type = NotificationType.DELIVERY_ADDRESS_SUBMITTED;
         String title = type.getTitle();
         String body = type.formatBody(auctionTitle, null);
@@ -176,7 +184,9 @@ public class FcmPushNotificationAdapter implements PushNotificationPort {
     /**
      * 거래 관련 인앱 알림을 Redis에 저장한다
      */
-    private void saveInAppNotificationWithTrade(Long userId, NotificationType type, String title, String body, Long auctionId, Long tradeId) {
+    private void saveInAppNotificationWithTrade(
+            Long userId, NotificationType type, String title,
+            String body, Long auctionId, Long tradeId) {
         InAppNotification notification = InAppNotification.create(type, title, body, auctionId, tradeId);
         notificationStoragePort.save(userId, notification);
     }

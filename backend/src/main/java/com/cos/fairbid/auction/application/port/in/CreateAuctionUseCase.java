@@ -1,11 +1,12 @@
 package com.cos.fairbid.auction.application.port.in;
 
+import java.util.List;
+
+import lombok.Builder;
+
 import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.auction.domain.AuctionDuration;
 import com.cos.fairbid.auction.domain.Category;
-import lombok.Builder;
-
-import java.util.List;
 
 /**
  * 경매 생성 유스케이스 인터페이스

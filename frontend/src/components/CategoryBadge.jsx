@@ -19,7 +19,9 @@ export default function CategoryBadge({ category }) {
   const style = CATEGORY_STYLES[category] || DEFAULT;
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold ${style.bg} ${style.text}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold ${style.bg} ${style.text}`}
+    >
       <span className="text-xs">{style.icon}</span>
       {formatCategory(category)}
     </span>

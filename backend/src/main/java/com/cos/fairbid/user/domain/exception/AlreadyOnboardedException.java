@@ -1,7 +1,8 @@
 package com.cos.fairbid.user.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 이미 온보딩을 완료한 사용자가 다시 온보딩을 시도할 때 발생하는 예외

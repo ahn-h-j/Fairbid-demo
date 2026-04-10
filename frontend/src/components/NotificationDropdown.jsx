@@ -153,9 +153,7 @@ export default function NotificationDropdown() {
 
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-8 text-center text-gray-400 text-sm">
-                알림이 없습니다
-              </div>
+              <div className="px-4 py-8 text-center text-gray-400 text-sm">알림이 없습니다</div>
             ) : (
               <ul className="divide-y divide-gray-50">
                 {notifications.map((notification) => (
@@ -172,9 +170,11 @@ export default function NotificationDropdown() {
                           {getNotificationIcon(notification.type)}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-[13px] font-semibold truncate ${
-                            !notification.read ? 'text-gray-900' : 'text-gray-600'
-                          }`}>
+                          <p
+                            className={`text-[13px] font-semibold truncate ${
+                              !notification.read ? 'text-gray-900' : 'text-gray-600'
+                            }`}
+                          >
                             {notification.title}
                           </p>
                           <p className="text-[12px] text-gray-500 line-clamp-2 mt-0.5">

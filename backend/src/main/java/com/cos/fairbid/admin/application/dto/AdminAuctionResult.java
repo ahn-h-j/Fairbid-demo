@@ -1,10 +1,11 @@
 package com.cos.fairbid.admin.application.dto;
 
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.AuctionStatus;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.AuctionStatus;
 
 /**
  * 관리자용 경매 목록 결과 DTO (Application Layer)

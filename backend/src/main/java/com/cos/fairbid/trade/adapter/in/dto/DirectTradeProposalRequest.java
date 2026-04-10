@@ -1,11 +1,11 @@
 package com.cos.fairbid.trade.adapter.in.dto;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 /**
  * 직거래 시간 제안/역제안 요청 DTO

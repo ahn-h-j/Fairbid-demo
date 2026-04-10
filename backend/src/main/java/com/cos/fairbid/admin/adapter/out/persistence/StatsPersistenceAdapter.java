@@ -1,17 +1,19 @@
 package com.cos.fairbid.admin.adapter.out.persistence;
 
-import com.cos.fairbid.admin.application.port.out.LoadStatsPort;
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.admin.application.port.out.LoadStatsPort;
+import com.cos.fairbid.auction.domain.AuctionStatus;
 
 /**
  * 통계 데이터 조회 어댑터
@@ -76,8 +78,8 @@ public class StatsPersistenceAdapter implements LoadStatsPort {
     public double getAvgPriceIncreaseRate(LocalDateTime from) {
         // 낙찰된 경매의 평균 가격 상승률
         // (currentPrice - startPrice) / startPrice * 100
-        String jpql = "SELECT COALESCE(AVG((a.currentPrice - a.startPrice) * 100.0 / a.startPrice), 0) " +
-                "FROM AuctionEntity a WHERE a.status = :status AND a.startPrice > 0";
+        String jpql = "SELECT COALESCE(AVG((a.currentPrice - a.startPrice) * 100.0 / a.startPrice), 0) "
+                + "FROM AuctionEntity a WHERE a.status = :status AND a.startPrice > 0";
         if (from != null) {
             jpql += " AND a.createdAt >= :from";
         }
@@ -159,8 +161,8 @@ public class StatsPersistenceAdapter implements LoadStatsPort {
     @Override
     @SuppressWarnings("unchecked")
     public List<DailyCount> getDailyCompletedAuctions(LocalDateTime from) {
-        String sql = "SELECT DATE(a.actual_end_time) as date, COUNT(*) as count FROM auction a " +
-                "WHERE a.status = 'ENDED' AND a.actual_end_time IS NOT NULL";
+        String sql = "SELECT DATE(a.actual_end_time) as date, COUNT(*) as count FROM auction a "
+                + "WHERE a.status = 'ENDED' AND a.actual_end_time IS NOT NULL";
         if (from != null) {
             sql += " AND a.actual_end_time >= :from";
         }

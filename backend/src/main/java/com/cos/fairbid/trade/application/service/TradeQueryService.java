@@ -1,15 +1,17 @@
 package com.cos.fairbid.trade.application.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.trade.application.port.in.TradeQueryUseCase;
 import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
 import com.cos.fairbid.trade.domain.Trade;
 import com.cos.fairbid.trade.domain.exception.TradeNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 거래 조회 서비스

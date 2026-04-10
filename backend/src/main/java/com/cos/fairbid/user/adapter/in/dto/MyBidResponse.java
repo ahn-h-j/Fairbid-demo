@@ -1,9 +1,9 @@
 package com.cos.fairbid.user.adapter.in.dto;
 
+import java.time.LocalDateTime;
+
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.user.application.port.in.GetMyBidsUseCase.MyBidItem;
-
-import java.time.LocalDateTime;
 
 /**
  * 내 입찰 경매 응답 DTO

@@ -1,8 +1,8 @@
 package com.cos.fairbid.user.application.port.out;
 
-import com.cos.fairbid.user.application.port.in.GetMyBidsUseCase.MyBidItem;
-
 import java.util.List;
+
+import com.cos.fairbid.user.application.port.in.GetMyBidsUseCase.MyBidItem;
 
 /**
  * 사용자의 입찰 경매 목록 조회 포트

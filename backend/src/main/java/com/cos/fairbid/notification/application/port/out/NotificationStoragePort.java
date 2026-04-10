@@ -1,8 +1,8 @@
 package com.cos.fairbid.notification.application.port.out;
 
-import com.cos.fairbid.notification.domain.InAppNotification;
-
 import java.util.List;
+
+import com.cos.fairbid.notification.domain.InAppNotification;
 
 /**
  * 인앱 알림 저장소 아웃바운드 포트

@@ -1,17 +1,19 @@
 package com.cos.fairbid.winning.adapter.out.persistence;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.winning.adapter.out.persistence.entity.WinningEntity;
 import com.cos.fairbid.winning.adapter.out.persistence.mapper.WinningMapper;
 import com.cos.fairbid.winning.adapter.out.persistence.repository.JpaWinningRepository;
 import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
 import com.cos.fairbid.winning.domain.Winning;
 import com.cos.fairbid.winning.domain.WinningStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 낙찰 영속성 어댑터

@@ -1,9 +1,9 @@
 package com.cos.fairbid.trade.application.port.in;
 
-import com.cos.fairbid.trade.domain.Trade;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.cos.fairbid.trade.domain.Trade;
 
 /**
  * 거래 조회 유스케이스

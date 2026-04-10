@@ -13,8 +13,8 @@ export function useAuction(auctionId) {
     auctionId ? `/auctions/${auctionId}` : null,
     fetcher,
     {
-      revalidateOnFocus: false,  // WebSocket이 실시간 업데이트 처리
-    }
+      revalidateOnFocus: false, // WebSocket이 실시간 업데이트 처리
+    },
   );
 
   return { auction: data, error, isLoading, mutate };

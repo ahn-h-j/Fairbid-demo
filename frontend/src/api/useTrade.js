@@ -7,10 +7,7 @@ import { fetcher, apiRequest } from './client';
  * @param {string|number|null} tradeId - 거래 ID
  */
 export function useTrade(tradeId) {
-  const { data, error, isLoading, mutate } = useSWR(
-    tradeId ? `/trades/${tradeId}` : null,
-    fetcher
-  );
+  const { data, error, isLoading, mutate } = useSWR(tradeId ? `/trades/${tradeId}` : null, fetcher);
 
   return {
     trade: data,
@@ -25,10 +22,7 @@ export function useTrade(tradeId) {
  * 인증은 JWT 토큰으로 처리됨
  */
 export function useMyTrades() {
-  const { data, error, isLoading, mutate } = useSWR(
-    '/trades/my',
-    fetcher
-  );
+  const { data, error, isLoading, mutate } = useSWR('/trades/my', fetcher);
 
   return {
     trades: data || [],

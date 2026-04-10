@@ -1,14 +1,5 @@
 package com.cos.fairbid.admin.application.service;
 
-import com.cos.fairbid.admin.application.dto.DailyAuctionStatsResult;
-import com.cos.fairbid.admin.application.dto.StatsOverviewResult;
-import com.cos.fairbid.admin.application.dto.TimePatternResult;
-import com.cos.fairbid.admin.application.port.in.GetStatsUseCase;
-import com.cos.fairbid.admin.application.port.out.LoadStatsPort;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.admin.application.dto.DailyAuctionStatsResult;
+import com.cos.fairbid.admin.application.dto.StatsOverviewResult;
+import com.cos.fairbid.admin.application.dto.TimePatternResult;
+import com.cos.fairbid.admin.application.port.in.GetStatsUseCase;
+import com.cos.fairbid.admin.application.port.out.LoadStatsPort;
 
 /**
  * 통계 서비스
@@ -102,7 +104,10 @@ public class StatsService implements GetStatsUseCase {
 
         // 0~23시 모든 시간대 포함하도록 보정 (중복 시간대 발생 시 합산)
         Map<Integer, Long> hourMap = hourlyBids.stream()
-                .collect(Collectors.toMap(LoadStatsPort.HourlyBidCount::hour, LoadStatsPort.HourlyBidCount::count, Long::sum));
+                .collect(Collectors.toMap(
+                        LoadStatsPort.HourlyBidCount::hour,
+                        LoadStatsPort.HourlyBidCount::count,
+                        Long::sum));
 
         List<TimePatternResult.HourlyBidCount> result = new ArrayList<>();
         int peakHour = 0;

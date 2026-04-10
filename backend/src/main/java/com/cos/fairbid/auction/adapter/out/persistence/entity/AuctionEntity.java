@@ -1,7 +1,12 @@
 package com.cos.fairbid.auction.adapter.out.persistence.entity;
 
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import com.cos.fairbid.auction.domain.Category;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -20,12 +25,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
+import com.cos.fairbid.auction.domain.AuctionStatus;
+import com.cos.fairbid.auction.domain.Category;
 
 /**
  * 경매 JPA 엔티티

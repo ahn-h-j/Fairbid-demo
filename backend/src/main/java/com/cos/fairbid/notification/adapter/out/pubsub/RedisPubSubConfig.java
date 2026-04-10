@@ -1,12 +1,14 @@
 package com.cos.fairbid.notification.adapter.out.pubsub;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * Redis Pub/Sub 리스너(구독) 설정

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ===== Base Styles ===== */
 
@@ -21,7 +21,13 @@ body {
 }
 
 /* 텍스트/입력 영역은 선택 가능하게 */
-input, textarea, p, h1, h2, h3, span[class*="text-"] {
+input,
+textarea,
+p,
+h1,
+h2,
+h3,
+span[class*='text-'] {
   -webkit-user-select: text;
   user-select: text;
 }
@@ -50,8 +56,15 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 카운트다운 타이머 펄스 */
 @keyframes pulse-subtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.01); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.01);
+  }
 }
 .animate-pulse-subtle {
   animation: pulse-subtle 1.5s ease-in-out infinite;
@@ -59,8 +72,14 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 페이드인 */
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fade-in {
   animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -68,8 +87,14 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 슬라이드업 */
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-slide-up {
   animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -77,9 +102,17 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 스케일 팝 (성공 시) */
 @keyframes scale-pop {
-  0% { opacity: 0; transform: scale(0.9); }
-  50% { transform: scale(1.02); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 .animate-scale-pop {
   animation: scale-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -87,10 +120,20 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 바운스인 (결제 완료 등 성공 피드백) */
 @keyframes bounce-in {
-  0% { opacity: 0; transform: scale(0.5); }
-  50% { transform: scale(1.1); }
-  70% { transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 .animate-bounce-in {
   animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
@@ -98,8 +141,12 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 시머 (로딩 스켈레톤) */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 .animate-shimmer {
   background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
@@ -109,8 +156,13 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 라이브 뱃지 글로우 */
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
 }
 .animate-glow-green {
   animation: glow 2s ease-in-out infinite;
@@ -120,13 +172,15 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
 
 /* 카드 호버 효과 */
 .card-hover {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1),
-              0 8px 16px -8px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 20px 40px -12px rgba(0, 0, 0, 0.1),
+    0 8px 16px -8px rgba(0, 0, 0, 0.06);
 }
 
 /* 그라데이션 텍스트 */
@@ -154,16 +208,21 @@ input, textarea, p, h1, h2, h3, span[class*="text-"] {
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
 
 /* 인풋 포커스 효과 */
 .input-glow:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15),
-              0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.15),
+    0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* 버튼 프레스 효과 */

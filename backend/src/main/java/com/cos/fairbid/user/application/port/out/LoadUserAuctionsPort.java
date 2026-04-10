@@ -1,9 +1,9 @@
 package com.cos.fairbid.user.application.port.out;
 
+import java.util.List;
+
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.user.application.port.in.GetMyAuctionsUseCase.MyAuctionItem;
-
-import java.util.List;
 
 /**
  * 사용자의 판매 경매 목록 조회 포트

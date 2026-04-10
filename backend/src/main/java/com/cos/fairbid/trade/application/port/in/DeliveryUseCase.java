@@ -1,8 +1,8 @@
 package com.cos.fairbid.trade.application.port.in;
 
-import com.cos.fairbid.trade.domain.DeliveryInfo;
-
 import java.util.Optional;
+
+import com.cos.fairbid.trade.domain.DeliveryInfo;
 
 /**
  * 택배 유스케이스

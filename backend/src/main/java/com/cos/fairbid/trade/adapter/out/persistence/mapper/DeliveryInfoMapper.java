@@ -1,8 +1,9 @@
 package com.cos.fairbid.trade.adapter.out.persistence.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.cos.fairbid.trade.adapter.out.persistence.entity.DeliveryInfoEntity;
 import com.cos.fairbid.trade.domain.DeliveryInfo;
-import org.springframework.stereotype.Component;
 
 /**
  * 택배 배송 정보 Entity ↔ Domain 변환 Mapper

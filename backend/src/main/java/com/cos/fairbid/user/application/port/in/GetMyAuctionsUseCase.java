@@ -1,9 +1,9 @@
 package com.cos.fairbid.user.application.port.in;
 
+import java.time.LocalDateTime;
+
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.common.pagination.CursorPage;
-
-import java.time.LocalDateTime;
 
 /**
  * 내 판매 경매 목록 조회 유스케이스

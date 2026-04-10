@@ -1,7 +1,8 @@
 package com.cos.fairbid.auth.application.port.out;
 
-import com.cos.fairbid.user.domain.User;
 import io.jsonwebtoken.Claims;
+
+import com.cos.fairbid.user.domain.User;
 
 /**
  * 토큰 생성 및 검증 아웃바운드 포트

@@ -1,7 +1,8 @@
 package com.cos.fairbid.user.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 전화번호 중복 예외

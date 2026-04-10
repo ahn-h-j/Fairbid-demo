@@ -21,5 +21,5 @@ public interface GetUserWinningInfoUseCase {
     record UserWinningInfo(
             Integer rank,   // 낙찰 순위 (1 또는 2)
             String status   // 낙찰 상태 (PENDING_RESPONSE, RESPONDED, NO_SHOW, FAILED, STANDBY)
-    ) {}
+    ) { }
 }

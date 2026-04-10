@@ -1,15 +1,5 @@
 package com.cos.fairbid.auction.adapter.out.cache;
 
-import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import com.cos.fairbid.auction.domain.Category;
-import com.cos.fairbid.auction.domain.TopBidderInfo;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,6 +11,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.AuctionStatus;
+import com.cos.fairbid.auction.domain.Category;
+import com.cos.fairbid.auction.domain.TopBidderInfo;
 
 /**
  * Redis 기반 경매 캐시 어댑터
@@ -227,26 +229,48 @@ public class RedisAuctionCacheAdapter implements AuctionCachePort {
                 Map.entry("category", auction.getCategory().name()),
                 Map.entry("startPrice", String.valueOf(auction.getStartPrice())),
                 Map.entry("currentPrice", String.valueOf(auction.getCurrentPrice())),
-                Map.entry("instantBuyPrice", auction.getInstantBuyPrice() != null ? String.valueOf(auction.getInstantBuyPrice()) : "0"),
+                Map.entry("instantBuyPrice",
+                        auction.getInstantBuyPrice() != null
+                                ? String.valueOf(auction.getInstantBuyPrice()) : "0"),
                 Map.entry("bidIncrement", String.valueOf(auction.getBidIncrement())),
                 Map.entry("scheduledEndTime", auction.getScheduledEndTime().toString()),
                 Map.entry("scheduledEndTimeMs", String.valueOf(scheduledEndTimeMs)),
-                Map.entry("actualEndTime", auction.getActualEndTime() != null ? auction.getActualEndTime().toString() : ""),
+                Map.entry("actualEndTime",
+                        auction.getActualEndTime() != null
+                                ? auction.getActualEndTime().toString() : ""),
                 Map.entry("extensionCount", String.valueOf(auction.getExtensionCount())),
                 Map.entry("totalBidCount", String.valueOf(auction.getTotalBidCount())),
                 Map.entry("status", auction.getStatus().name()),
-                Map.entry("winnerId", auction.getWinnerId() != null ? String.valueOf(auction.getWinnerId()) : ""),
-                Map.entry("imageUrls", auction.getImageUrls() != null ? String.join(",", auction.getImageUrls()) : ""),
-                Map.entry("createdAt", auction.getCreatedAt() != null ? auction.getCreatedAt().toString() : ""),
-                Map.entry("updatedAt", auction.getUpdatedAt() != null ? auction.getUpdatedAt().toString() : ""),
+                Map.entry("winnerId",
+                        auction.getWinnerId() != null
+                                ? String.valueOf(auction.getWinnerId()) : ""),
+                Map.entry("imageUrls",
+                        auction.getImageUrls() != null
+                                ? String.join(",", auction.getImageUrls()) : ""),
+                Map.entry("createdAt",
+                        auction.getCreatedAt() != null
+                                ? auction.getCreatedAt().toString() : ""),
+                Map.entry("updatedAt",
+                        auction.getUpdatedAt() != null
+                                ? auction.getUpdatedAt().toString() : ""),
                 // 즉시 구매 관련 필드
-                Map.entry("instantBuyerId", auction.getInstantBuyerId() != null ? String.valueOf(auction.getInstantBuyerId()) : ""),
+                Map.entry("instantBuyerId",
+                        auction.getInstantBuyerId() != null
+                                ? String.valueOf(auction.getInstantBuyerId()) : ""),
                 Map.entry("instantBuyActivatedTimeMs", instantBuyActivatedTimeMs),
                 // 1순위, 2순위 입찰자 정보 (Lua 스크립트에서 갱신됨)
-                Map.entry("topBidderId", auction.getTopBidderId() != null ? String.valueOf(auction.getTopBidderId()) : ""),
-                Map.entry("topBidAmount", auction.getTopBidAmount() != null ? String.valueOf(auction.getTopBidAmount()) : ""),
-                Map.entry("secondBidderId", auction.getSecondBidderId() != null ? String.valueOf(auction.getSecondBidderId()) : ""),
-                Map.entry("secondBidAmount", auction.getSecondBidAmount() != null ? String.valueOf(auction.getSecondBidAmount()) : "")
+                Map.entry("topBidderId",
+                        auction.getTopBidderId() != null
+                                ? String.valueOf(auction.getTopBidderId()) : ""),
+                Map.entry("topBidAmount",
+                        auction.getTopBidAmount() != null
+                                ? String.valueOf(auction.getTopBidAmount()) : ""),
+                Map.entry("secondBidderId",
+                        auction.getSecondBidderId() != null
+                                ? String.valueOf(auction.getSecondBidderId()) : ""),
+                Map.entry("secondBidAmount",
+                        auction.getSecondBidAmount() != null
+                                ? String.valueOf(auction.getSecondBidAmount()) : "")
         );
     }
 

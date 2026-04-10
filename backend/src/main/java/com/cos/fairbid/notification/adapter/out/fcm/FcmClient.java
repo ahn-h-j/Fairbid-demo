@@ -1,12 +1,15 @@
 package com.cos.fairbid.notification.adapter.out.fcm;
 
-import com.cos.fairbid.notification.domain.NotificationType;
+import org.springframework.stereotype.Component;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+
+import com.cos.fairbid.notification.domain.NotificationType;
 
 /**
  * FCM 전송 클라이언트

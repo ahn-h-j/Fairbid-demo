@@ -43,7 +43,9 @@ export default function OnboardingPage() {
 
     setNicknameStatus('checking');
     try {
-      const result = await apiRequest(`/users/check-nickname?nickname=${encodeURIComponent(value)}`);
+      const result = await apiRequest(
+        `/users/check-nickname?nickname=${encodeURIComponent(value)}`,
+      );
       setNicknameStatus(result.available ? 'available' : 'duplicate');
     } catch {
       setNicknameStatus(null);
@@ -52,7 +54,7 @@ export default function OnboardingPage() {
 
   /** 닉네임 입력 핸들러 */
   const handleNicknameChange = (e) => {
-    const value = e.target.value;
+    const {value} = e.target;
     setNickname(value);
     setErrors((prev) => ({ ...prev, nickname: undefined }));
 
@@ -106,7 +108,7 @@ export default function OnboardingPage() {
         method: 'POST',
         body: JSON.stringify({
           nickname: nickname.trim(),
-          phoneNumber: phoneNumber,
+          phoneNumber,
         }),
       });
 
@@ -116,7 +118,8 @@ export default function OnboardingPage() {
       }
 
       // location.state?.from을 우선 사용하고, 없으면 localStorage fallback
-      const redirectPath = location.state?.from || localStorage.getItem('redirectAfterLogin') || '/';
+      const redirectPath =
+        location.state?.from || localStorage.getItem('redirectAfterLogin') || '/';
       localStorage.removeItem('redirectAfterLogin');
       navigate(redirectPath, { replace: true });
     } catch (err) {
@@ -149,7 +152,11 @@ export default function OnboardingPage() {
 
         {/* 폼 레벨 에러 */}
         {errors.form && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700" role="alert" aria-live="polite">
+          <div
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700"
+            role="alert"
+            aria-live="polite"
+          >
             {errors.form}
           </div>
         )}
@@ -194,7 +201,10 @@ export default function OnboardingPage() {
 
           {/* 전화번호 */}
           <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            <label
+              htmlFor="phoneNumber"
+              className="block text-sm font-semibold text-gray-700 mb-1.5"
+            >
               전화번호
             </label>
             <input
@@ -226,9 +236,25 @@ export default function OnboardingPage() {
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
                 처리 중…
               </span>

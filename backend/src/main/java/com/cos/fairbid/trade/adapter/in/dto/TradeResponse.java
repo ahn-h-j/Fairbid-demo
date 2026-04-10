@@ -1,12 +1,13 @@
 package com.cos.fairbid.trade.adapter.in.dto;
 
-import com.cos.fairbid.trade.domain.Trade;
-import com.cos.fairbid.trade.domain.TradeMethod;
-import com.cos.fairbid.trade.domain.TradeStatus;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.trade.domain.Trade;
+import com.cos.fairbid.trade.domain.TradeMethod;
+import com.cos.fairbid.trade.domain.TradeStatus;
 
 /**
  * 거래 응답 DTO

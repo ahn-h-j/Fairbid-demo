@@ -1,7 +1,8 @@
 package com.cos.fairbid.bid.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 입찰 금액이 최소 입찰 가능 금액보다 낮을 때 발생하는 예외

@@ -1,16 +1,20 @@
 package com.cos.fairbid.notification.adapter.out.websocket;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.stereotype.Component;
+
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * 커스텀 Actuator 엔드포인트: /actuator/wsconnections
@@ -60,14 +64,15 @@ public class WebSocketConnectionsEndpoint {
                     "http://169.254.169.254/latest/meta-data/local-ipv4").toURL().openConnection();
             conn.setConnectTimeout(1000);
             conn.setReadTimeout(1000);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 return reader.readLine();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // EC2가 아닌 환경 → fallback
             try {
                 return InetAddress.getLocalHost().getHostAddress();
-            } catch (Exception ex) {
+            } catch (UnknownHostException ex) {
                 return "unknown";
             }
         }

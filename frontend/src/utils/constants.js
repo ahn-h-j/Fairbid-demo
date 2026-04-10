@@ -41,6 +41,5 @@ export const BID_TYPES = {
 /**
  * 타이머 임계값 (초 단위)
  */
-export const TIMER_WARNING_THRESHOLD = 300;  // 5분
-export const TIMER_DANGER_THRESHOLD = 60;    // 1분
-
+export const TIMER_WARNING_THRESHOLD = 300; // 5분
+export const TIMER_DANGER_THRESHOLD = 60; // 1분

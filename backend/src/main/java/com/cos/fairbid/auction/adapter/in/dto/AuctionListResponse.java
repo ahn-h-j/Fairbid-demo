@@ -1,10 +1,11 @@
 package com.cos.fairbid.auction.adapter.in.dto;
 
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.AuctionStatus;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.AuctionStatus;
 
 /**
  * 경매 목록 응답 DTO

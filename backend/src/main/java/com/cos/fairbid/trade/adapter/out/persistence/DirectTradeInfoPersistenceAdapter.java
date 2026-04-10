@@ -1,13 +1,15 @@
 package com.cos.fairbid.trade.adapter.out.persistence;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.trade.adapter.out.persistence.mapper.DirectTradeInfoMapper;
 import com.cos.fairbid.trade.adapter.out.persistence.repository.DirectTradeInfoJpaRepository;
 import com.cos.fairbid.trade.application.port.out.DirectTradeInfoRepositoryPort;
 import com.cos.fairbid.trade.domain.DirectTradeInfo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 /**
  * 직거래 정보 영속성 어댑터

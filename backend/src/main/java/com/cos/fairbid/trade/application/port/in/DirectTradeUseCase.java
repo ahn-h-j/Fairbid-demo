@@ -1,10 +1,10 @@
 package com.cos.fairbid.trade.application.port.in;
 
-import com.cos.fairbid.trade.domain.DirectTradeInfo;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
+
+import com.cos.fairbid.trade.domain.DirectTradeInfo;
 
 /**
  * 직거래 유스케이스

@@ -1,10 +1,12 @@
 package com.cos.fairbid.auth.adapter.out.oauth;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.auth.application.port.out.OAuthClientPort;
 import com.cos.fairbid.auth.application.port.out.OAuthUserInfo;
 import com.cos.fairbid.user.domain.OAuthProvider;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 /**
  * OAuth 클라이언트 라우팅 어댑터

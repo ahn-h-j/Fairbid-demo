@@ -1,22 +1,23 @@
 package com.cos.fairbid.bid.adapter.out.cache;
 
-import com.cos.fairbid.bid.application.port.out.BidCachePort;
-import com.cos.fairbid.bid.domain.exception.BidTooLowException;
-import com.cos.fairbid.bid.domain.exception.AuctionEndedException;
-import com.cos.fairbid.bid.domain.exception.InstantBuyException;
-import com.cos.fairbid.bid.domain.exception.SelfBidNotAllowedException;
+import java.util.Arrays;
+import java.util.List;
 
-import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
+import com.cos.fairbid.bid.application.port.out.BidCachePort;
+import com.cos.fairbid.bid.domain.exception.AuctionEndedException;
+import com.cos.fairbid.bid.domain.exception.BidTooLowException;
+import com.cos.fairbid.bid.domain.exception.InstantBuyException;
+import com.cos.fairbid.bid.domain.exception.SelfBidNotAllowedException;
 
 /**
  * Redis Lua 스크립트 기반 입찰 캐시 어댑터
@@ -74,7 +75,8 @@ public class RedisBidCacheAdapter implements BidCachePort {
             handleBidError(errorCode, auctionId, bidderId, bidAmount, result);
         }
 
-        // 성공 케이스: {1, newCurrentPrice, newTotalBidCount, newBidIncrement, extended, extensionCount, scheduledEndTimeMs, instantBuyActivated}
+        // 성공 케이스: {1, newCurrentPrice, newTotalBidCount, newBidIncrement,
+        //   extended, extensionCount, scheduledEndTimeMs, instantBuyActivated}
         Long newCurrentPrice = (Long) result.get(1);
         Long newTotalBidCount = (Long) result.get(2);
         Long newBidIncrement = (Long) result.get(3);

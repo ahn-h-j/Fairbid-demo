@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    FairBid Checkstyle Suppressions.
+    테스트 코드 및 특정 패턴에 대한 예외 처리.
+-->
+<suppressions>
+    <!-- 테스트 코드: 네이밍 규칙 완화 (테스트 메서드에 한글/언더스코어 허용) -->
+    <suppress files="[\\/]test[\\/]" checks="MethodName"/>
+    <suppress files="[\\/]test[\\/]" checks="LocalVariableName"/>
+    <suppress files="[\\/]test[\\/]" checks="MemberName"/>
+
+    <!-- 테스트 코드: import 순서 완화 -->
+    <suppress files="[\\/]test[\\/]" checks="ImportOrder"/>
+
+    <!-- 테스트 코드: 줄 길이 완화 (assertion 메시지 등) -->
+    <suppress files="[\\/]test[\\/]" checks="LineLength"/>
+
+    <!-- 기존 RuntimeException 사용처: 커스텀 예외로 전환 전까지 허용 -->
+    <suppress files="RedisBidCacheAdapter\.java" id="NoRawRuntimeException"/>
+    <suppress files="NotificationRedisAdapter\.java" id="NoRawRuntimeException"/>
+</suppressions>

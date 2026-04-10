@@ -1,12 +1,14 @@
 package com.cos.fairbid.notification.application.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.notification.application.port.in.NotificationQueryUseCase;
 import com.cos.fairbid.notification.application.port.out.NotificationStoragePort;
 import com.cos.fairbid.notification.domain.InAppNotification;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 알림 서비스

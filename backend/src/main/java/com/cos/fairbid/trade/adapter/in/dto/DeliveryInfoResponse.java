@@ -1,9 +1,10 @@
 package com.cos.fairbid.trade.adapter.in.dto;
 
-import com.cos.fairbid.trade.domain.DeliveryInfo;
-import com.cos.fairbid.trade.domain.DeliveryStatus;
 import lombok.Builder;
 import lombok.Getter;
+
+import com.cos.fairbid.trade.domain.DeliveryInfo;
+import com.cos.fairbid.trade.domain.DeliveryStatus;
 
 /**
  * 배송 정보 응답 DTO

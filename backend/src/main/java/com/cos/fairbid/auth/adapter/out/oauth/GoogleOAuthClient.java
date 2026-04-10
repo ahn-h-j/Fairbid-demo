@@ -1,9 +1,7 @@
 package com.cos.fairbid.auth.adapter.out.oauth;
 
-import com.cos.fairbid.auth.application.port.out.OAuthUserInfo;
-import com.cos.fairbid.auth.domain.exception.OAuthEmailRequiredException;
-import com.cos.fairbid.user.domain.OAuthProvider;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -11,7 +9,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auth.application.port.out.OAuthUserInfo;
+import com.cos.fairbid.auth.domain.exception.OAuthEmailRequiredException;
+import com.cos.fairbid.user.domain.OAuthProvider;
 
 /**
  * 구글 OAuth2 클라이언트

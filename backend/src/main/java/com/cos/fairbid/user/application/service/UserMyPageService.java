@@ -1,16 +1,18 @@
 package com.cos.fairbid.user.application.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.common.pagination.CursorPage;
 import com.cos.fairbid.user.application.port.in.GetMyAuctionsUseCase;
 import com.cos.fairbid.user.application.port.in.GetMyBidsUseCase;
 import com.cos.fairbid.user.application.port.out.LoadUserAuctionsPort;
 import com.cos.fairbid.user.application.port.out.LoadUserBidsPort;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * 마이페이지 서비스

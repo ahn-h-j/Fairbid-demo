@@ -1,8 +1,9 @@
 package com.cos.fairbid.bid.application.port.in;
 
+import lombok.Builder;
+
 import com.cos.fairbid.bid.domain.Bid;
 import com.cos.fairbid.bid.domain.BidType;
-import lombok.Builder;
 
 /**
  * 입찰 유스케이스 인터페이스

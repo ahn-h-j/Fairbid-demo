@@ -1,13 +1,15 @@
 package com.cos.fairbid.winning.application.service;
 
-import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
-import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
+import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
 
 /**
  * 경매 종료 서비스

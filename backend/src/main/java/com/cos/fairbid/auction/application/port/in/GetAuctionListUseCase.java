@@ -1,10 +1,11 @@
 package com.cos.fairbid.auction.application.port.in;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.auction.domain.Category;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * 경매 목록 조회 유스케이스 인터페이스

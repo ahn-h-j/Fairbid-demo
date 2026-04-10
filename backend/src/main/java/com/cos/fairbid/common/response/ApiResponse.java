@@ -1,9 +1,10 @@
 package com.cos.fairbid.common.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
 
 /**
  * 공통 API 응답 형식

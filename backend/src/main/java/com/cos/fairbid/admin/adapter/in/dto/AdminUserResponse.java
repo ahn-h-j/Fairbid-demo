@@ -1,11 +1,12 @@
 package com.cos.fairbid.admin.adapter.in.dto;
 
+import java.time.LocalDateTime;
+
+import lombok.Builder;
+
 import com.cos.fairbid.user.domain.OAuthProvider;
 import com.cos.fairbid.user.domain.User;
 import com.cos.fairbid.user.domain.UserRole;
-import lombok.Builder;
-
-import java.time.LocalDateTime;
 
 /**
  * 관리자용 유저 응답 DTO

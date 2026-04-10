@@ -1,5 +1,17 @@
 package com.cos.fairbid.auth.application.service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
 import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
 import com.cos.fairbid.auth.application.port.in.RefreshTokenUseCase;
@@ -15,16 +27,6 @@ import com.cos.fairbid.user.domain.User;
 import com.cos.fairbid.user.domain.UserRole;
 import com.cos.fairbid.user.domain.exception.UserBlockedException;
 import com.cos.fairbid.user.domain.exception.UserNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 인증 서비스

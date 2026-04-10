@@ -1,15 +1,5 @@
 package com.cos.fairbid.bid.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
-import com.cos.fairbid.bid.adapter.in.dto.BidResponse;
-import com.cos.fairbid.bid.adapter.in.dto.PlaceBidRequest;
-import com.cos.fairbid.bid.application.port.in.PlaceBidUseCase;
-import com.cos.fairbid.bid.domain.Bid;
-import com.cos.fairbid.common.annotation.RequireOnboarding;
-import com.cos.fairbid.common.response.ApiResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +7,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.bid.adapter.in.dto.BidResponse;
+import com.cos.fairbid.bid.adapter.in.dto.PlaceBidRequest;
+import com.cos.fairbid.bid.application.port.in.PlaceBidUseCase;
+import com.cos.fairbid.bid.domain.Bid;
+import com.cos.fairbid.common.annotation.RequireOnboarding;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
 
 /**
  * 입찰 REST Controller

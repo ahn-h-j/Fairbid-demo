@@ -59,9 +59,7 @@ export default function UserManagePage() {
       {/* 헤더 */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">유저 관리</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          총 {totalElements.toLocaleString()}명의 유저
-        </p>
+        <p className="text-sm text-gray-500 mt-1">총 {totalElements.toLocaleString()}명의 유저</p>
       </div>
 
       {/* 검색 */}
@@ -90,22 +88,32 @@ export default function UserManagePage() {
 
       {/* 모바일: 카드 리스트 */}
       <div className="sm:hidden space-y-3">
-        {loading ? (
-          <div className="py-12 text-center"><LoadingSpinner /></div>
-        ) : users.length === 0 ? (
+        {loading && (
+          <div className="py-12 text-center">
+            <LoadingSpinner />
+          </div>
+        )}
+        {!loading && users.length === 0 && (
           <div className="py-12 text-center text-gray-400 text-sm">유저가 없습니다</div>
-        ) : (
+        )}
+        {!loading && users.length > 0 && (
           users.map((user) => (
             <div key={user.id} className="bg-white rounded-xl p-4 ring-1 ring-gray-100 shadow-sm">
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">{user.nickname || '-'}</span>
+                    <span className="text-sm font-semibold text-gray-900">
+                      {user.nickname || '-'}
+                    </span>
                     {!user.isOnboarded && (
-                      <span className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded">미완료</span>
+                      <span className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded">
+                        미완료
+                      </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">#{user.id} · {user.email}</p>
+                  <p className="text-xs text-gray-500 mt-0.5 truncate">
+                    #{user.id} · {user.email}
+                  </p>
                 </div>
                 <StatusBadge isBlocked={user.isBlocked} isActive={user.isActive} />
               </div>
@@ -155,19 +163,21 @@ export default function UserManagePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {loading ? (
+              {loading && (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center">
                     <LoadingSpinner />
                   </td>
                 </tr>
-              ) : users.length === 0 ? (
+              )}
+              {!loading && users.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center text-gray-400 text-sm">
                     유저가 없습니다
                   </td>
                 </tr>
-              ) : (
+              )}
+              {!loading && users.length > 0 && (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-500">{user.id}</td>
@@ -247,12 +257,13 @@ function ProviderBadge({ provider }) {
     GOOGLE: { label: 'Google', color: 'bg-blue-100 text-blue-800' },
   };
 
-  const { label, color } = config[provider] || { label: provider, color: 'bg-gray-100 text-gray-700' };
+  const { label, color } = config[provider] || {
+    label: provider,
+    color: 'bg-gray-100 text-gray-700',
+  };
 
   return (
-    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${color}`}>
-      {label}
-    </span>
+    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${color}`}>{label}</span>
   );
 }
 

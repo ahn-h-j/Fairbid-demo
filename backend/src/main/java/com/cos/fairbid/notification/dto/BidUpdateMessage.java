@@ -1,8 +1,8 @@
 package com.cos.fairbid.notification.dto;
 
-import com.cos.fairbid.bid.domain.event.BidPlacedEvent;
-
 import java.time.LocalDateTime;
+
+import com.cos.fairbid.bid.domain.event.BidPlacedEvent;
 
 /**
  * WebSocket을 통해 클라이언트에 전송되는 입찰 업데이트 메시지

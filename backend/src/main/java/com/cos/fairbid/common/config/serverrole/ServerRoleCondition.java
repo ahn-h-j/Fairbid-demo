@@ -1,10 +1,10 @@
 package com.cos.fairbid.common.config.serverrole;
 
+import java.util.Map;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.util.Map;
 
 /**
  * server.role 기반 빈 활성화 조건

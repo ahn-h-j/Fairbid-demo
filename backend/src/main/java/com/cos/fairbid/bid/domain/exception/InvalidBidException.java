@@ -1,7 +1,8 @@
 package com.cos.fairbid.bid.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 입찰 요청이 유효하지 않을 때 발생하는 예외

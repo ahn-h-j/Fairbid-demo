@@ -1,10 +1,12 @@
 package com.cos.fairbid.auth.infrastructure.jwt;
 
-import com.cos.fairbid.auth.application.port.out.TokenProviderPort;
-import com.cos.fairbid.auth.domain.exception.TokenExpiredException;
-import com.cos.fairbid.auth.domain.exception.TokenInvalidException;
-import com.cos.fairbid.user.domain.User;
-import com.cos.fairbid.user.domain.UserRole;
+import java.util.Base64;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -13,11 +15,12 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
+import com.cos.fairbid.auth.application.port.out.TokenProviderPort;
+import com.cos.fairbid.auth.domain.exception.TokenExpiredException;
+import com.cos.fairbid.auth.domain.exception.TokenInvalidException;
+import com.cos.fairbid.user.domain.User;
+import com.cos.fairbid.user.domain.UserRole;
 
 /**
  * JWT 토큰 생성 및 검증 컴포넌트

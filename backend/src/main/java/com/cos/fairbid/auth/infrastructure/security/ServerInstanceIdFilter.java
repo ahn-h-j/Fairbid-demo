@@ -1,19 +1,22 @@
 package com.cos.fairbid.auth.infrastructure.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 응답 헤더에 서버 인스턴스 식별 정보를 추가하는 필터 (load-test 프로필 전용)
@@ -46,15 +49,16 @@ public class ServerInstanceIdFilter extends OncePerRequestFilter {
             HttpURLConnection conn = (HttpURLConnection) URI.create(url).toURL().openConnection();
             conn.setConnectTimeout(1000);
             conn.setReadTimeout(1000);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 return reader.readLine();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // EC2가 아닌 환경 (로컬 등) → fallback
             try {
                 InetAddress addr = InetAddress.getLocalHost();
                 return url.contains("instance-id") ? addr.getHostName() : addr.getHostAddress();
-            } catch (Exception ex) {
+            } catch (UnknownHostException ex) {
                 return "unknown";
             }
         }

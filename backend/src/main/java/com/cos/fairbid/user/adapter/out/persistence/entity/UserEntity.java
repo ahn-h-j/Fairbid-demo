@@ -1,7 +1,11 @@
 package com.cos.fairbid.user.adapter.out.persistence.entity;
 
-import com.cos.fairbid.user.domain.OAuthProvider;
-import com.cos.fairbid.user.domain.UserRole;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -16,11 +20,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.user.domain.OAuthProvider;
+import com.cos.fairbid.user.domain.UserRole;
 
 /**
  * User JPA 엔티티
@@ -28,10 +30,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_users_nickname", columnNames = "nickname"),
-        @UniqueConstraint(name = "uk_users_phone_number", columnNames = "phone_number"),
-        @UniqueConstraint(name = "uk_users_provider_id", columnNames = {"provider", "provider_id"})
+    @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+    @UniqueConstraint(name = "uk_users_nickname", columnNames = "nickname"),
+    @UniqueConstraint(name = "uk_users_phone_number", columnNames = "phone_number"),
+    @UniqueConstraint(name = "uk_users_provider_id", columnNames = {"provider", "provider_id"})
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

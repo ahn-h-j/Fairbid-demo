@@ -1,7 +1,8 @@
 package com.cos.fairbid.auth.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * JWT 토큰 만료 예외

@@ -1,12 +1,13 @@
 package com.cos.fairbid.bid.adapter.out.persistence.repository;
 
-import com.cos.fairbid.bid.adapter.out.persistence.entity.BidEntity;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.cos.fairbid.bid.adapter.out.persistence.entity.BidEntity;
 
 /**
  * 입찰 JPA Repository
@@ -33,12 +34,14 @@ public interface JpaBidRepository extends JpaRepository<BidEntity, Long> {
      * @param pageable 페이지 크기 지정용
      * @return Object[] 배열 목록 (JPQL projection)
      */
-    @Query("SELECT a.id, a.title, MAX(b.amount), a.currentPrice, a.status, a.createdAt " +
-            "FROM BidEntity b JOIN com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity a ON b.auctionId = a.id " +
-            "WHERE b.bidderId = :bidderId " +
-            "AND (:cursor IS NULL OR a.id < :cursor) " +
-            "GROUP BY a.id, a.title, a.currentPrice, a.status, a.createdAt " +
-            "ORDER BY a.id DESC")
+    @Query("SELECT a.id, a.title, MAX(b.amount), a.currentPrice, a.status, a.createdAt "
+            + "FROM BidEntity b "
+            + "JOIN com.cos.fairbid.auction.adapter.out.persistence.entity.AuctionEntity a "
+            + "ON b.auctionId = a.id "
+            + "WHERE b.bidderId = :bidderId "
+            + "AND (:cursor IS NULL OR a.id < :cursor) "
+            + "GROUP BY a.id, a.title, a.currentPrice, a.status, a.createdAt "
+            + "ORDER BY a.id DESC")
     List<Object[]> findBidAuctionsByBidderWithCursor(
             @Param("bidderId") Long bidderId,
             @Param("cursor") Long cursor,

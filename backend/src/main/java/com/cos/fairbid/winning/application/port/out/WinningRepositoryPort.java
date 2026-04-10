@@ -1,9 +1,9 @@
 package com.cos.fairbid.winning.application.port.out;
 
-import com.cos.fairbid.winning.domain.Winning;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.cos.fairbid.winning.domain.Winning;
 
 /**
  * 낙찰 저장소 아웃바운드 포트

@@ -1,5 +1,11 @@
 package com.cos.fairbid.bid.application.service;
 
+import org.springframework.stereotype.Service;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.auction.domain.Auction;
@@ -10,10 +16,6 @@ import com.cos.fairbid.bid.application.port.out.BidCachePort.BidResult;
 import com.cos.fairbid.bid.application.port.out.BidEventPublisherPort;
 import com.cos.fairbid.bid.application.port.out.BidStreamPort;
 import com.cos.fairbid.bid.domain.Bid;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 /**
  * 입찰 서비스

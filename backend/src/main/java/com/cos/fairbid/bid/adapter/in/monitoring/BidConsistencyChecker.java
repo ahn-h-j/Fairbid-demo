@@ -1,20 +1,22 @@
 package com.cos.fairbid.bid.adapter.in.monitoring;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
-import com.cos.fairbid.bid.application.port.out.BidRepositoryPort;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.stream.PendingMessagesSummary;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicLong;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.bid.adapter.out.stream.RedisBidStreamAdapter;
+import com.cos.fairbid.bid.application.port.out.BidRepositoryPort;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * Redis-RDB 입찰 정합성 모니터링 스케줄러 (load-test 프로파일 전용)

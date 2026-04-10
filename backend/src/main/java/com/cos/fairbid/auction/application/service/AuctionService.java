@@ -1,5 +1,18 @@
 package com.cos.fairbid.auction.application.service;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.in.CreateAuctionUseCase;
 import com.cos.fairbid.auction.application.port.in.GetAuctionDetailUseCase;
 import com.cos.fairbid.auction.application.port.in.GetAuctionListUseCase;
@@ -13,17 +26,6 @@ import com.cos.fairbid.auction.domain.event.AuctionCreatedEvent;
 import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
 import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
 import com.cos.fairbid.winning.domain.Winning;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 경매 유스케이스 구현체
@@ -35,7 +37,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class AuctionService implements CreateAuctionUseCase, GetAuctionDetailUseCase, GetAuctionListUseCase, GetUserWinningInfoUseCase {
+public class AuctionService
+        implements CreateAuctionUseCase, GetAuctionDetailUseCase,
+        GetAuctionListUseCase, GetUserWinningInfoUseCase {
 
     private final AuctionRepositoryPort auctionRepository;
     private final AuctionCachePort auctionCachePort;

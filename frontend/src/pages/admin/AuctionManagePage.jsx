@@ -70,7 +70,7 @@ export default function AuctionManagePage() {
 
   // 노쇼 강제 처리
   const handleForceNoShow = async (auctionId) => {
-    if (!confirm(`경매 #${auctionId}의 1순위 낙찰자를 노쇼 처리하시겠습니까?`)) return;
+    if (!window.confirm(`경매 #${auctionId}의 1순위 낙찰자를 노쇼 처리하시겠습니까?`)) return;
 
     setNoShowLoading(auctionId);
     setNoShowResult(null);
@@ -112,9 +112,7 @@ export default function AuctionManagePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">경매 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            총 {totalElements.toLocaleString()}건의 경매
-          </p>
+          <p className="text-sm text-gray-500 mt-1">총 {totalElements.toLocaleString()}건의 경매</p>
         </div>
       </div>
 
@@ -167,10 +165,14 @@ export default function AuctionManagePage() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="font-semibold mb-3 text-gray-900">
-                경매 #{noShowResult.auctionId} {noShowResult.type === 'status' ? '상태 조회' : '노쇼 처리'} 결과
+                경매 #{noShowResult.auctionId}{' '}
+                {noShowResult.type === 'status' ? '상태 조회' : '노쇼 처리'} 결과
               </p>
               {noShowResult.success ? (
-                <WinningStatusDisplay data={noShowResult.data} isNoShow={noShowResult.type !== 'status'} />
+                <WinningStatusDisplay
+                  data={noShowResult.data}
+                  isNoShow={noShowResult.type !== 'status'}
+                />
               ) : (
                 <p>{noShowResult.error}</p>
               )}
@@ -188,24 +190,35 @@ export default function AuctionManagePage() {
 
       {/* 모바일: 카드 리스트 */}
       <div className="sm:hidden space-y-3">
-        {loading ? (
-          <div className="py-12 text-center"><LoadingSpinner /></div>
-        ) : auctions.length === 0 ? (
+        {loading && (
+          <div className="py-12 text-center">
+            <LoadingSpinner />
+          </div>
+        )}
+        {!loading && auctions.length === 0 && (
           <div className="py-12 text-center text-gray-400 text-sm">경매가 없습니다</div>
-        ) : (
+        )}
+        {!loading && auctions.length > 0 && (
           auctions.map((auction) => (
-            <div key={auction.id} className="bg-white rounded-xl p-4 ring-1 ring-gray-100 shadow-sm">
+            <div
+              key={auction.id}
+              className="bg-white rounded-xl p-4 ring-1 ring-gray-100 shadow-sm"
+            >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">{auction.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">#{auction.id} · {auction.sellerNickname}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    #{auction.id} · {auction.sellerNickname}
+                  </p>
                 </div>
                 <StatusBadge status={auction.status} />
               </div>
               <div className="flex items-center justify-between text-sm">
                 <div>
                   <span className="text-gray-500">현재가</span>
-                  <span className="font-semibold text-gray-900 ml-1">{auction.currentPrice.toLocaleString()}원</span>
+                  <span className="font-semibold text-gray-900 ml-1">
+                    {auction.currentPrice.toLocaleString()}원
+                  </span>
                 </div>
                 <div className="text-xs text-gray-500">
                   입찰 {auction.totalBidCount} · 연장 {auction.extensionCount || 0}
@@ -271,25 +284,25 @@ export default function AuctionManagePage() {
                 <th className="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-20">
                   상태
                 </th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-20">
-
-                </th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-20" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {loading ? (
+              {loading && (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center">
                     <LoadingSpinner />
                   </td>
                 </tr>
-              ) : auctions.length === 0 ? (
+              )}
+              {!loading && auctions.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center text-gray-400 text-sm">
                     경매가 없습니다
                   </td>
                 </tr>
-              ) : (
+              )}
+              {!loading && auctions.length > 0 && (
                 auctions.map((auction) => (
                   <tr key={auction.id} className="hover:bg-gray-50">
                     <td className="px-3 py-3 text-sm text-gray-500">{auction.id}</td>
@@ -401,7 +414,7 @@ function WinningStatusDisplay({ data, isNoShow }) {
     CANCELLED: '취소',
   };
 
-  const formatPrice = (price) => price?.toLocaleString() + '원';
+  const formatPrice = (price) => `${price?.toLocaleString()  }원`;
 
   return (
     <div className="space-y-4">
@@ -433,16 +446,21 @@ function WinningStatusDisplay({ data, isNoShow }) {
             </div>
             <div>
               <span className="text-gray-500">상태:</span>{' '}
-              <span className={`font-medium ${data.firstWinning.status === 'NO_SHOW' ? 'text-red-600' : ''}`}>
+              <span
+                className={`font-medium ${data.firstWinning.status === 'NO_SHOW' ? 'text-red-600' : ''}`}
+              >
                 {statusLabels[data.firstWinning.status] || data.firstWinning.status}
               </span>
             </div>
-            {data.firstWinning.responseDeadline && data.firstWinning.responseDeadline !== 'null' && (
-              <div>
-                <span className="text-gray-500">기한:</span>{' '}
-                <span className="font-medium text-xs">{data.firstWinning.responseDeadline.replace('T', ' ').slice(0, 16)}</span>
-              </div>
-            )}
+            {data.firstWinning.responseDeadline &&
+              data.firstWinning.responseDeadline !== 'null' && (
+                <div>
+                  <span className="text-gray-500">기한:</span>{' '}
+                  <span className="font-medium text-xs">
+                    {data.firstWinning.responseDeadline.replace('T', ' ').slice(0, 16)}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
       )}
@@ -462,12 +480,16 @@ function WinningStatusDisplay({ data, isNoShow }) {
             </div>
             <div>
               <span className="text-gray-500">상태:</span>{' '}
-              <span className="font-medium">{statusLabels[data.secondWinning.status] || data.secondWinning.status}</span>
+              <span className="font-medium">
+                {statusLabels[data.secondWinning.status] || data.secondWinning.status}
+              </span>
             </div>
             {data.secondWinning.isEligibleForTransfer !== undefined && (
               <div>
                 <span className="text-gray-500">승계 가능:</span>{' '}
-                <span className={`font-medium ${data.secondWinning.isEligibleForTransfer ? 'text-green-600' : 'text-red-600'}`}>
+                <span
+                  className={`font-medium ${data.secondWinning.isEligibleForTransfer ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {data.secondWinning.isEligibleForTransfer ? '예 (90% 이상)' : '아니오'}
                 </span>
               </div>
@@ -491,13 +513,21 @@ function WinningStatusDisplay({ data, isNoShow }) {
             </div>
             <div>
               <span className="text-gray-500">상태:</span>{' '}
-              <span className={`font-medium ${data.trade.status === 'CANCELLED' ? 'text-red-600' : ''}`}>
+              <span
+                className={`font-medium ${data.trade.status === 'CANCELLED' ? 'text-red-600' : ''}`}
+              >
                 {tradeStatusLabels[data.trade.status] || data.trade.status}
               </span>
             </div>
             <div>
               <span className="text-gray-500">방식:</span>{' '}
-              <span className="font-medium">{data.trade.method === 'DIRECT' ? '직거래' : data.trade.method === 'DELIVERY' ? '택배' : data.trade.method || '미정'}</span>
+              <span className="font-medium">
+                {(() => {
+                  if (data.trade.method === 'DIRECT') return '직거래';
+                  if (data.trade.method === 'DELIVERY') return '택배';
+                  return data.trade.method || '미정';
+                })()}
+              </span>
             </div>
           </div>
         </div>
@@ -507,7 +537,9 @@ function WinningStatusDisplay({ data, isNoShow }) {
       {isNoShow && data.afterTradeBuyerId && (
         <div className="bg-green-50 rounded-lg p-3 border border-green-200">
           <p className="text-xs font-semibold text-green-600 mb-1">거래 구매자 변경됨</p>
-          <p className="text-sm">새 구매자: <span className="font-medium">#{data.afterTradeBuyerId}</span></p>
+          <p className="text-sm">
+            새 구매자: <span className="font-medium">#{data.afterTradeBuyerId}</span>
+          </p>
         </div>
       )}
     </div>

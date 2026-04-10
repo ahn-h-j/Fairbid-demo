@@ -1,10 +1,11 @@
 package com.cos.fairbid.bid.domain;
 
-import com.cos.fairbid.auction.domain.Auction;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.auction.domain.Auction;
 
 /**
  * 입찰 도메인 모델

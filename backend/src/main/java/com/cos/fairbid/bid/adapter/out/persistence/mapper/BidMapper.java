@@ -1,8 +1,9 @@
 package com.cos.fairbid.bid.adapter.out.persistence.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.cos.fairbid.bid.adapter.out.persistence.entity.BidEntity;
 import com.cos.fairbid.bid.domain.Bid;
-import org.springframework.stereotype.Component;
 
 /**
  * 입찰 Entity ↔ Domain 변환 Mapper

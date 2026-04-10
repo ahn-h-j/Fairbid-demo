@@ -1,12 +1,13 @@
 package com.cos.fairbid.auction.adapter.in.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import lombok.Builder;
+
 import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.auction.domain.Category;
-import lombok.Builder;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 경매 응답 DTO
@@ -82,7 +83,9 @@ public record AuctionResponse(
      * @param userBidRank       현재 사용자의 입찰 순위 (진행 중 경매에서 1, 2, 또는 null)
      * @return 경매 응답 DTO
      */
-    public static AuctionResponse from(Auction auction, Integer userWinningRank, String userWinningStatus, Integer userBidRank) {
+    public static AuctionResponse from(
+            Auction auction, Integer userWinningRank,
+            String userWinningStatus, Integer userBidRank) {
         return AuctionResponse.builder()
                 // 기본 정보
                 .id(auction.getId())

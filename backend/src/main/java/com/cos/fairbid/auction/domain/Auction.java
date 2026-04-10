@@ -1,5 +1,11 @@
 package com.cos.fairbid.auction.domain;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import lombok.Builder;
+import lombok.Getter;
+
 import com.cos.fairbid.auction.domain.exception.InvalidAuctionException;
 import com.cos.fairbid.auction.domain.policy.AuctionExtensionPolicy;
 import com.cos.fairbid.auction.domain.policy.BidIncrementPolicy;
@@ -7,11 +13,6 @@ import com.cos.fairbid.bid.domain.exception.AuctionEndedException;
 import com.cos.fairbid.bid.domain.exception.BidTooLowException;
 import com.cos.fairbid.bid.domain.exception.InvalidBidException;
 import com.cos.fairbid.bid.domain.exception.SelfBidNotAllowedException;
-import lombok.Builder;
-import lombok.Getter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 경매 도메인 모델
@@ -354,7 +355,9 @@ public class Auction {
         if (this.status != AuctionStatus.BIDDING
                 && this.status != AuctionStatus.INSTANT_BUY_PENDING
                 && this.status != AuctionStatus.ENDED) {
-            throw new IllegalStateException("BIDDING, INSTANT_BUY_PENDING 또는 ENDED 상태에서만 유찰 처리 가능합니다. 현재 상태: " + this.status);
+            throw new IllegalStateException(
+                    "BIDDING, INSTANT_BUY_PENDING 또는 ENDED 상태에서만 유찰 처리 가능합니다. 현재 상태: "
+                            + this.status);
         }
         this.status = AuctionStatus.FAILED;
         this.actualEndTime = LocalDateTime.now();

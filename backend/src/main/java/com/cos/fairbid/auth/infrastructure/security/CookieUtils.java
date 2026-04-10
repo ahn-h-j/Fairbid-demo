@@ -1,8 +1,9 @@
 package com.cos.fairbid.auth.infrastructure.security;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Refresh Token 쿠키 관리 컴포넌트

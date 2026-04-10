@@ -1,16 +1,18 @@
 package com.cos.fairbid.trade.adapter.out.persistence;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.trade.adapter.out.persistence.mapper.TradeMapper;
 import com.cos.fairbid.trade.adapter.out.persistence.repository.TradeJpaRepository;
 import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
 import com.cos.fairbid.trade.domain.Trade;
 import com.cos.fairbid.trade.domain.TradeStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 거래 영속성 어댑터

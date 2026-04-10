@@ -1,10 +1,30 @@
 package com.cos.fairbid.user.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.auction.domain.AuctionStatus;
 import com.cos.fairbid.auth.infrastructure.security.CookieUtils;
 import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
 import com.cos.fairbid.common.annotation.RequireOnboarding;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.pagination.CursorPage;
 import com.cos.fairbid.common.response.ApiResponse;
 import com.cos.fairbid.user.adapter.in.dto.CursorPageResponse;
 import com.cos.fairbid.user.adapter.in.dto.MyAuctionResponse;
@@ -16,7 +36,6 @@ import com.cos.fairbid.user.adapter.in.dto.UpdateBankAccountRequest;
 import com.cos.fairbid.user.adapter.in.dto.UpdateNicknameRequest;
 import com.cos.fairbid.user.adapter.in.dto.UpdateShippingAddressRequest;
 import com.cos.fairbid.user.adapter.in.dto.UserProfileResponse;
-import com.cos.fairbid.common.pagination.CursorPage;
 import com.cos.fairbid.user.application.port.in.CheckNicknameUseCase;
 import com.cos.fairbid.user.application.port.in.CompleteOnboardingUseCase;
 import com.cos.fairbid.user.application.port.in.CompleteOnboardingUseCase.OnboardingResult;
@@ -32,23 +51,6 @@ import com.cos.fairbid.user.application.port.in.UpdateNicknameUseCase;
 import com.cos.fairbid.user.application.port.in.UpdateNicknameUseCase.UpdateResult;
 import com.cos.fairbid.user.application.port.in.UpdateShippingAddressUseCase;
 import com.cos.fairbid.user.domain.User;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 사용자 REST Controller

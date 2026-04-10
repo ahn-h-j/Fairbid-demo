@@ -1,9 +1,10 @@
 package com.cos.fairbid.trade.adapter.out.persistence.repository;
 
-import com.cos.fairbid.trade.adapter.out.persistence.entity.DeliveryInfoEntity;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.cos.fairbid.trade.adapter.out.persistence.entity.DeliveryInfoEntity;
 
 /**
  * 택배 배송 정보 JPA Repository

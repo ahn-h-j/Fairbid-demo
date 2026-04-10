@@ -1,7 +1,8 @@
 package com.cos.fairbid.auction.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 경매 도메인 검증 예외

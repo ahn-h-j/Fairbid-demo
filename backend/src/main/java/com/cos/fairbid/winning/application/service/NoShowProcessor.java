@@ -1,5 +1,12 @@
 package com.cos.fairbid.winning.application.service;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.auction.domain.Auction;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
@@ -10,11 +17,6 @@ import com.cos.fairbid.user.application.port.out.LoadUserPort;
 import com.cos.fairbid.user.application.port.out.SaveUserPort;
 import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
 import com.cos.fairbid.winning.domain.Winning;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 /**
  * 노쇼 처리 서비스

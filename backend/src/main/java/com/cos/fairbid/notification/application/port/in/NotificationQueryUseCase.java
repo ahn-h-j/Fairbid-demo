@@ -1,8 +1,8 @@
 package com.cos.fairbid.notification.application.port.in;
 
-import com.cos.fairbid.notification.domain.InAppNotification;
-
 import java.util.List;
+
+import com.cos.fairbid.notification.domain.InAppNotification;
 
 /**
  * 알림 조회 UseCase

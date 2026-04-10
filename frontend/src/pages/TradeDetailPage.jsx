@@ -12,7 +12,7 @@ import {
   verifyPayment,
   rejectPayment,
   shipDelivery,
-  confirmDelivery
+  confirmDelivery,
 } from '../api/useTrade';
 import { apiRequest } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -74,9 +74,17 @@ export default function TradeDetailPage() {
     <div className="max-w-2xl mx-auto animate-fade-in">
       {/* 페이지 헤더 */}
       <div className="mb-6">
-        <Link to="/trades" className="text-[13px] text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-2">
+        <Link
+          to="/trades"
+          className="text-[13px] text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-2"
+        >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           거래 목록
         </Link>
@@ -84,8 +92,12 @@ export default function TradeDetailPage() {
       </div>
 
       {/* 알림 */}
-      {error && <Alert type="error" message={error} onClose={() => setError(null)} className="mb-4" />}
-      {success && <Alert type="success" message={success} onClose={() => setSuccess(null)} className="mb-4" />}
+      {error && (
+        <Alert type="error" message={error} onClose={() => setError(null)} className="mb-4" />
+      )}
+      {success && (
+        <Alert type="success" message={success} onClose={() => setSuccess(null)} className="mb-4" />
+      )}
 
       {/* 거래 정보 카드 */}
       <div className="bg-white rounded-2xl p-5 ring-1 ring-black/[0.04] mb-4">
@@ -108,11 +120,7 @@ export default function TradeDetailPage() {
 
       {/* 상태별 액션 UI */}
       {trade.status === 'AWAITING_METHOD_SELECTION' && isBuyer && (
-        <MethodSelectionUI
-          tradeId={tradeId}
-          onAction={handleAction}
-          submitting={submitting}
-        />
+        <MethodSelectionUI tradeId={tradeId} onAction={handleAction} submitting={submitting} />
       )}
 
       {trade.status === 'AWAITING_METHOD_SELECTION' && isSeller && (
@@ -179,7 +187,9 @@ function TradeStatusBadge({ status }) {
   };
   const config = statusConfig[status] || { text: status, color: 'bg-gray-100 text-gray-500' };
   return (
-    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold ${config.color}`}>
+    <span
+      className={`inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold ${config.color}`}
+    >
       {config.text}
     </span>
   );
@@ -278,7 +288,9 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
     } else {
       return (
         <div className="bg-yellow-50 rounded-2xl p-5 ring-1 ring-yellow-200/50">
-          <p className="text-[14px] text-yellow-800">판매자가 만남 시간을 제안할 때까지 기다려주세요.</p>
+          <p className="text-[14px] text-yellow-800">
+            판매자가 만남 시간을 제안할 때까지 기다려주세요.
+          </p>
         </div>
       );
     }
@@ -286,7 +298,11 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
 
   // 제안이 있음 - isSeller로 내 제안인지 판단
   const isMyProposal = isSeller === (directInfo.proposedBy === trade.sellerId);
-  const statusText = directInfo.status === 'PROPOSED' ? '제안됨' : directInfo.status === 'COUNTER_PROPOSED' ? '역제안됨' : '수락됨';
+  const statusText = (() => {
+    if (directInfo.status === 'PROPOSED') return '제안됨';
+    if (directInfo.status === 'COUNTER_PROPOSED') return '역제안됨';
+    return '수락됨';
+  })();
 
   return (
     <div className="bg-white rounded-2xl p-5 ring-1 ring-black/[0.04] space-y-4">
@@ -295,7 +311,9 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
         <p className="text-[13px] text-gray-600">📍 {directInfo.location}</p>
         <p className="text-[13px] text-gray-600">📅 {directInfo.meetingDate}</p>
         <p className="text-[13px] text-gray-600">🕐 {directInfo.meetingTime}</p>
-        <p className="text-[12px] text-gray-400">{isMyProposal ? '내가 제안함' : '상대방이 제안함'} · {statusText}</p>
+        <p className="text-[12px] text-gray-400">
+          {isMyProposal ? '내가 제안함' : '상대방이 제안함'} · {statusText}
+        </p>
       </div>
 
       {directInfo.status !== 'ACCEPTED' && !isMyProposal && (
@@ -358,7 +376,9 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
                     onClick={() => {
                       if (counterDate && counterTime) {
                         setShowCounterModal(false);
-                        onAction(() => counterProposeDirectTrade(trade.id, counterDate, counterTime));
+                        onAction(() =>
+                          counterProposeDirectTrade(trade.id, counterDate, counterTime),
+                        );
                       }
                     }}
                     disabled={!counterDate || !counterTime}
@@ -382,7 +402,7 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
 
 // 택배 UI
 function DeliveryUI({ trade, isSeller, onAction, submitting }) {
-  const deliveryInfo = trade.deliveryInfo;
+  const {deliveryInfo} = trade;
   const [savedAddress, setSavedAddress] = useState(null);
   const [useSavedAddress, setUseSavedAddress] = useState(false);
   const [addressForm, setAddressForm] = useState({
@@ -410,7 +430,7 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
   useEffect(() => {
     if (!isSeller && deliveryInfo?.status === 'AWAITING_ADDRESS') {
       apiRequest('/users/me')
-        .then(data => {
+        .then((data) => {
           if (data.shippingAddress) {
             setSavedAddress(data.shippingAddress);
           }
@@ -423,7 +443,7 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
   useEffect(() => {
     if (isSeller && deliveryInfo?.status === 'AWAITING_PAYMENT') {
       apiRequest('/users/me')
-        .then(data => {
+        .then((data) => {
           if (data.bankAccount) {
             setSavedBankAccount(data.bankAccount);
           }
@@ -508,8 +528,13 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
               </div>
               {useSavedAddress && (
                 <div className="bg-blue-50 rounded-xl p-3 text-[13px] text-blue-700">
-                  <p className="font-semibold">{savedAddress.recipientName} ({formatPhone(savedAddress.recipientPhone)})</p>
-                  <p className="mt-0.5">{savedAddress.postalCode && `[${savedAddress.postalCode}] `}{savedAddress.address}</p>
+                  <p className="font-semibold">
+                    {savedAddress.recipientName} ({formatPhone(savedAddress.recipientPhone)})
+                  </p>
+                  <p className="mt-0.5">
+                    {savedAddress.postalCode && `[${savedAddress.postalCode}] `}
+                    {savedAddress.address}
+                  </p>
                   {savedAddress.addressDetail && <p>{savedAddress.addressDetail}</p>}
                 </div>
               )}
@@ -523,35 +548,46 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
                 type="text"
                 placeholder="수령인 이름"
                 value={addressForm.recipientName}
-                onChange={(e) => setAddressForm(prev => ({ ...prev, recipientName: e.target.value }))}
+                onChange={(e) =>
+                  setAddressForm((prev) => ({ ...prev, recipientName: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="tel"
                 placeholder="연락처 (010-0000-0000)"
                 value={addressForm.recipientPhone}
-                onChange={(e) => setAddressForm(prev => ({ ...prev, recipientPhone: formatPhoneInput(e.target.value) }))}
+                onChange={(e) =>
+                  setAddressForm((prev) => ({
+                    ...prev,
+                    recipientPhone: formatPhoneInput(e.target.value),
+                  }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="text"
                 placeholder="우편번호"
                 value={addressForm.postalCode}
-                onChange={(e) => setAddressForm(prev => ({ ...prev, postalCode: e.target.value }))}
+                onChange={(e) =>
+                  setAddressForm((prev) => ({ ...prev, postalCode: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="text"
                 placeholder="주소"
                 value={addressForm.address}
-                onChange={(e) => setAddressForm(prev => ({ ...prev, address: e.target.value }))}
+                onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))}
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="text"
                 placeholder="상세주소 (선택)"
                 value={addressForm.addressDetail}
-                onChange={(e) => setAddressForm(prev => ({ ...prev, addressDetail: e.target.value }))}
+                onChange={(e) =>
+                  setAddressForm((prev) => ({ ...prev, addressDetail: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
             </div>
@@ -559,7 +595,12 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
 
           <button
             onClick={() => onAction(() => submitAddress(trade.id, addressForm))}
-            disabled={submitting || !addressForm.recipientName || !addressForm.recipientPhone || !addressForm.address}
+            disabled={
+              submitting ||
+              !addressForm.recipientName ||
+              !addressForm.recipientPhone ||
+              !addressForm.address
+            }
             className="w-full py-3 bg-blue-600 text-white text-[14px] font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? '등록 중...' : '배송지 등록'}
@@ -600,23 +641,29 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
             </div>
           ) : (
             <div className="bg-yellow-50 rounded-xl p-4">
-              <p className="text-[13px] text-yellow-700">판매자가 아직 계좌를 등록하지 않았습니다. 잠시 후 다시 확인해주세요.</p>
+              <p className="text-[13px] text-yellow-700">
+                판매자가 아직 계좌를 등록하지 않았습니다. 잠시 후 다시 확인해주세요.
+              </p>
             </div>
           )}
 
-          {deliveryInfo.paymentConfirmed ? (
-            deliveryInfo.paymentVerified ? (
-              <div className="bg-green-50 rounded-xl p-4 text-center">
-                <p className="text-[14px] font-semibold text-green-700">입금 확인 완료</p>
-                <p className="text-[12px] text-green-600 mt-1">판매자가 입금을 확인했습니다. 곧 발송될 예정입니다.</p>
-              </div>
-            ) : (
-              <div className="bg-yellow-50 rounded-xl p-4 text-center">
-                <p className="text-[14px] font-semibold text-yellow-700">입금 완료 처리됨</p>
-                <p className="text-[12px] text-yellow-600 mt-1">판매자의 입금 확인을 기다리는 중...</p>
-              </div>
-            )
-          ) : (
+          {deliveryInfo.paymentConfirmed && deliveryInfo.paymentVerified && (
+            <div className="bg-green-50 rounded-xl p-4 text-center">
+              <p className="text-[14px] font-semibold text-green-700">입금 확인 완료</p>
+              <p className="text-[12px] text-green-600 mt-1">
+                판매자가 입금을 확인했습니다. 곧 발송될 예정입니다.
+              </p>
+            </div>
+          )}
+          {deliveryInfo.paymentConfirmed && !deliveryInfo.paymentVerified && (
+            <div className="bg-yellow-50 rounded-xl p-4 text-center">
+              <p className="text-[14px] font-semibold text-yellow-700">입금 완료 처리됨</p>
+              <p className="text-[12px] text-yellow-600 mt-1">
+                판매자의 입금 확인을 기다리는 중...
+              </p>
+            </div>
+          )}
+          {!deliveryInfo.paymentConfirmed && (
             <button
               onClick={() => onAction(() => confirmPayment(trade.id))}
               disabled={submitting || !bankAccount}
@@ -651,28 +698,39 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
                 type="text"
                 placeholder="은행명 (예: 카카오뱅크)"
                 value={bankAccountForm.bankName}
-                onChange={(e) => setBankAccountForm(prev => ({ ...prev, bankName: e.target.value }))}
+                onChange={(e) =>
+                  setBankAccountForm((prev) => ({ ...prev, bankName: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="text"
                 placeholder="계좌번호"
                 value={bankAccountForm.accountNumber}
-                onChange={(e) => setBankAccountForm(prev => ({ ...prev, accountNumber: e.target.value }))}
+                onChange={(e) =>
+                  setBankAccountForm((prev) => ({ ...prev, accountNumber: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
               <input
                 type="text"
                 placeholder="예금주"
                 value={bankAccountForm.accountHolder}
-                onChange={(e) => setBankAccountForm(prev => ({ ...prev, accountHolder: e.target.value }))}
+                onChange={(e) =>
+                  setBankAccountForm((prev) => ({ ...prev, accountHolder: e.target.value }))
+                }
                 className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
             </div>
 
             <button
               onClick={() => onAction(handleSubmitBankAccount)}
-              disabled={submitting || !bankAccountForm.bankName || !bankAccountForm.accountNumber || !bankAccountForm.accountHolder}
+              disabled={
+                submitting ||
+                !bankAccountForm.bankName ||
+                !bankAccountForm.accountNumber ||
+                !bankAccountForm.accountHolder
+              }
               className="w-full py-3 bg-blue-600 text-white text-[14px] font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? '등록 중...' : '계좌 등록'}
@@ -686,16 +744,20 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
         <div className="bg-white rounded-2xl p-5 ring-1 ring-black/[0.04] space-y-4">
           <h3 className="text-[14px] font-bold text-gray-900">배송 정보</h3>
           <div className="bg-gray-50 rounded-xl p-4 space-y-1">
-            <p className="text-[13px] text-gray-600">📍 {deliveryInfo.address} {deliveryInfo.addressDetail}</p>
+            <p className="text-[13px] text-gray-600">
+              📍 {deliveryInfo.address} {deliveryInfo.addressDetail}
+            </p>
             <p className="text-[13px] text-gray-600">👤 {deliveryInfo.recipientName}</p>
             <p className="text-[13px] text-gray-600">📞 {deliveryInfo.recipientPhone}</p>
           </div>
 
-          {deliveryInfo.paymentConfirmed && deliveryInfo.paymentVerified ? (
-            /* 입금 확인 완료 → 송장 입력 가능 */
+          {/* 입금 확인 완료 → 송장 입력 가능 */}
+          {deliveryInfo.paymentConfirmed && deliveryInfo.paymentVerified && (
             <>
               <div className="bg-green-50 rounded-xl p-3">
-                <p className="text-[13px] font-semibold text-green-700">입금이 확인되었습니다. 송장을 입력해주세요.</p>
+                <p className="text-[13px] font-semibold text-green-700">
+                  입금이 확인되었습니다. 송장을 입력해주세요.
+                </p>
               </div>
               <h4 className="text-[13px] font-semibold text-gray-700 pt-2">송장 정보 입력</h4>
               <div className="space-y-3">
@@ -703,31 +765,42 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
                   type="text"
                   placeholder="택배사"
                   value={shippingForm.courierCompany}
-                  onChange={(e) => setShippingForm(prev => ({ ...prev, courierCompany: e.target.value }))}
+                  onChange={(e) =>
+                    setShippingForm((prev) => ({ ...prev, courierCompany: e.target.value }))
+                  }
                   className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 />
                 <input
                   type="text"
                   placeholder="송장번호"
                   value={shippingForm.trackingNumber}
-                  onChange={(e) => setShippingForm(prev => ({ ...prev, trackingNumber: e.target.value }))}
+                  onChange={(e) =>
+                    setShippingForm((prev) => ({ ...prev, trackingNumber: e.target.value }))
+                  }
                   className="w-full px-4 py-3 bg-gray-50 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 />
               </div>
               <button
                 onClick={() => onAction(() => shipDelivery(trade.id, shippingForm))}
-                disabled={submitting || !shippingForm.courierCompany || !shippingForm.trackingNumber}
+                disabled={
+                  submitting || !shippingForm.courierCompany || !shippingForm.trackingNumber
+                }
                 className="w-full py-3 bg-blue-600 text-white text-[14px] font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {submitting ? '등록 중...' : '발송 완료'}
               </button>
             </>
-          ) : deliveryInfo.paymentConfirmed && !deliveryInfo.paymentVerified ? (
-            /* 구매자가 입금 완료 알림 → 판매자가 확인/거절 선택 */
+          )}
+          {/* 구매자가 입금 완료 알림 → 판매자가 확인/거절 선택 */}
+          {deliveryInfo.paymentConfirmed && !deliveryInfo.paymentVerified && (
             <>
               <div className="bg-blue-50 rounded-xl p-4">
-                <p className="text-[14px] font-semibold text-blue-800">구매자가 입금을 완료했다고 합니다.</p>
-                <p className="text-[13px] text-blue-600 mt-1">계좌를 확인하고 입금 여부를 확인해주세요.</p>
+                <p className="text-[14px] font-semibold text-blue-800">
+                  구매자가 입금을 완료했다고 합니다.
+                </p>
+                <p className="text-[13px] text-blue-600 mt-1">
+                  계좌를 확인하고 입금 여부를 확인해주세요.
+                </p>
               </div>
               <div className="flex gap-3">
                 <button
@@ -746,11 +819,14 @@ function DeliveryUI({ trade, isSeller, onAction, submitting }) {
                 </button>
               </div>
             </>
-          ) : (
-            /* 아직 구매자가 입금 완료를 누르지 않음 */
+          )}
+          {/* 아직 구매자가 입금 완료를 누르지 않음 */}
+          {!deliveryInfo.paymentConfirmed && (
             <div className="bg-yellow-50 rounded-xl p-4">
               <p className="text-[14px] text-yellow-800">구매자의 입금을 기다리는 중입니다.</p>
-              <p className="text-[13px] text-yellow-600 mt-1">입금이 확인되면 알림을 보내드립니다.</p>
+              <p className="text-[13px] text-yellow-600 mt-1">
+                입금이 확인되면 알림을 보내드립니다.
+              </p>
             </div>
           )}
         </div>
@@ -810,8 +886,13 @@ function ArrangedUI({ trade, isSeller, onAction, submitting }) {
           </div>
           <div className="bg-gray-50 rounded-xl p-4 space-y-1">
             <p className="text-[13px] font-semibold text-gray-700">배송지</p>
-            <p className="text-[13px] text-gray-600">👤 {trade.deliveryInfo.recipientName} ({formatPhone(trade.deliveryInfo.recipientPhone)})</p>
-            <p className="text-[13px] text-gray-600">📍 {trade.deliveryInfo.address} {trade.deliveryInfo.addressDetail}</p>
+            <p className="text-[13px] text-gray-600">
+              👤 {trade.deliveryInfo.recipientName} (
+              {formatPhone(trade.deliveryInfo.recipientPhone)})
+            </p>
+            <p className="text-[13px] text-gray-600">
+              📍 {trade.deliveryInfo.address} {trade.deliveryInfo.addressDetail}
+            </p>
           </div>
         </div>
       )}

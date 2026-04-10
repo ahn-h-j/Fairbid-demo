@@ -1,13 +1,14 @@
 package com.cos.fairbid.user.application.port.out;
 
-import com.cos.fairbid.user.domain.OAuthProvider;
-import com.cos.fairbid.user.domain.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.cos.fairbid.user.domain.OAuthProvider;
+import com.cos.fairbid.user.domain.User;
 
 /**
  * 사용자 조회 아웃바운드 포트

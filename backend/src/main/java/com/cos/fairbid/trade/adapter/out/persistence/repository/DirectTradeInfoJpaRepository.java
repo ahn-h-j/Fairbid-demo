@@ -1,9 +1,10 @@
 package com.cos.fairbid.trade.adapter.out.persistence.repository;
 
-import com.cos.fairbid.trade.adapter.out.persistence.entity.DirectTradeInfoEntity;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.cos.fairbid.trade.adapter.out.persistence.entity.DirectTradeInfoEntity;
 
 /**
  * 직거래 정보 JPA Repository

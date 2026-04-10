@@ -1,18 +1,20 @@
 package com.cos.fairbid.winning.adapter.in.scheduler;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import java.util.List;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.notification.application.port.out.PushNotificationPort;
 import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
 import com.cos.fairbid.trade.domain.Trade;
 import com.cos.fairbid.winning.application.port.in.ProcessNoShowUseCase;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * 응답 만료 감시 스케줄러

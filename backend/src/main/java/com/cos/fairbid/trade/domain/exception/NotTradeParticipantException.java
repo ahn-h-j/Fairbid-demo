@@ -1,7 +1,8 @@
 package com.cos.fairbid.trade.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 거래 참여자가 아닌 사용자가 접근할 때 발생하는 예외

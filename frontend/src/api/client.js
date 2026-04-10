@@ -61,10 +61,10 @@ export function decodeJwtPayload(token) {
     let base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
     const jsonStr = decodeURIComponent(
-      atob(base64)
+      globalThis.atob(base64)
         .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
+        .join(''),
     );
     return JSON.parse(jsonStr);
   } catch {
@@ -111,7 +111,7 @@ async function refreshAccessToken() {
         throw new ApiError(
           data.error?.code || 'REFRESH_FAILED',
           data.error?.message || '토큰 갱신에 실패했습니다.',
-          401
+          401,
         );
       }
 
@@ -198,7 +198,7 @@ export async function apiRequest(endpoint, options = {}) {
     throw new ApiError(
       data.error?.code || 'UNKNOWN',
       data.error?.message || '알 수 없는 오류가 발생했습니다.',
-      response.status
+      response.status,
     );
   }
 

@@ -1,10 +1,11 @@
 package com.cos.fairbid.trade.domain;
 
-import com.cos.fairbid.winning.domain.Winning;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import com.cos.fairbid.winning.domain.Winning;
 
 /**
  * 거래 도메인 모델
@@ -135,7 +136,10 @@ public class Trade {
      */
     public void complete() {
         if (this.status != TradeStatus.ARRANGED) {
-            throw new IllegalStateException("거래 완료 처리가 불가능한 상태입니다. 조율이 완료된 상태(ARRANGED)에서만 완료 가능합니다. 현재 상태: " + this.status);
+            throw new IllegalStateException(
+                    "거래 완료 처리가 불가능한 상태입니다. "
+                            + "조율이 완료된 상태(ARRANGED)에서만 완료 가능합니다. 현재 상태: "
+                            + this.status);
         }
         this.status = TradeStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();

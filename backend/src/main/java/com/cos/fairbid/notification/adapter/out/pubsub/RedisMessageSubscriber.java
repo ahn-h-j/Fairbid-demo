@@ -1,15 +1,20 @@
 package com.cos.fairbid.notification.adapter.out.pubsub;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.notification.dto.AuctionClosedMessage;
-import com.cos.fairbid.notification.dto.BidUpdateMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.notification.dto.AuctionClosedMessage;
+import com.cos.fairbid.notification.dto.BidUpdateMessage;
 
 /**
  * Redis Pub/Sub 메시지 수신자
@@ -40,8 +45,8 @@ public class RedisMessageSubscriber implements MessageListener {
      */
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String channel = new String(message.getChannel());
-        String body = new String(message.getBody());
+        String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
+        String body = new String(message.getBody(), StandardCharsets.UTF_8);
 
         try {
             if (RedisPubSubBroadcastAdapter.CHANNEL_BID_UPDATE.equals(channel)) {

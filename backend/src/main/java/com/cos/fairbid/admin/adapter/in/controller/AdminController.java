@@ -1,21 +1,8 @@
 package com.cos.fairbid.admin.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
-import com.cos.fairbid.admin.application.dto.AdminUserResult;
-import com.cos.fairbid.admin.application.dto.DailyAuctionStatsResult;
-import com.cos.fairbid.admin.application.dto.StatsOverviewResult;
-import com.cos.fairbid.admin.application.dto.TimePatternResult;
-import com.cos.fairbid.admin.application.port.in.GetStatsUseCase;
-import com.cos.fairbid.admin.application.port.in.ManageAuctionUseCase;
-import com.cos.fairbid.admin.application.port.in.ManageUserUseCase;
-import com.cos.fairbid.auction.domain.AuctionStatus;
-import com.cos.fairbid.common.response.ApiResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-
 import java.util.Set;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -25,6 +12,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.admin.application.dto.AdminAuctionResult;
+import com.cos.fairbid.admin.application.dto.AdminUserResult;
+import com.cos.fairbid.admin.application.dto.DailyAuctionStatsResult;
+import com.cos.fairbid.admin.application.dto.StatsOverviewResult;
+import com.cos.fairbid.admin.application.dto.TimePatternResult;
+import com.cos.fairbid.admin.application.port.in.GetStatsUseCase;
+import com.cos.fairbid.admin.application.port.in.ManageAuctionUseCase;
+import com.cos.fairbid.admin.application.port.in.ManageUserUseCase;
+import com.cos.fairbid.auction.domain.AuctionStatus;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
 
 /**
  * 관리자 컨트롤러

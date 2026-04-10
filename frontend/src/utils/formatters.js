@@ -7,7 +7,7 @@ import { CATEGORIES } from './constants';
  */
 export function formatPrice(price) {
   if (price == null) return '-';
-  return new Intl.NumberFormat('ko-KR').format(price) + '원';
+  return `${new Intl.NumberFormat('ko-KR').format(price)  }원`;
 }
 
 /**
@@ -108,4 +108,3 @@ export function formatPhone(phone) {
   }
   return phone;
 }
-

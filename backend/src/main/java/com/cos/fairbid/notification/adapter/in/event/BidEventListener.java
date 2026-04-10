@@ -1,13 +1,15 @@
 package com.cos.fairbid.notification.adapter.in.event;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.bid.domain.event.BidPlacedEvent;
 import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 import com.cos.fairbid.notification.application.port.out.AuctionBroadcastPort;
 import com.cos.fairbid.notification.dto.BidUpdateMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
 /**
  * 입찰 이벤트 리스너

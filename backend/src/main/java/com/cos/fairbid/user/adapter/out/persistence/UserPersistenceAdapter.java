@@ -1,19 +1,21 @@
 package com.cos.fairbid.user.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+
 import com.cos.fairbid.user.adapter.out.persistence.mapper.UserMapper;
 import com.cos.fairbid.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.cos.fairbid.user.application.port.out.LoadUserPort;
 import com.cos.fairbid.user.application.port.out.SaveUserPort;
 import com.cos.fairbid.user.domain.OAuthProvider;
 import com.cos.fairbid.user.domain.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * User 영속성 어댑터

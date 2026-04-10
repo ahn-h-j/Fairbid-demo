@@ -39,8 +39,8 @@ out/
 ### Environment ###
 .env
 
-# Claude Code local settings
-.claude/
+# Claude Code — 개인 설정만 제외, 하네스(스킬/에이전트/훅)는 추적
+.claude/settings.local.json
 
 ### k6 Load Test ###
 k6/results/

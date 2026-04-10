@@ -1,17 +1,9 @@
 package com.cos.fairbid.common.test;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
-import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
-import com.cos.fairbid.auction.domain.Auction;
-import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
-import com.cos.fairbid.common.response.ApiResponse;
-import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
-import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
-import com.cos.fairbid.winning.application.port.in.ProcessNoShowUseCase;
-import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auction.application.port.out.AuctionCachePort;
+import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
+import com.cos.fairbid.auction.domain.Auction;
+import com.cos.fairbid.auction.domain.exception.AuctionNotFoundException;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
+import com.cos.fairbid.trade.application.port.out.TradeRepositoryPort;
+import com.cos.fairbid.winning.application.port.in.CloseAuctionUseCase;
+import com.cos.fairbid.winning.application.port.in.ProcessNoShowUseCase;
+import com.cos.fairbid.winning.application.port.out.WinningRepositoryPort;
 
 /**
  * 테스트용 컨트롤러

@@ -1,7 +1,8 @@
 package com.cos.fairbid.user.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 사용자 조회 실패 예외

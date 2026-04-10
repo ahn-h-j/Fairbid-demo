@@ -1,12 +1,9 @@
 package com.cos.fairbid.notification.adapter.in.controller;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
-import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
-import com.cos.fairbid.common.response.ApiResponse;
-import com.cos.fairbid.notification.application.port.in.NotificationQueryUseCase;
-import com.cos.fairbid.notification.domain.InAppNotification;
-import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+
+import com.cos.fairbid.auth.infrastructure.security.SecurityUtils;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import com.cos.fairbid.common.response.ApiResponse;
+import com.cos.fairbid.notification.application.port.in.NotificationQueryUseCase;
+import com.cos.fairbid.notification.domain.InAppNotification;
 
 /**
  * 알림 REST Controller

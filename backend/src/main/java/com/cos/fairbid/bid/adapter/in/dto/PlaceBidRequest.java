@@ -1,12 +1,13 @@
 package com.cos.fairbid.bid.adapter.in.dto;
 
-import com.cos.fairbid.bid.application.port.in.PlaceBidUseCase.PlaceBidCommand;
-import com.cos.fairbid.bid.domain.BidType;
+import java.util.Objects;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 
-import java.util.Objects;
+import com.cos.fairbid.bid.application.port.in.PlaceBidUseCase.PlaceBidCommand;
+import com.cos.fairbid.bid.domain.BidType;
 
 /**
  * 입찰 요청 DTO

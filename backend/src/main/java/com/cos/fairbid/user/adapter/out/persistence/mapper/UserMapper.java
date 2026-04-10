@@ -1,8 +1,9 @@
 package com.cos.fairbid.user.adapter.out.persistence.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.cos.fairbid.user.adapter.out.persistence.entity.UserEntity;
 import com.cos.fairbid.user.domain.User;
-import org.springframework.stereotype.Component;
 
 /**
  * User 도메인 ↔ Entity 변환 매퍼

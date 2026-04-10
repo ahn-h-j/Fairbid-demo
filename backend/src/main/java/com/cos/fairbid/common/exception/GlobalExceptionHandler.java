@@ -1,13 +1,10 @@
 package com.cos.fairbid.common.exception;
 
 
-import com.cos.fairbid.auction.domain.AuctionDuration;
-import com.cos.fairbid.auction.domain.Category;
-import com.cos.fairbid.bid.domain.BidType;
-import com.cos.fairbid.common.response.ApiResponse;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +14,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+
+import com.cos.fairbid.auction.domain.AuctionDuration;
+import com.cos.fairbid.auction.domain.Category;
+import com.cos.fairbid.bid.domain.BidType;
+import com.cos.fairbid.common.response.ApiResponse;
 
 /**
  * 전역 예외 처리 핸들러
@@ -56,9 +59,9 @@ public class GlobalExceptionHandler {
      * 각 예외가 정의한 HttpStatus를 사용
      */
     @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDomainException(DomainException e) {
-        log.warn("{}: {}", e.getClass().getSimpleName(), e.getMessage());
-        return errorResponse(e.getStatus(), e.getErrorCode(), e.getMessage());
+    public ResponseEntity<ApiResponse<Void>> handleDomainException(DomainException ex) {
+        log.warn("{}: {}", ex.getClass().getSimpleName(), ex.getMessage());
+        return errorResponse(ex.getStatus(), ex.getErrorCode(), ex.getMessage());
     }
 
     // =====================================================
@@ -71,9 +74,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException e
+            MethodArgumentNotValidException ex
     ) {
-        String message = e.getBindingResult().getFieldErrors().stream()
+        String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
@@ -87,9 +90,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(
-            ConstraintViolationException e
+            ConstraintViolationException ex
     ) {
-        String message = e.getConstraintViolations().stream()
+        String message = ex.getConstraintViolations().stream()
                 .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .collect(Collectors.joining(", "));
 
@@ -107,12 +110,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException e
+            HttpMessageNotReadableException ex
     ) {
         String message = "요청 본문을 파싱할 수 없습니다.";
 
         // enum 변환 실패 시 타입 기반으로 유효한 값 안내
-        Throwable cause = e.getCause();
+        Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException invalidFormat) {
             Class<?> targetType = invalidFormat.getTargetType();
             if (targetType != null && targetType.isEnum()) {
@@ -124,7 +127,7 @@ public class GlobalExceptionHandler {
             }
         }
 
-        log.warn("HttpMessageNotReadableException: {}", e.getMessage());
+        log.warn("HttpMessageNotReadableException: {}", ex.getMessage());
         return errorResponse(HttpStatus.BAD_REQUEST, "INVALID_REQUEST_BODY", message);
     }
 
@@ -134,13 +137,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException e
+            MethodArgumentTypeMismatchException ex
     ) {
-        String paramName = e.getName();
+        String paramName = ex.getName();
         String message = "'" + paramName + "' 파라미터 값이 유효하지 않습니다.";
 
         // enum 타입인 경우 유효한 값 안내
-        Class<?> requiredType = e.getRequiredType();
+        Class<?> requiredType = ex.getRequiredType();
         if (requiredType != null && requiredType.isEnum()) {
             @SuppressWarnings("unchecked")
             Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) requiredType;
@@ -148,7 +151,8 @@ public class GlobalExceptionHandler {
             message = "'" + paramName + "' 파라미터 값이 유효하지 않습니다. 허용 값: " + validValues;
         }
 
-        log.warn("MethodArgumentTypeMismatchException: param={}, value={}", paramName, sanitizeLogValue(e.getValue()));
+        log.warn("MethodArgumentTypeMismatchException: param={}, value={}",
+                paramName, sanitizeLogValue(ex.getValue()));
         return errorResponse(HttpStatus.BAD_REQUEST, "INVALID_PARAMETER", message);
     }
 
@@ -167,11 +171,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolationException(
-            DataIntegrityViolationException e) {
+            DataIntegrityViolationException ex) {
         String message = "데이터 무결성 위반이 발생했습니다.";
 
         // 1. Hibernate ConstraintViolationException에서 constraintName 추출 시도
-        Throwable cause = e.getCause();
+        Throwable cause = ex.getCause();
         if (cause instanceof org.hibernate.exception.ConstraintViolationException hibernateEx) {
             String constraintName = hibernateEx.getConstraintName();
             if (constraintName != null) {
@@ -182,7 +186,7 @@ public class GlobalExceptionHandler {
         }
 
         // 2. Fallback: 예외 메시지에서 중복 필드 추출 시도
-        String exceptionMessage = e.getMostSpecificCause().getMessage();
+        String exceptionMessage = ex.getMostSpecificCause().getMessage();
         if (exceptionMessage != null) {
             if (exceptionMessage.contains("nickname")) {
                 message = "이미 사용 중인 닉네임입니다.";
@@ -229,9 +233,9 @@ public class GlobalExceptionHandler {
      * HTTP 400 Bad Request
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.warn("IllegalArgumentException: {}", e.getMessage());
-        return errorResponse(HttpStatus.BAD_REQUEST, "INVALID_ARGUMENT", e.getMessage());
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.warn("IllegalArgumentException: {}", ex.getMessage());
+        return errorResponse(HttpStatus.BAD_REQUEST, "INVALID_ARGUMENT", ex.getMessage());
     }
 
     /**
@@ -239,8 +243,8 @@ public class GlobalExceptionHandler {
      * HTTP 500 Internal Server Error
      */
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
-        log.error("IllegalStateException: {}", e.getMessage());
+    public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException ex) {
+        log.error("IllegalStateException: {}", ex.getMessage());
         return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다.");
     }
 
@@ -249,8 +253,8 @@ public class GlobalExceptionHandler {
      * HTTP 500 Internal Server Error
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-        log.error("Unexpected error occurred", e);
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
+        log.error("Unexpected error occurred", ex);
         return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다.");
     }
 

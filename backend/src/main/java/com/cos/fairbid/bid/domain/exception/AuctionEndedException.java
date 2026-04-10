@@ -1,7 +1,8 @@
 package com.cos.fairbid.bid.domain.exception;
 
-import com.cos.fairbid.common.exception.DomainException;
 import org.springframework.http.HttpStatus;
+
+import com.cos.fairbid.common.exception.DomainException;
 
 /**
  * 경매가 이미 종료되었을 때 발생하는 예외

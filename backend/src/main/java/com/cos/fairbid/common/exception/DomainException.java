@@ -1,7 +1,8 @@
 package com.cos.fairbid.common.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
 
 /**
  * 도메인 예외 베이스 클래스

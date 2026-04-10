@@ -1,9 +1,9 @@
 package com.cos.fairbid.winning.domain;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 /**
  * 낙찰 도메인 모델

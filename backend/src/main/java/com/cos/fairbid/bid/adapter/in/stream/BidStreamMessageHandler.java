@@ -1,17 +1,19 @@
 package com.cos.fairbid.bid.adapter.in.stream;
 
-import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.cos.fairbid.auction.application.port.out.AuctionRepositoryPort;
 import com.cos.fairbid.bid.application.port.out.BidRepositoryPort;
 import com.cos.fairbid.bid.domain.Bid;
 import com.cos.fairbid.bid.domain.BidType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Map;
+import com.cos.fairbid.common.config.serverrole.EnabledOnRole;
 
 /**
  * Redis Stream 메시지 처리 핸들러 (별도 빈)
