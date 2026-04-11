@@ -100,6 +100,18 @@ app:
   admin:
     emails: ${ADMIN_EMAILS:}  # 콤마 구분 이메일 목록 (예: admin@test.com,admin2@test.com)
 
+# 네이버 검색 API (시세 데이터 수집)
+# - v2 Phase 1: Anthropic web_search 를 우리 검색 파이프라인으로 대체
+# - NAVER_CLIENT_ID/SECRET 는 OAuth2 로그인과 동일한 환경변수 재사용
+#   (네이버 Developers Console 에서 같은 앱에 "검색" API 권한 활성화 필요)
+naver:
+  search:
+    client-id: ${NAVER_CLIENT_ID:}
+    client-secret: ${NAVER_CLIENT_SECRET:}
+    base-url: https://openapi.naver.com
+    connect-timeout-ms: 3000
+    read-timeout-ms: 5000
+
 # AI 경매 어시스턴트 (Anthropic Claude)
 # - api-key 미설정 시 /api/v1/ai/auction-assist 호출 시 503 으로 떨어진다
 # - v1 은 캐싱 없이 매 요청마다 Claude API 를 그대로 호출한다
@@ -115,5 +127,16 @@ ai:
     connect-timeout-ms: 5000
     read-timeout-ms: 60000
     max-tokens: 2000
-    web-search-enabled: ${ANTHROPIC_WEB_SEARCH_ENABLED:true}
-    web-search-max-uses: ${ANTHROPIC_WEB_SEARCH_MAX_USES:2}
+    web-search-enabled: ${ANTHROPIC_WEB_SEARCH_ENABLED:false}
+    web-search-max-uses: ${ANTHROPIC_WEB_SEARCH_MAX_USES:1}
+
+# Discord Webhook — AI 어시스턴트 가드레일 주간 리포트 전송
+# - webhook-url 미설정 시 리포트 전송 비활성화 (no-op)
+# - cron: 기본 매주 월요일 09:00 KST. 환경변수로 오버라이드 가능.
+# - 보안: webhook-url 은 절대 저장소에 하드코딩하지 말 것. 환경변수 DISCORD_AI_ASSIST_SOFT_WEBHOOK_URL 로 주입.
+discord:
+  ai-assist-soft:
+    webhook-url: ${DISCORD_AI_ASSIST_SOFT_WEBHOOK_URL:}
+    cron: ${DISCORD_AI_ASSIST_SOFT_CRON:0 0 9 * * MON}
+    connect-timeout-ms: 3000
+    read-timeout-ms: 5000

@@ -1,5 +1,8 @@
 package com.cos.fairbid.ai.adapter.out.claude;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -42,4 +45,10 @@ public class AnthropicProperties {
 
     /** 한 호출당 web_search 최대 사용 횟수 (비용 가드) */
     private int webSearchMaxUses = 2;
+
+    /**
+     * web_search 화이트리스트 도메인. 비어있으면 무제한(전체 웹).
+     * 도메인을 좁히면 검색 결과 페이지의 토큰량을 줄이고 시세 신뢰도가 높은 출처만 사용한다.
+     */
+    private List<String> webSearchAllowedDomains = Collections.emptyList();
 }

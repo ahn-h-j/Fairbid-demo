@@ -1,5 +1,7 @@
 package com.cos.fairbid.ai.adapter.out.claude;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -17,12 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageRequest;
 import com.cos.fairbid.ai.adapter.out.claude.dto.ClaudeMessageResponse;
 import com.cos.fairbid.ai.application.dto.AiAssistCommand;
+import com.cos.fairbid.ai.application.dto.PriceItem;
+import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
 import com.cos.fairbid.ai.domain.AiAssistResult;
 import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
 import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
 import com.cos.fairbid.ai.domain.exception.InvalidImageException;
+import com.cos.fairbid.ai.domain.guardrail.GuardrailViolation;
 
 /**
  * Anthropic Claude Messages API 어댑터 (AiClientPort 구현).
@@ -60,15 +65,57 @@ public class ClaudeApiAdapter implements AiClientPort {
         this.objectMapper = objectMapper;
     }
 
+    // ── 2단계 호출 ──
+
     @Override
-    public AiAssistResult generate(AiAssistCommand command) {
-        ClaudeMessageRequest request = promptBuilder.build(command);
-        ClaudeMessageResponse response = callApi(request);
+    public ProductAnalysis analyzeProduct(AiAssistCommand command) {
+        long startNanos = System.nanoTime();
+        ClaudeMessageRequest request = promptBuilder.buildPhase1(command);
+        ClaudeMessageResponse response = null;
+        String outcome = "error";
+        Throwable thrown = null;
+        try {
+            response = callApi(request);
+            String rawText = extractText(response);
+            ProductAnalysis analysis = parsePhase1Result(rawText);
+            outcome = "success";
+            return analysis;
+        } catch (RuntimeException e) {
+            thrown = e;
+            throw e;
+        } finally {
+            long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000L;
+            recordCallMetric(response, elapsedMs, outcome, thrown);
+        }
+    }
 
-        logUsage(response);
-
-        String rawText = extractText(response);
-        return parseResult(rawText);
+    @Override
+    public AiAssistResult generatePricing(
+            AiAssistCommand command,
+            ProductAnalysis analysis,
+            List<PriceItem> priceItems,
+            List<GuardrailViolation> retryViolations
+    ) {
+        long startNanos = System.nanoTime();
+        ClaudeMessageRequest request = promptBuilder.buildPhase2(
+                command, analysis.productName(), analysis.grade(),
+                analysis.gradeReason(), priceItems, retryViolations);
+        ClaudeMessageResponse response = null;
+        String outcome = "error";
+        Throwable thrown = null;
+        try {
+            response = callApi(request);
+            String rawText = extractText(response);
+            AiAssistResult result = parseResult(rawText);
+            outcome = "success";
+            return result;
+        } catch (RuntimeException e) {
+            thrown = e;
+            throw e;
+        } finally {
+            long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000L;
+            recordCallMetric(response, elapsedMs, outcome, thrown);
+        }
     }
 
     /**
@@ -204,7 +251,19 @@ public class ClaudeApiAdapter implements AiClientPort {
                 parsed.suggestedPrices().mid(),
                 parsed.suggestedPrices().high()
         );
-        return new AiAssistResult(prices, parsed.generatedDescription());
+
+        // confidence 처리 — null/빈 값이면 기본 "high"
+        String confidence = parsed.confidence();
+        if (confidence == null || confidence.isBlank()) {
+            confidence = "high";
+        }
+        String confidenceReason = "low".equalsIgnoreCase(confidence) ? parsed.confidenceReason() : null;
+
+        if ("low".equalsIgnoreCase(confidence)) {
+            log.info("Claude 낮은 신뢰도 응답 - reason={}", confidenceReason);
+        }
+
+        return new AiAssistResult(prices, parsed.generatedDescription(), confidence, confidenceReason);
     }
 
     /**
@@ -227,25 +286,127 @@ public class ClaudeApiAdapter implements AiClientPort {
         return withoutOpener.substring(0, closingFence);
     }
 
-    private void logUsage(ClaudeMessageResponse response) {
-        ClaudeMessageResponse.Usage usage = response.usage();
-        if (usage == null) {
-            return;
+    /**
+     * 호출당 메트릭을 한 줄짜리 구조화 로그로 남긴다.
+     *
+     * 형식 (key=value, 공백 구분):
+     *   AI_METRIC outcome=... latency_ms=... model=... input_tokens=... output_tokens=...
+     *             cache_creation=... cache_read=... web_search_requests=... error_type=...
+     *
+     * - 누락 필드는 "-" 로 표기한다 (회귀 러너가 grep + split 으로 파싱).
+     * - 응답 자체를 받지 못한 실패(네트워크/5xx)도 latency 와 outcome 은 항상 기록된다.
+     * - JSON 응답의 status (success / need_more_info / mismatch / image_unreadable) 는
+     *   parseResult 에서 별도로 로그하므로 여기서는 outcome(success/error) 만 본다.
+     */
+    private void recordCallMetric(
+            ClaudeMessageResponse response,
+            long elapsedMs,
+            String outcome,
+            Throwable thrown
+    ) {
+        Integer inputTokens = null;
+        Integer outputTokens = null;
+        Integer cacheCreation = null;
+        Integer cacheRead = null;
+        Integer webSearchRequests = null;
+        String model = null;
+
+        if (response != null) {
+            model = response.model();
+            ClaudeMessageResponse.Usage usage = response.usage();
+            if (usage != null) {
+                inputTokens = usage.inputTokens();
+                outputTokens = usage.outputTokens();
+                cacheCreation = usage.cacheCreationInputTokens();
+                cacheRead = usage.cacheReadInputTokens();
+                if (usage.serverToolUse() != null) {
+                    webSearchRequests = usage.serverToolUse().webSearchRequests();
+                }
+            }
         }
-        log.info("Claude 토큰 사용량 - input={}, output={}",
-                usage.inputTokens(),
-                usage.outputTokens());
+
+        String errorType = thrown == null ? "-" : thrown.getClass().getSimpleName();
+
+        log.info(
+                "AI_METRIC outcome={} latency_ms={} model={} input_tokens={} output_tokens={} "
+                        + "cache_creation={} cache_read={} web_search_requests={} error_type={}",
+                outcome,
+                elapsedMs,
+                nullToDash(model),
+                nullToDash(inputTokens),
+                nullToDash(outputTokens),
+                nullToDash(cacheCreation),
+                nullToDash(cacheRead),
+                nullToDash(webSearchRequests),
+                errorType
+        );
+    }
+
+    private static String nullToDash(Object value) {
+        return value == null ? "-" : value.toString();
     }
 
     /**
-     * Claude JSON 출력 파싱용 내부 record.
-     *
-     * status 가 "success" 면 suggestedPrices + generatedDescription 를 사용한다.
-     * status 가 그 외(need_more_info, mismatch, image_unreadable 등) 면 userMessage 를 사용자에게 노출한다.
+     * 1차 호출(상품 분석) 응답을 파싱한다.
      */
+    private ProductAnalysis parsePhase1Result(String rawText) {
+        String json = stripCodeFence(rawText).trim();
+        ParsedPhase1 parsed;
+        try {
+            parsed = objectMapper.readValue(json, ParsedPhase1.class);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            log.warn("Phase1 응답 JSON 파싱 실패 - raw: {}", json);
+            throw AiGenerationFailedException.withCause(e);
+        }
+
+        if (parsed == null || parsed.status() == null || parsed.status().isBlank()) {
+            log.warn("Phase1 응답에 status 필드 없음 - raw: {}", json);
+            throw AiGenerationFailedException.of();
+        }
+
+        // 실패 분기
+        if (!"success".equalsIgnoreCase(parsed.status())) {
+            String userMessage = parsed.userMessage();
+            if (userMessage == null || userMessage.isBlank()) {
+                log.warn("Phase1 실패 응답에 userMessage 누락 - status={}", parsed.status());
+                throw AiGenerationFailedException.of();
+            }
+            throw AiGenerationFailedException.fromAi(userMessage);
+        }
+
+        if (parsed.productName() == null || parsed.grade() == null || parsed.searchKeyword() == null) {
+            log.warn("Phase1 성공 응답 필수 필드 누락 - raw: {}", json);
+            throw AiGenerationFailedException.of();
+        }
+
+        return new ProductAnalysis(
+                parsed.productName(),
+                parsed.grade(),
+                parsed.gradeReason() != null ? parsed.gradeReason() : "",
+                parsed.searchKeyword()
+        );
+    }
+
+    // ── 내부 파싱 DTO ──
+
+    /** 1차 호출 응답 파싱용 */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record ParsedPhase1(
+            String status,
+            String productName,
+            String grade,
+            String gradeReason,
+            String searchKeyword,
+            String userMessage
+    ) {
+    }
+
+    /** 2차 호출 응답 파싱용 — success / 실패 */
     @JsonIgnoreProperties(ignoreUnknown = true)
     private record ParsedPayload(
             String status,
+            String confidence,
+            String confidenceReason,
             ParsedPrices suggestedPrices,
             String generatedDescription,
             String userMessage

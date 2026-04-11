@@ -20,10 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record ClaudeMessageRequest(
         String model,
         @JsonProperty("max_tokens") int maxTokens,
-        String system,
+        Object system,
         List<Message> messages,
         List<Tool> tools
 ) {
+
+    /**
+     * System prompt 블록 (Prompt Caching 지원).
+     *
+     * - system 필드에 String 대신 {@code List<SystemBlock>} 을 넣으면 블록별로
+     *   cache_control 을 부여할 수 있다.
+     * - Anthropic API 는 system 이 String 이든 Array 이든 둘 다 수용한다.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record SystemBlock(
+            String type,
+            String text,
+            @JsonProperty("cache_control") CacheControl cacheControl
+    ) {
+        /** cache_control: ephemeral — 5분 TTL 캐시 */
+        public static SystemBlock cached(String text) {
+            return new SystemBlock("text", text, new CacheControl("ephemeral"));
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record CacheControl(String type) {
+    }
 
     public record Message(
             String role,
@@ -44,10 +67,20 @@ public record ClaudeMessageRequest(
     public record Tool(
             String type,
             String name,
-            @JsonProperty("max_uses") Integer maxUses
+            @JsonProperty("max_uses") Integer maxUses,
+            @JsonProperty("allowed_domains") List<String> allowedDomains
     ) {
         public static Tool webSearch(int maxUses) {
-            return new Tool("web_search_20250305", "web_search", maxUses);
+            return new Tool("web_search_20250305", "web_search", maxUses, null);
+        }
+
+        /**
+         * web_search 도구를 도메인 화이트리스트와 함께 생성한다.
+         * 시세 신뢰도가 높은 도메인만 검색하게 해 검색 결과 페이지 토큰을 줄이고 노이즈를 거른다.
+         */
+        public static Tool webSearch(int maxUses, List<String> allowedDomains) {
+            return new Tool("web_search_20250305", "web_search", maxUses,
+                    allowedDomains == null || allowedDomains.isEmpty() ? null : allowedDomains);
         }
     }
 
