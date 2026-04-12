@@ -112,6 +112,10 @@ dependencies {
 
     // Firebase Admin SDK (FCM)
     implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+    // ShedLock — 분산 스케줄러 락 (스케일아웃 시 주간 리포트 중복 전송 방지)
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.16.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0'
 }
 
 tasks.named('test') {

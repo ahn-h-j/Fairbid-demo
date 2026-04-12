@@ -383,7 +383,8 @@ public class ClaudeApiAdapter implements AiClientPort {
                 parsed.productName(),
                 parsed.grade(),
                 parsed.gradeReason() != null ? parsed.gradeReason() : "",
-                parsed.searchKeyword()
+                parsed.searchKeyword(),
+                parsed.productKey() != null ? parsed.productKey() : ""
         );
     }
 
@@ -397,6 +398,7 @@ public class ClaudeApiAdapter implements AiClientPort {
             String grade,
             String gradeReason,
             String searchKeyword,
+            String productKey,
             String userMessage
     ) {
     }

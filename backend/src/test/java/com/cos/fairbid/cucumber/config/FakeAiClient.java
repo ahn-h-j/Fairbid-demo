@@ -45,7 +45,7 @@ public class FakeAiClient implements AiClientPort {
     @Override
     public ProductAnalysis analyzeProduct(AiAssistCommand command) {
         checkFailure();
-        return new ProductAnalysis("테스트 상품", "B", "테스트용 등급", "테스트 상품");
+        return new ProductAnalysis("테스트 상품", "B", "테스트용 등급", "테스트 상품", "test_product");
     }
 
     @Override

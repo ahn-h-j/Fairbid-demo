@@ -34,3 +34,30 @@ export async function placeBid(auctionId, bidData) {
     body: JSON.stringify(bidData),
   });
 }
+
+/**
+ * AI 경매 어시스턴트 호출
+ *
+ * 이미지와 (선택적인) 카테고리/구조화 메모를 보내면 시작가 추천(low/mid/high),
+ * 상품 설명(Markdown), 그리고 confidence(high/low) 를 받는다.
+ *
+ * confidence 가 'low' 일 때는 AI 가 검색 결과 부족으로 학습 지식 기반 추정을 한 경우이며,
+ * confidenceReason 에 불확실한 이유가 담겨 있다 (프론트에서 "참고용 추정치" 배지 노출).
+ *
+ * @param {object} payload
+ * @param {string} [payload.category] - 카테고리 코드 (선택, 미지정 시 AI 가 추론)
+ * @param {string} [payload.memo] - 구조화 힌트를 자연어로 조립한 문자열 (선택)
+ * @param {string[]} payload.imageUrls - 이미지 URL 배열 (1~5장, 필수)
+ * @returns {Promise<{
+ *   suggestedPrices: {low: number, mid: number, high: number},
+ *   generatedDescription: string,
+ *   confidence: 'high' | 'low',
+ *   confidenceReason: string | null
+ * }>}
+ */
+export async function requestAiAuctionAssist(payload) {
+  return apiRequest('/ai/auction-assist', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

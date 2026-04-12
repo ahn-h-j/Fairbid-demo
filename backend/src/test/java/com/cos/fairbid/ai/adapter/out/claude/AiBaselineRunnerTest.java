@@ -125,9 +125,25 @@ class AiBaselineRunnerTest {
         GuardrailFailurePort failurePort = (violations, category, keyword, aiMidPrice, searchMedian, attemptCount) ->
                 System.out.println("[ai-baseline]   guardrail failure recorded: " + violations.size() + " violations");
 
-        // AiAssistService 조립 (입력 가드레일 + 2단계 호출 + 출력 가드레일)
+        // 시세 캐시 포트 — 러너에서는 항상 MISS (Redis 없음)
+        com.cos.fairbid.ai.application.port.out.PriceCachePort priceCachePort =
+                new com.cos.fairbid.ai.application.port.out.PriceCachePort() {
+                    @Override
+                    public java.util.Optional<com.cos.fairbid.ai.domain.AiAssistResult> find(
+                            String category, String productKey, String grade) {
+                        return java.util.Optional.empty();
+                    }
+
+                    @Override
+                    public void save(String category, String productKey, String grade,
+                                     com.cos.fairbid.ai.domain.AiAssistResult result) {
+                        // no-op
+                    }
+                };
+
+        // AiAssistService 조립 (입력 가드레일 + 2단계 호출 + 출력 가드레일 + 캐시)
         AiAssistService service = new AiAssistService(
-                adapter, naverAdapter, inputChain, outputChain, failurePort);
+                adapter, naverAdapter, priceCachePort, inputChain, outputChain, failurePort);
 
         // 2. AI_METRIC 로그를 직접 캡처할 수 있게 ClaudeApiAdapter 로거에 ListAppender 부착
         Logger adapterLogger = (Logger) LoggerFactory.getLogger(ClaudeApiAdapter.class);

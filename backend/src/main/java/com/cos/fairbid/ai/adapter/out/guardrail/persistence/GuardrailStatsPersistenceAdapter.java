@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,13 @@ import com.cos.fairbid.ai.domain.guardrail.GuardrailWeeklyReport;
 /**
  * 가드레일 실패 통계 조회 Persistence Adapter.
  * GuardrailFailureRepository 의 집계 쿼리를 사용해 주간 리포트를 조립한다.
+ *
+ * readOnly 트랜잭션 — 네 개의 집계 쿼리를 하나의 연결로 실행.
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class GuardrailStatsPersistenceAdapter implements GuardrailStatsPort {
 
     /** 상위 몇 개 규칙에 대해 샘플 메시지를 수집할지 */
