@@ -600,8 +600,8 @@ function EndedAuctionSection({ auction, user }) {
   const hasFinalPrice = !!auction.finalPrice;
 
   // API에서 반환하는 userWinningRank, userWinningStatus 사용
-  const {userWinningRank} = auction;
-  const {userWinningStatus} = auction;
+  const { userWinningRank } = auction;
+  const { userWinningStatus } = auction;
 
   // 1순위 노쇼된 경우
   if (userWinningRank === 1 && userWinningStatus === 'NO_SHOW') {

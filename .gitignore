@@ -41,6 +41,8 @@ out/
 
 # Claude Code — 개인 설정만 제외, 하네스(스킬/에이전트/훅)는 추적
 .claude/settings.local.json
+# schedule 스킬 런타임 lock 파일 (sessionId, pid, 획득시간)
+.claude/scheduled_tasks.lock
 
 ### k6 Load Test ###
 k6/results/

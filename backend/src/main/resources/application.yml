@@ -119,6 +119,9 @@ naver:
 # - web_search: Claude 가 한국 중고 시세를 실시간 조회해 가격 정확도를 높임
 #   호출당 비용이 약 2배(17원 → 40원) 늘지만 학습 데이터 시점 이후 시세 변동 반영 가능
 ai:
+  # AI 제공자 스위치. claude (기본) | openai
+  # 런타임에 하나의 AiClientPort 구현체만 빈으로 등록되도록 ConditionalOnProperty 분기.
+  provider: ${AI_PROVIDER:claude}
   anthropic:
     api-key: ${ANTHROPIC_API_KEY:}
     model: ${ANTHROPIC_MODEL:claude-sonnet-4-5}
@@ -129,6 +132,20 @@ ai:
     max-tokens: 2000
     web-search-enabled: ${ANTHROPIC_WEB_SEARCH_ENABLED:false}
     web-search-max-uses: ${ANTHROPIC_WEB_SEARCH_MAX_USES:1}
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-4.1-mini}
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+    connect-timeout-ms: 5000
+    read-timeout-ms: 60000
+    max-tokens: 2000
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+    connect-timeout-ms: 5000
+    read-timeout-ms: 60000
+    max-tokens: 2000
 
 # Discord Webhook — AI 어시스턴트 가드레일 주간 리포트 전송
 # - webhook-url 미설정 시 리포트 전송 비활성화 (no-op)

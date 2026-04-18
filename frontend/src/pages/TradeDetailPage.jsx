@@ -402,7 +402,7 @@ function DirectTradeUI({ trade, isSeller, onAction, submitting }) {
 
 // 택배 UI
 function DeliveryUI({ trade, isSeller, onAction, submitting }) {
-  const {deliveryInfo} = trade;
+  const { deliveryInfo } = trade;
   const [savedAddress, setSavedAddress] = useState(null);
   const [useSavedAddress, setUseSavedAddress] = useState(false);
   const [addressForm, setAddressForm] = useState({

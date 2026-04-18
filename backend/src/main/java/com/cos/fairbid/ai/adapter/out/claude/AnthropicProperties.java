@@ -3,6 +3,7 @@ package com.cos.fairbid.ai.adapter.out.claude;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,13 @@ import lombok.Setter;
 /**
  * Anthropic Claude API 설정 프로퍼티.
  * application.yml 의 ai.anthropic.* 항목을 바인딩한다.
+ *
+ * ai.provider=claude (미설정 시 기본값) 일 때만 빈 등록.
  */
 @Getter
 @Setter
 @Component
+@ConditionalOnProperty(name = "ai.provider", havingValue = "claude", matchIfMissing = true)
 @ConfigurationProperties(prefix = "ai.anthropic")
 public class AnthropicProperties {
 

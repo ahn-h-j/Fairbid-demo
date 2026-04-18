@@ -61,9 +61,10 @@ export function decodeJwtPayload(token) {
     let base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
     const jsonStr = decodeURIComponent(
-      globalThis.atob(base64)
+      globalThis
+        .atob(base64)
         .split('')
-        .map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
+        .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
         .join(''),
     );
     return JSON.parse(jsonStr);

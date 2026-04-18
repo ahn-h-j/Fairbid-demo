@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -33,6 +34,7 @@ import com.cos.fairbid.ai.domain.guardrail.GuardrailViolation;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ai.provider", havingValue = "claude", matchIfMissing = true)
 public class ClaudePromptBuilder {
 
     private static final String PHASE1_PROMPT_RESOURCE = "prompts/auction-assist-phase1.txt";
@@ -44,7 +46,7 @@ public class ClaudePromptBuilder {
     private String phase2Prompt;
 
     @PostConstruct
-    void loadSystemPrompt() {
+    public void loadSystemPrompt() {
         this.phase1Prompt = loadResource(PHASE1_PROMPT_RESOURCE);
         this.phase2Prompt = loadResource(PHASE2_PROMPT_RESOURCE);
         log.info("Claude prompts loaded - phase1: {} chars, phase2: {} chars",

@@ -145,9 +145,7 @@ export default function Layout() {
               {!isOnboardingRequired && (
                 <div className="flex items-center gap-2 sm:border-l sm:border-gray-200/60 sm:pl-3 sm:ml-2">
                   {/* 로딩 중에는 빈 공간 (깜빡임 방지) */}
-                  {authState === AUTH_STATE.LOADING && (
-                    <div className="w-8 h-8" />
-                  )}
+                  {authState === AUTH_STATE.LOADING && <div className="w-8 h-8" />}
                   {/* 로그인 상태: 알림 (+ PC에서만 닉네임 드롭다운) */}
                   {authState !== AUTH_STATE.LOADING && isLoggedIn && (
                     <>

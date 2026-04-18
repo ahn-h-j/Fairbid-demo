@@ -198,7 +198,8 @@ export default function AuctionManagePage() {
         {!loading && auctions.length === 0 && (
           <div className="py-12 text-center text-gray-400 text-sm">경매가 없습니다</div>
         )}
-        {!loading && auctions.length > 0 && (
+        {!loading &&
+          auctions.length > 0 &&
           auctions.map((auction) => (
             <div
               key={auction.id}
@@ -253,8 +254,7 @@ export default function AuctionManagePage() {
                 )}
               </div>
             </div>
-          ))
-        )}
+          ))}
       </div>
 
       {/* PC: 테이블 */}
@@ -302,7 +302,8 @@ export default function AuctionManagePage() {
                   </td>
                 </tr>
               )}
-              {!loading && auctions.length > 0 && (
+              {!loading &&
+                auctions.length > 0 &&
                 auctions.map((auction) => (
                   <tr key={auction.id} className="hover:bg-gray-50">
                     <td className="px-3 py-3 text-sm text-gray-500">{auction.id}</td>
@@ -361,8 +362,7 @@ export default function AuctionManagePage() {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>
@@ -414,7 +414,7 @@ function WinningStatusDisplay({ data, isNoShow }) {
     CANCELLED: '취소',
   };
 
-  const formatPrice = (price) => `${price?.toLocaleString()  }원`;
+  const formatPrice = (price) => `${price?.toLocaleString()}원`;
 
   return (
     <div className="space-y-4">

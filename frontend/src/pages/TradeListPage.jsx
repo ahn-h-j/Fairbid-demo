@@ -279,7 +279,9 @@ export default function TradeListPage() {
               </Link>
             </div>
           )}
-          {!isLoading && !tradesLoading && items.length > 0 && (
+          {!isLoading &&
+            !tradesLoading &&
+            items.length > 0 &&
             items.map((item) => {
               const auctionId = item.id || item.auctionId;
               const trade = findTradeForAuction(auctionId);
@@ -343,8 +345,7 @@ export default function TradeListPage() {
                   </div>
                 </button>
               );
-            })
-          )}
+            })}
         </div>
 
         {isLoadingMore && (

@@ -38,3 +38,40 @@ frontend/CLAUDE.md에서 금지하지만 ESLint 규칙이 없었음
 - ESLint: hook 경로 버그로 인한 false positive
 ```
 - **상태**: 분석완료 — 와일드카드 import 전량 수정, hook 버그 수정 (2026-04-06)
+
+### 2026-04-12 11:37
+- **도구**: ESLint
+- **위반 상세**:
+```
+
+Oops! Something went wrong! :(
+
+ESLint: 10.2.0
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'eslint-config-prettier' imported from C:\Users\tkgkd\Desktop\Workspace\FairBid-ai-assist\frontend\eslint.config.js
+    at packageResolve (node:internal/modules/esm/resolve:839:9)
+    at moduleResolve (node:internal/modules/esm/resolve:908:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1039:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:554:12)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:523:25)
+    at ModuleLoader.getModuleJob (node:internal/modules/esm/loader:246:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:126:49)
+```
+- **파일**:
+  - `frontend/src/api/mutations.js`
+  - `frontend/src/pages/AuctionCreatePage.jsx`
+- **상태**: 미분석 → `/evolve`로 분석 필요
+
+### 2026-04-18 06:55
+- **단계**: Claude Code hook
+- **도구**: Bash
+- **위반**: sed -i 백업 확장자 누락 (Windows Git Bash에서 파일 손상 위험)
+- **명령어**: sed -i 's/foo/bar/' file.txt
+- **상태**: open
+
+### 2026-04-18 06:55
+- **단계**: Claude Code hook
+- **도구**: Bash
+- **위반**: sed -i 백업 확장자 누락 (Windows Git Bash에서 파일 손상 위험)
+- **명령어**: sed --in-place 's/foo/bar/' file.txt
+- **상태**: open

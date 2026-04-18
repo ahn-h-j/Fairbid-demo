@@ -96,7 +96,8 @@ export default function UserManagePage() {
         {!loading && users.length === 0 && (
           <div className="py-12 text-center text-gray-400 text-sm">유저가 없습니다</div>
         )}
-        {!loading && users.length > 0 && (
+        {!loading &&
+          users.length > 0 &&
           users.map((user) => (
             <div key={user.id} className="bg-white rounded-xl p-4 ring-1 ring-gray-100 shadow-sm">
               <div className="flex items-start justify-between gap-3 mb-2">
@@ -126,8 +127,7 @@ export default function UserManagePage() {
                 <span className="text-gray-400 ml-auto">{formatDate(user.createdAt)}</span>
               </div>
             </div>
-          ))
-        )}
+          ))}
       </div>
 
       {/* PC: 테이블 */}
@@ -177,7 +177,8 @@ export default function UserManagePage() {
                   </td>
                 </tr>
               )}
-              {!loading && users.length > 0 && (
+              {!loading &&
+                users.length > 0 &&
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-500">{user.id}</td>
@@ -214,8 +215,7 @@ export default function UserManagePage() {
                       {formatDate(user.createdAt)}
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>

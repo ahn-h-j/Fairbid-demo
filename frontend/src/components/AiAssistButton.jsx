@@ -18,13 +18,7 @@ import Spinner from './Spinner';
  * @param {(result: {suggestedPrices: {low:number, mid:number, high:number}, generatedDescription: string}) => void} props.onResult
  * @param {boolean} [props.disabled] - 외부 사유로 비활성화 (예: 폼 제출 중)
  */
-export default function AiAssistButton({
-  category,
-  memo,
-  imageUrls,
-  onResult,
-  disabled = false,
-}) {
+export default function AiAssistButton({ category, memo, imageUrls, onResult, disabled = false }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

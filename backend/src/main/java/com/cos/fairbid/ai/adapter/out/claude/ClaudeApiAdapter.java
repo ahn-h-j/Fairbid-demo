@@ -2,6 +2,7 @@ package com.cos.fairbid.ai.adapter.out.claude;
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -38,6 +39,7 @@ import com.cos.fairbid.ai.domain.guardrail.GuardrailViolation;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "ai.provider", havingValue = "claude", matchIfMissing = true)
 public class ClaudeApiAdapter implements AiClientPort {
 
     private static final String MESSAGES_PATH = "/v1/messages";
