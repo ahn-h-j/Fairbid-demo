@@ -39,6 +39,74 @@ frontend/CLAUDE.md에서 금지하지만 ESLint 규칙이 없었음
 ```
 - **상태**: 분석완료 — 와일드카드 import 전량 수정, hook 버그 수정 (2026-04-06)
 
+### 2026-04-08 16:09
+- **도구**: Checkstyle
+- **위반 상세**:
+```
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1048576 bytes for AllocateHeap
+# An error report file with more information is saved as:
+# C:\Users\tkgkd\.gradle\workers\hs_err_pid25636.log
+Could not write standard input to Gradle Worker Daemon 4.
+java.io.IOException: �������� ������ ���Դϴ�
+	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
+	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:349)
+	at java.base/java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:81)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:142)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.writeBuffer(ExecOutputHandleRunner.java:98)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.forwardContent(ExecOutputHandleRunner.java:85)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.run(ExecOutputHandleRunner.java:64)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':checkstyleMain'.
+> A failure occurred while executing org.gradle.api.plugins.quality.internal.CheckstyleAction
+   > Failed to run Gradle Worker Daemon
+      > Process 'Gradle Worker Daemon 4' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 10s
+```
+- **파일**:
+  - `backend/src/main/java/com/cos/fairbid/notification/adapter/out/websocket/WebSocketSessionTracker.java`
+- **상태**: 미분석 → `/evolve`로 분석 필요
+
+### 2026-04-11 12:18
+- **도구**: Checkstyle
+- **위반 상세**:
+```
+[ant:checkstyle] [ERROR] C:\Users\tkgkd\Desktop\Workspace\FairBid-ai-monitoring\backend\src\main\java\com\cos\fairbid\notification\adapter\out\websocket\WebSocketSessionTracker.java:7:1: [import-grouping] Wrong order for 'org.springframework.context.event.EventListener' import. [ImportOrder]
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':checkstyleMain'.
+> A failure occurred while executing org.gradle.api.plugins.quality.internal.CheckstyleAction
+   > Checkstyle rule violations were found. See the report at: file:///C:/Users/tkgkd/Desktop/Workspace/FairBid-ai-monitoring/backend/build/reports/checkstyle/main.html
+     Checkstyle files with violations: 1
+     Checkstyle violations by severity: [error:1]
+
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 12s
+```
+- **파일**:
+  - `backend/src/main/java/com/cos/fairbid/notification/adapter/out/websocket/WebSocketSessionTracker.java`
+- **상태**: 미분석 → `/evolve`로 분석 필요
 ### 2026-04-12 11:37
 - **도구**: ESLint
 - **위반 상세**:

@@ -2,7 +2,8 @@ package com.cos.fairbid.winning.application.service;
 
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import com.cos.fairbid.auction.domain.Auction;
@@ -21,16 +22,45 @@ import com.cos.fairbid.winning.domain.Winning;
  * 경매 종료 시 발생하는 비즈니스 로직을 담당
  *
  * Port 의존성이 있으므로 application 계층에 위치
+ *
+ * Prometheus 메트릭:
+ * - fairbid_auction_closed_total{result=sold} — 낙찰 건수
+ * - fairbid_auction_closed_total{result=unsold} — 유찰 건수
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AuctionClosingProcessor {
 
     private final WinningRepositoryPort winningRepository;
     private final PushNotificationPort pushNotificationPort;
     private final TradeRepositoryPort tradeRepositoryPort;
     private final DeliveryInfoRepositoryPort deliveryInfoRepositoryPort;
+    /** 낙찰 카운터 */
+    private final Counter soldCounter;
+    /** 유찰 카운터 */
+    private final Counter unsoldCounter;
+
+    public AuctionClosingProcessor(
+            WinningRepositoryPort winningRepository,
+            PushNotificationPort pushNotificationPort,
+            TradeRepositoryPort tradeRepositoryPort,
+            DeliveryInfoRepositoryPort deliveryInfoRepositoryPort,
+            MeterRegistry meterRegistry
+    ) {
+        this.winningRepository = winningRepository;
+        this.pushNotificationPort = pushNotificationPort;
+        this.tradeRepositoryPort = tradeRepositoryPort;
+        this.deliveryInfoRepositoryPort = deliveryInfoRepositoryPort;
+
+        this.soldCounter = Counter.builder("fairbid_auction_closed_total")
+                .tag("result", "sold")
+                .description("낙찰 건수")
+                .register(meterRegistry);
+        this.unsoldCounter = Counter.builder("fairbid_auction_closed_total")
+                .tag("result", "unsold")
+                .description("유찰 건수")
+                .register(meterRegistry);
+    }
 
     /**
      * 입찰자가 없는 경우 유찰 처리한다
@@ -48,6 +78,7 @@ public class AuctionClosingProcessor {
                 auction.getTitle()
         );
 
+        unsoldCounter.increment();
         log.info("경매 유찰 처리 완료 - auctionId: {}", auction.getId());
     }
 
@@ -92,6 +123,8 @@ public class AuctionClosingProcessor {
 
         log.debug("Trade 생성 완료 - auctionId: {}, buyerId: {}, method: {}",
                 auction.getId(), bidderId, savedTrade.getMethod());
+
+        soldCounter.increment();
 
         // 5. 1순위 낙찰자에게 Push 알림
         pushNotificationPort.sendWinningNotification(

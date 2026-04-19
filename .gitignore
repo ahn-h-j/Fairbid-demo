@@ -46,3 +46,11 @@ out/
 
 ### k6 Load Test ###
 k6/results/
+
+### AI Monitor ###
+monitoring/ai-monitor/.env
+monitoring/ai-monitor/state.db
+monitoring/ai-monitor/data/
+monitoring/ai-monitor/__pycache__/
+monitoring/ai-monitor/**/__pycache__/
+monitoring/ai-monitor/.pytest_cache/

@@ -1,0 +1,207 @@
+# AI Monitor 설정 파일
+#
+# 메트릭 정의 + 임계치 + 동작 파라미터
+# 코드 변경 없이 임계치 조정 가능
+
+# === 동작 파라미터 ===
+runtime:
+  check_interval_seconds: 30        # 이상 탐지 폴링 주기
+  # severity별 cooldown (분). 같은 알람이 cooldown 동안은 단순 지속 알람으로 강등.
+  cooldown_minutes:
+    critical: 5
+    warning: 30
+    info: 60
+  # 직전 발송값 대비 N% 이상 악화되면 cooldown 무시하고 "악화" 알람 발송
+  escalation_threshold: 0.20
+  # 위반이 사라졌을 때 "해소" 알람을 보낼지 여부
+  send_recovery_notice: true
+  # 야간 브리핑 — 어제 from_time ~ 오늘 to_time 범위 이상을 to_time에 발송
+  # 이상 0건이면 "평온한 밤" 임베드만 발송 (Claude 호출 X)
+  night_report:
+    enabled: true
+    from_time: "19:00"   # 전일 시각 (퇴근)
+    to_time: "09:00"     # 당일 시각 (출근, 발송 시각)
+  # 주간 모니터링 정책 리뷰 (evolver)
+  # 매주 설정된 요일/시각에 지난 N일 이력 집계 → Claude → 조정 제안 Discord 발송
+  evolve:
+    enabled: true
+    day: "monday"        # monday/tuesday/.../sunday
+    time: "09:00"        # 로컬 타임존 (컨테이너 TZ=Asia/Seoul)
+    lookback_days: 7
+  claude_model: "claude-sonnet-4-5-20250929"
+  prometheus_timeout_seconds: 10
+
+# === 글로벌 라벨 (모든 PromQL의 application=fairbid 자동 부착됨) ===
+labels:
+  application: fairbid
+
+# === 메트릭 정의 ===
+# 각 메트릭은 PromQL 쿼리 + 임계치 + comparator + 설명
+#
+# comparator:
+#   gt        : value > threshold
+#   lt        : value < threshold
+#   abs_gt    : abs(value) > threshold
+#
+# severity: warning | critical
+metrics:
+  - key: http_5xx_error_rate
+    label: HTTP 5xx 에러율
+    # 트래픽 0일 때 분모가 0이 되어 NaN이 나오므로 vector(0)로 fallback
+    promql: |
+      (
+        sum(rate(http_server_requests_seconds_count{application="fairbid",status=~"5.."}[5m]))
+        /
+        sum(rate(http_server_requests_seconds_count{application="fairbid"}[5m]))
+      ) or vector(0)
+    threshold: 0.05
+    comparator: gt
+    severity: critical
+    unit: ratio
+
+  - key: http_p95_latency
+    label: HTTP p95 응답시간(s)
+    promql: |
+      histogram_quantile(0.95,
+        sum by (le)(rate(http_server_requests_seconds_bucket{application="fairbid"}[5m]))
+      )
+    threshold: 1.0
+    comparator: gt
+    severity: warning
+    unit: seconds
+
+  - key: bid_fail_rate
+    label: 입찰 실패율
+    promql: |
+      (
+        sum(rate(fairbid_bid_total{application="fairbid",result="fail"}[5m]))
+        /
+        sum(rate(fairbid_bid_total{application="fairbid"}[5m]))
+      ) or vector(0)
+    threshold: 0.10
+    comparator: gt
+    severity: critical
+    unit: ratio
+
+  - key: bid_rdb_sync_p95
+    label: 입찰 RDB 동기화 p95(s)
+    promql: |
+      histogram_quantile(0.95,
+        sum by (le)(rate(fairbid_bid_rdb_sync_seconds_bucket{application="fairbid"}[5m]))
+      ) or vector(0)
+    threshold: 2.0
+    comparator: gt
+    severity: warning
+    unit: seconds
+
+  # 아래 두 메트릭은 BidConsistencyChecker가 노출하며,
+  # 해당 빈은 @Profile("load-test")에서만 활성화된다.
+  # load-test 프로필이 꺼져 있으면 메트릭 부재 → optional 처리.
+  - key: bid_inconsistency
+    label: Redis-RDB 입찰 불일치 건수
+    promql: fairbid_bid_inconsistency_count{application="fairbid"}
+    threshold: 100
+    comparator: abs_gt
+    severity: critical
+    unit: count
+    optional: true
+
+  - key: stream_pending
+    label: Redis Stream PENDING 누적
+    promql: fairbid_stream_pending_count{application="fairbid"}
+    threshold: 1000
+    comparator: gt
+    severity: warning
+    unit: count
+    optional: true
+
+  - key: websocket_active
+    label: WebSocket 활성 연결 수
+    promql: sum(fairbid_websocket_active_connections{application="fairbid"})
+    threshold: 0           # 임계치 무관 (관찰만, 컨텍스트 메트릭으로 사용)
+    comparator: gt
+    severity: info
+    observe_only: true
+    unit: count
+
+  - key: jvm_heap_usage
+    label: JVM Heap 사용률
+    promql: |
+      sum(jvm_memory_used_bytes{application="fairbid",area="heap"})
+      /
+      sum(jvm_memory_max_bytes{application="fairbid",area="heap"})
+    threshold: 0.85
+    comparator: gt
+    severity: warning
+    unit: ratio
+
+  - key: gc_rate
+    label: GC 빈도 (회/초)
+    promql: sum(rate(jvm_gc_pause_seconds_count{application="fairbid"}[5m]))
+    threshold: 5
+    comparator: gt
+    severity: warning
+    unit: per_second
+
+  - key: cpu_usage
+    label: 시스템 CPU 사용률
+    promql: avg(system_cpu_usage{application="fairbid"})
+    threshold: 0.90
+    comparator: gt
+    severity: critical
+    unit: ratio
+
+  - key: hikari_pool_usage
+    label: HikariCP 커넥션 풀 사용률
+    promql: |
+      sum(hikaricp_connections_active{application="fairbid"})
+      /
+      sum(hikaricp_connections_max{application="fairbid"})
+    threshold: 0.85
+    comparator: gt
+    severity: warning
+    unit: ratio
+
+  # === 비즈니스 메트릭 ===
+  - key: auction_unsold_rate
+    label: 경매 유찰률
+    # sold + unsold 합계 대비 unsold 비율. 0/0 = NaN → 0 변환.
+    promql: |
+      (
+        sum(rate(fairbid_auction_closed_total{application="fairbid",result="unsold"}[1h]))
+        /
+        sum(rate(fairbid_auction_closed_total{application="fairbid"}[1h]))
+      ) or vector(0)
+    threshold: 0.50
+    comparator: gt
+    severity: warning
+    unit: ratio
+
+  - key: auction_extension_rate
+    label: 경매 연장 빈도 (회/분)
+    promql: sum(rate(fairbid_auction_extension_total{application="fairbid"}[5m])) * 60
+    threshold: 10
+    comparator: gt
+    severity: info
+    observe_only: true
+    unit: per_second
+
+  # === Redis 서버 메트릭 (redis-exporter 필요) ===
+  - key: redis_memory_usage
+    label: Redis 메모리 사용률
+    promql: redis_memory_used_bytes / redis_memory_max_bytes
+    threshold: 0.80
+    comparator: gt
+    severity: warning
+    unit: ratio
+    optional: true   # exporter 미구성 시 누락 허용
+
+  - key: redis_connected_clients
+    label: Redis 연결 클라이언트 수
+    promql: redis_connected_clients
+    threshold: 0
+    comparator: gt
+    severity: info
+    observe_only: true
+    optional: true
+    unit: count

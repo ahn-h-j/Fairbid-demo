@@ -1,0 +1,8 @@
+requests==2.32.3
+# anthropic 0.39 + httpx>=0.28 호환 문제 (proxies 인자 제거됨)
+# httpx 0.27.x 에 핀 고정
+httpx==0.27.2
+anthropic==0.39.0
+PyYAML==6.0.2
+# discord.py 2.3+ — Bot + asyncio + app_commands (슬래시 명령)
+discord.py>=2.3.2,<3.0

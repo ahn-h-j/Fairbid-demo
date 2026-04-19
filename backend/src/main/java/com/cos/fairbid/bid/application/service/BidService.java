@@ -51,6 +51,8 @@ public class BidService implements PlaceBidUseCase {
     private final Counter bidSuccessCounter;
     /** 입찰 실패 카운터 */
     private final Counter bidFailCounter;
+    /** 경매 연장 카운터 (종료 5분 전 입찰 시 5분 연장) */
+    private final Counter extensionCounter;
 
     public BidService(
             BidCachePort bidCachePort,
@@ -74,6 +76,9 @@ public class BidService implements PlaceBidUseCase {
         this.bidFailCounter = Counter.builder("fairbid_bid_total")
                 .tag("result", "fail")
                 .description("입찰 실패 건수")
+                .register(meterRegistry);
+        this.extensionCounter = Counter.builder("fairbid_auction_extension_total")
+                .description("경매 연장 발생 건수 (종료 5분 전 입찰)")
                 .register(meterRegistry);
     }
 
@@ -129,6 +134,10 @@ public class BidService implements PlaceBidUseCase {
         }
 
         bidSuccessCounter.increment();
+        // 경매 연장 발생 시 카운터 증가 (Lua 스크립트에서 extended=true 반환)
+        if (Boolean.TRUE.equals(result.extended())) {
+            extensionCounter.increment();
+        }
         return bid;
     }
 

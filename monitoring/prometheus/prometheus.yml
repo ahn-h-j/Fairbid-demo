@@ -20,6 +20,14 @@ scrape_configs:
           application: 'fairbid'
           environment: 'local'
 
+  # Redis 서버 메트릭 (redis-exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          application: 'fairbid'
+          environment: 'local'
+
   # Spring Boot 애플리케이션 메트릭 (ALB 경유, 스케일아웃 환경)
   # ALB 라운드로빈으로 각 인스턴스 메트릭을 번갈아 수집
   - job_name: 'fairbid-backend-alb'
