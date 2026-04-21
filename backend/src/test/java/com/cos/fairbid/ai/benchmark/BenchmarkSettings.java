@@ -14,7 +14,7 @@ import java.util.List;
  *   <li>{@code BENCHMARK_RUNS_PER_CASE} — 케이스당 반복 수. 기본 5.</li>
  *   <li>{@code BENCHMARK_CACHE_DISABLED} — {@code true}면 Redis 시세 캐시 우회.</li>
  *   <li>{@code BENCHMARK_DRY_RUN} — {@code true}면 실제 API 호출 없이 mock 응답으로 러너만 검증.</li>
- *   <li>{@code BENCHMARK_OUTPUT_DIR} — (선택) 결과 저장 루트. 미지정 시 {@code build/benchmark/{yyyyMMdd-HHmmss}}.</li>
+ *   <li>{@code BENCHMARK_OUTPUT_DIR} — (선택) 결과 저장 루트. 미지정 시 {@code docs/benchmark-results/runs/{yyyyMMdd-HHmmss}} (gitignored). 본벤치·재검토 등 영속화할 측정은 {@code docs/benchmark-results/raw/{label}} 로 직접 지정한다.</li>
  *   <li>{@code BENCHMARK_CASES_PATH} — (선택) Golden JSONL 클래스패스 경로. 기본 {@code ai/golden/cases.jsonl}.</li>
  *   <li>{@code BENCHMARK_CASES_LIMIT} — (선택) 첫 N 건만 실행. 스모크/디버깅용. 미지정 시 전체.</li>
  * </ul>
@@ -67,7 +67,14 @@ public record BenchmarkSettings(
         } else {
             String stamp = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")
                     .format(LocalDateTime.now());
-            outputDir = Path.of("build", "benchmark", stamp);
+            // gradle 기본 cwd 가 backend/ 이므로 프로젝트 루트로 올라가서 docs/ 를 해석한다.
+            // 이렇게 하지 않으면 결과가 backend/docs/... 아래로 떨어져 raw 아카이브 정책과 충돌한다.
+            Path cwd = Path.of("").toAbsolutePath();
+            Path projectRoot = cwd.getFileName() != null
+                    && "backend".equals(cwd.getFileName().toString())
+                    ? cwd.getParent()
+                    : cwd;
+            outputDir = projectRoot.resolve(Path.of("docs", "benchmark-results", "runs", stamp));
         }
 
         String casesPath = System.getenv("BENCHMARK_CASES_PATH");

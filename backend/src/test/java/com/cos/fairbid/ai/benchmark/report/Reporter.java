@@ -39,7 +39,7 @@ public final class Reporter {
     /**
      * 모델 전체에 대해 report.md + 루트에 comparison.md 작성.
      *
-     * @param benchmarkRoot {@code build/benchmark/{timestamp}/}
+     * @param benchmarkRoot {@code docs/benchmark-results/runs/{timestamp}/} (기본) 또는 {@code BENCHMARK_OUTPUT_DIR} 지정 경로
      * @param models 처리할 모델 리스트 (BENCHMARK_MODELS 순서 유지)
      * @param cases 동일 GoldenDataset — 카테고리/태그 메타 주입용
      */

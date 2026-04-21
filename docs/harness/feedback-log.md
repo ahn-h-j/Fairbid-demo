@@ -43,82 +43,82 @@ frontend/CLAUDE.md에서 금지하지만 ESLint 규칙이 없었음
 - **도구**: ESLint
 - **위반 상세**:
 ```
-[0m
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\api\client.js[24m
-  [2m64:7[22m   [31merror[39m  'atob' is not defined            [2mno-undef[22m
-  [2m66:21[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
-  [2m66:28[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
+[0m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\api\client.js[24m
+  [2m64:7[22m   [31merror[39m  'atob' is not defined            [2mno-undef[22m
+  [2m66:21[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
+  [2m66:28[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\components\Layout.jsx[24m
-  [2m147:20[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\components\Layout.jsx[24m
+  [2m147:20[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\components\Timer.jsx[24m
-  [2m109:8[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\components\Timer.jsx[24m
+  [2m109:8[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionCreatePage.jsx[24m
-  [2m369:13[22m  [33mwarning[39m  A form label must have accessible text  [2mjsx-a11y/label-has-associated-control[22m
-  [2m414:13[22m  [33mwarning[39m  A form label must have accessible text  [2mjsx-a11y/label-has-associated-control[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionCreatePage.jsx[24m
+  [2m369:13[22m  [33mwarning[39m  A form label must have accessible text  [2mjsx-a11y/label-has-associated-control[22m
+  [2m414:13[22m  [33mwarning[39m  A form label must have accessible text  [2mjsx-a11y/label-has-associated-control[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionDetailPage.jsx[24m
-  [2m603:9[22m  [31merror[39m  Use object destructuring  [2mprefer-destructuring[22m
-  [2m604:9[22m  [31merror[39m  Use object destructuring  [2mprefer-destructuring[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionDetailPage.jsx[24m
+  [2m603:9[22m  [31merror[39m  Use object destructuring  [2mprefer-destructuring[22m
+  [2m604:9[22m  [31merror[39m  Use object destructuring  [2mprefer-destructuring[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionListPage.jsx[24m
-  [2m160:8[22m   [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
-  [2m164:11[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\AuctionListPage.jsx[24m
+  [2m160:8[22m   [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+  [2m164:11[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\MyPage.jsx[24m
-  [2m303:10[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
-  [2m306:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m316:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m331:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m341:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m351:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m426:10[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
-  [2m429:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m439:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m449:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\MyPage.jsx[24m
+  [2m303:10[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
+  [2m306:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m316:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m331:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m341:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m351:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m426:10[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
+  [2m429:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m439:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m449:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\OnboardingPage.jsx[24m
-   [2m57:11[22m  [31merror[39m  Use object destructuring     [2mprefer-destructuring[22m
-  [2m111:11[22m  [31merror[39m  Expected property shorthand  [2mobject-shorthand[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\OnboardingPage.jsx[24m
+   [2m57:11[22m  [31merror[39m  Use object destructuring     [2mprefer-destructuring[22m
+  [2m111:11[22m  [31merror[39m  Expected property shorthand  [2mobject-shorthand[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\TradeDetailPage.jsx[24m
-  [2m260:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m270:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m302:5[22m   [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
-  [2m350:21[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m360:21[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
-  [2m406:9[22m   [31merror[39m    Use object destructuring                        [2mprefer-destructuring[22m
-  [2m651:12[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
-  [2m755:12[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\TradeDetailPage.jsx[24m
+  [2m260:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m270:15[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m302:5[22m   [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
+  [2m350:21[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m360:21[22m  [33mwarning[39m  A form label must be associated with a control  [2mjsx-a11y/label-has-associated-control[22m
+  [2m406:9[22m   [31merror[39m    Use object destructuring                        [2mprefer-destructuring[22m
+  [2m651:12[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
+  [2m755:12[22m  [31merror[39m    Do not nest ternary expressions                 [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\TradeListPage.jsx[24m
-  [2m263:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\TradeListPage.jsx[24m
+  [2m263:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\AuctionManagePage.jsx[24m
-   [2m73:10[22m  [31merror[39m    Unexpected use of 'confirm'        [2mno-restricted-globals[22m
-   [2m73:10[22m  [33mwarning[39m  Unexpected confirm                 [2mno-alert[22m
-  [2m193:10[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
-  [2m285:17[22m  [31merror[39m    Empty components are self-closing  [2mreact/self-closing-comp[22m
-  [2m289:16[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
-  [2m413:34[22m  [31merror[39m    Unexpected string concatenation    [2mprefer-template[22m
-  [2m521:18[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\AuctionManagePage.jsx[24m
+   [2m73:10[22m  [31merror[39m    Unexpected use of 'confirm'        [2mno-restricted-globals[22m
+   [2m73:10[22m  [33mwarning[39m  Unexpected confirm                 [2mno-alert[22m
+  [2m193:10[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
+  [2m285:17[22m  [31merror[39m    Empty components are self-closing  [2mreact/self-closing-comp[22m
+  [2m289:16[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
+  [2m413:34[22m  [31merror[39m    Unexpected string concatenation    [2mprefer-template[22m
+  [2m521:18[22m  [31merror[39m    Do not nest ternary expressions    [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\DashboardPage.jsx[24m
-  [2m154:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
-  [2m221:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\DashboardPage.jsx[24m
+  [2m154:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+  [2m221:12[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\UserManagePage.jsx[24m
-   [2m91:10[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
-  [2m164:16[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\pages\admin\UserManagePage.jsx[24m
+   [2m91:10[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
+  [2m164:16[22m  [31merror[39m  Do not nest ternary expressions  [2mno-nested-ternary[22m
 
-[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\utils\formatters.js[24m
-  [2m10:10[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
+[4mC:\Users\tkgkd\Desktop\Workspace\FairBid\frontend\src\utils\formatters.js[24m
+  [2m10:10[22m  [31merror[39m  Unexpected string concatenation  [2mprefer-template[22m
 
-[31m[1m✖ 44 problems (29 errors, 15 warnings)[22m[39m
-[31m[1m  10 errors and 0 warnings potentially fixable with the `--fix` option.[22m[39m
-[0m
+[31m[1m✖ 44 problems (29 errors, 15 warnings)[22m[39m
+[31m[1m  10 errors and 0 warnings potentially fixable with the `--fix` option.[22m[39m
+[0m
 ```
 - **파일**:
   - `frontend/src/api/client.js`
@@ -156,3 +156,40 @@ frontend/CLAUDE.md에서 금지하지만 ESLint 규칙이 없었음
   - `frontend/src/utils/constants.js`
   - `frontend/src/utils/formatters.js`
 - **상태**: 미분석 → `/evolve`로 분석 필요
+
+### 2026-04-12 11:37
+- **도구**: ESLint
+- **위반 상세**:
+```
+
+Oops! Something went wrong! :(
+
+ESLint: 10.2.0
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'eslint-config-prettier' imported from C:\Users\tkgkd\Desktop\Workspace\FairBid-ai-assist\frontend\eslint.config.js
+    at packageResolve (node:internal/modules/esm/resolve:839:9)
+    at moduleResolve (node:internal/modules/esm/resolve:908:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1039:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:554:12)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:523:25)
+    at ModuleLoader.getModuleJob (node:internal/modules/esm/loader:246:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:126:49)
+```
+- **파일**:
+  - `frontend/src/api/mutations.js`
+  - `frontend/src/pages/AuctionCreatePage.jsx`
+- **상태**: 미분석 → `/evolve`로 분석 필요
+
+### 2026-04-18 06:55
+- **단계**: Claude Code hook
+- **도구**: Bash
+- **위반**: sed -i 백업 확장자 누락 (Windows Git Bash에서 파일 손상 위험)
+- **명령어**: sed -i 's/foo/bar/' file.txt
+- **상태**: open
+
+### 2026-04-18 06:55
+- **단계**: Claude Code hook
+- **도구**: Bash
+- **위반**: sed -i 백업 확장자 누락 (Windows Git Bash에서 파일 손상 위험)
+- **명령어**: sed --in-place 's/foo/bar/' file.txt
+- **상태**: open
