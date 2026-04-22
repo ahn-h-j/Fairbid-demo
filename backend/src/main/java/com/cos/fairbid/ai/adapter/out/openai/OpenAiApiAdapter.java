@@ -23,7 +23,7 @@ import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 import com.cos.fairbid.ai.application.dto.PriceItem;
 import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
-import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
 import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
@@ -98,7 +98,7 @@ public class OpenAiApiAdapter implements AiClientPort {
     }
 
     @Override
-    public AiAssistResult generatePricing(
+    public PricingResult generatePricing(
             AiAssistCommand command,
             ProductAnalysis analysis,
             List<PriceItem> priceItems,
@@ -114,7 +114,7 @@ public class OpenAiApiAdapter implements AiClientPort {
         try {
             response = callApi(request);
             String rawText = extractText(response);
-            AiAssistResult result = parseResult(rawText);
+            PricingResult result = parseResult(rawText);
             outcome = "success";
             return result;
         } catch (RuntimeException e) {
@@ -194,9 +194,10 @@ public class OpenAiApiAdapter implements AiClientPort {
     }
 
     /**
-     * 2차 응답 JSON 파싱. Claude 와 동일한 스키마(status / suggestedPrices / generatedDescription).
+     * 2차 응답 JSON 파싱. Claude 와 동일한 스키마 사용하되, SPEC §19 옵션 B 적용으로
+     * {@code generatedDescription} 필드는 파싱만 하고 버린다.
      */
-    private AiAssistResult parseResult(String rawText) {
+    private PricingResult parseResult(String rawText) {
         String json = stripCodeFence(rawText).trim();
         ParsedPayload parsed;
         try {
@@ -224,8 +225,7 @@ public class OpenAiApiAdapter implements AiClientPort {
         if (parsed.suggestedPrices() == null
                 || parsed.suggestedPrices().low() == null
                 || parsed.suggestedPrices().mid() == null
-                || parsed.suggestedPrices().high() == null
-                || parsed.generatedDescription() == null) {
+                || parsed.suggestedPrices().high() == null) {
             log.warn("OpenAI 성공 응답 필수 필드 누락 - raw: {}", json);
             throw AiGenerationFailedException.of();
         }
@@ -246,7 +246,7 @@ public class OpenAiApiAdapter implements AiClientPort {
             log.info("OpenAI 낮은 신뢰도 응답 - reason={}", confidenceReason);
         }
 
-        return new AiAssistResult(prices, parsed.generatedDescription(), confidence, confidenceReason);
+        return new PricingResult(prices, confidence, confidenceReason);
     }
 
     /**

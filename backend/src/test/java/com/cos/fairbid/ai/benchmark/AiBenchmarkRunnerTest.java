@@ -21,6 +21,7 @@ import com.cos.fairbid.ai.adapter.out.guardrail.rules.ReformatRule;
 import com.cos.fairbid.ai.adapter.out.naver.NaverSearchProperties;
 import com.cos.fairbid.ai.adapter.out.naver.NaverShoppingAdapter;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
+import com.cos.fairbid.ai.application.port.out.DescriptionGeneratorPort;
 import com.cos.fairbid.ai.application.port.out.GuardrailFailurePort;
 import com.cos.fairbid.ai.application.port.out.PriceCachePort;
 import com.cos.fairbid.ai.application.port.out.PriceSearchPort;
@@ -70,6 +71,19 @@ import com.cos.fairbid.ai.benchmark.runner.RealModelExecutor;
  */
 @EnabledIfEnvironmentVariable(named = "BENCHMARK_MODELS", matches = ".+")
 class AiBenchmarkRunnerTest {
+
+    /**
+     * 벤치마크 전용 설명 생성 no-op.
+     *
+     * <p>벤치는 가격 추정 정확도만 측정하므로 실제 설명 호출은 비용/시간 낭비.
+     * {@link DescriptionLengthRule} HARD 기준(180~450자)을 통과하는 고정 문자열을 반환하고
+     * 설명 품질은 {@code description_smoke} 러너에서 별도 측정한다.</p>
+     */
+    private static final DescriptionGeneratorPort BENCH_NOOP_DESCRIPTION = (c, a, p, v) ->
+            "## 벤치마크 더미 설명\n\n"
+                    + "이 텍스트는 벤치마크 파이프라인이 AiAssistService 전체 흐름을 실행하기 위한 고정 더미 설명입니다. "
+                    + "실제 설명 품질은 description_smoke 러너에서 별도 측정합니다. "
+                    + "벤치마크의 주 관심사는 가격 추정 정확도이며 설명 자동 지표에 영향을 주지 않도록 180자에서 450자 사이 길이를 유지합니다.";
 
     @Test
     void runBenchmark() throws Exception {
@@ -161,6 +175,7 @@ class AiBenchmarkRunnerTest {
             ModelAdapterFactory.ModelAdapter ma = factory.build(normalized);
             AiAssistService service = new AiAssistService(
                     ma.adapter(),
+                    BENCH_NOOP_DESCRIPTION,
                     priceSearch,
                     noOpCache,
                     inputChain,

@@ -29,25 +29,21 @@ import com.cos.fairbid.ai.benchmark.runner.ModelAdapterFactory;
 import com.cos.fairbid.ai.description_smoke.DescriptionQualityScorer.AutomatedMetrics;
 import com.cos.fairbid.ai.description_smoke.LlmJudge.AbsoluteScores;
 import com.cos.fairbid.ai.description_smoke.LlmJudge.PairwiseChoices;
-import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.auction.domain.Category;
 
 /**
  * SPEC §19 옵션 B 스모크 게이트 러너.
  *
- * <p>10건 케이스 × [Claude Sonnet, Gemini 2.5 Pro] 설명 생성 →
- * 자동 지표 4종 + Claude Opus judge 절대/쌍비교 → JSONL + report.md 저장.</p>
+ * <p>구 구조: 10건 케이스 × [Claude Sonnet, Gemini 2.5 Pro] 설명 생성 → 자동 지표 + judge 채점.</p>
  *
- * <p><b>실행:</b></p>
- * <pre>
- * DESCRIPTION_SMOKE_ENABLED=true \
- * ANTHROPIC_API_KEY=... GEMINI_API_KEY=... \
- * ANTHROPIC_JUDGE_MODEL=claude-opus-4-... \
- * ./gradlew :backend:test --tests "DescriptionSmokeRunnerTest"
- * </pre>
+ * <p><b>상태 (2026-04-21 이후)</b>: SPEC §19 옵션 B 본 작업으로 {@code AiClientPort} 가 설명을 더는
+ * 반환하지 않는다({@link PricingResult}). 기존 "Claude 설명 vs Gemini 설명" 쌍비교는 불가.
+ * 재측정은 "프롬프트 보강 전 vs 후" 구조로 러너를 재설계해야 한다 — 별도 이슈로 분리 예정.</p>
  *
- * <p>결과 경로 기본값: {@code docs/benchmark-results/runs/description-smoke-{stamp}/}.
- * 영속화는 {@code BENCHMARK_OUTPUT_DIR=docs/benchmark-results/raw/description-smoke-{date}} 로 덮어쓰고 커밋.</p>
+ * <p>컴파일 보존을 위해 구조는 유지하되 phase2Only 가 {@code PricingResult} 를 읽어 설명을 null 로 채운다.
+ * 결과 report 는 역사적으로 의미 없으므로 실행을 피하고, 재설계 전까지 {@code DESCRIPTION_SMOKE_ENABLED}
+ * 가드로 막힌 상태 그대로 둔다.</p>
  */
 @EnabledIfEnvironmentVariable(named = "DESCRIPTION_SMOKE_ENABLED", matches = "true")
 public class DescriptionSmokeRunnerTest {
@@ -179,15 +175,17 @@ public class DescriptionSmokeRunnerTest {
             ProductAnalysis sharedAnalysis,
             String label) {
         try {
-            AiAssistResult result = adapter.generatePricing(
+            // SPEC §19 옵션 B 이후 PricingResult 에는 설명이 없다. 이 러너는 재설계 전까지 설명 null.
+            PricingResult result = adapter.generatePricing(
                     command, sharedAnalysis, List.<PriceItem>of(), List.of());
             return new Generation(
                     label,
-                    result.generatedDescription(),
+                    null,
                     result.confidence(),
                     sharedAnalysis.productName(),
                     sharedAnalysis.grade(),
-                    null, null);
+                    "DEPRECATED_RUNNER",
+                    "AiClientPort 가 설명을 더는 반환하지 않음. 러너 재설계 필요.");
         } catch (RuntimeException e) {
             return new Generation(
                     label, null, null, null, null,

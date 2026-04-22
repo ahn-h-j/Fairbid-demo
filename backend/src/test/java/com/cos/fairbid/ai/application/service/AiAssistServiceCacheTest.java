@@ -24,12 +24,14 @@ import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 import com.cos.fairbid.ai.application.dto.PriceItem;
 import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
+import com.cos.fairbid.ai.application.port.out.DescriptionGeneratorPort;
 import com.cos.fairbid.ai.application.port.out.GuardrailFailurePort;
 import com.cos.fairbid.ai.application.port.out.PriceCachePort;
 import com.cos.fairbid.ai.application.port.out.PriceSearchPort;
 import com.cos.fairbid.ai.application.service.guardrail.InputGuardrailChain;
 import com.cos.fairbid.ai.application.service.guardrail.OutputGuardrailChain;
 import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.guardrail.OutputValidation;
 import com.cos.fairbid.auction.domain.Category;
@@ -46,6 +48,7 @@ import com.cos.fairbid.auction.domain.Category;
 class AiAssistServiceCacheTest {
 
     private AiClientPort aiClientPort;
+    private DescriptionGeneratorPort descriptionGeneratorPort;
     private PriceSearchPort priceSearchPort;
     private PriceCachePort priceCachePort;
     private InputGuardrailChain inputGuardrailChain;
@@ -57,6 +60,7 @@ class AiAssistServiceCacheTest {
     @BeforeEach
     void setUp() {
         aiClientPort = mock(AiClientPort.class);
+        descriptionGeneratorPort = mock(DescriptionGeneratorPort.class);
         priceSearchPort = mock(PriceSearchPort.class);
         priceCachePort = mock(PriceCachePort.class);
         inputGuardrailChain = mock(InputGuardrailChain.class);
@@ -64,7 +68,7 @@ class AiAssistServiceCacheTest {
         guardrailFailurePort = mock(GuardrailFailurePort.class);
 
         service = new AiAssistService(
-                aiClientPort, priceSearchPort, priceCachePort,
+                aiClientPort, descriptionGeneratorPort, priceSearchPort, priceCachePort,
                 inputGuardrailChain, outputGuardrailChain, guardrailFailurePort);
     }
 
@@ -110,10 +114,12 @@ class AiAssistServiceCacheTest {
 
         when(priceSearchPort.search(anyString(), anyInt())).thenReturn(List.of());
 
-        AiAssistResult generated = new AiAssistResult(
-                new SuggestedPrices(1_800_000L, 2_000_000L, 2_200_000L),
-                "## 맥북 프로 M3", "high", null);
-        when(aiClientPort.generatePricing(any(), any(), any(), any())).thenReturn(generated);
+        SuggestedPrices prices = new SuggestedPrices(1_800_000L, 2_000_000L, 2_200_000L);
+        String description = "## 맥북 프로 M3";
+        when(aiClientPort.generatePricing(any(), any(), any(), any()))
+                .thenReturn(new PricingResult(prices, "high", null));
+        when(descriptionGeneratorPort.generateDescription(any(), any(), any(), any()))
+                .thenReturn(description);
 
         when(outputGuardrailChain.validate(any(), any(), any())).thenReturn(OutputValidation.pass());
 
@@ -121,14 +127,17 @@ class AiAssistServiceCacheTest {
         AiAssistResult result = service.generate(command);
 
         // then
-        assertThat(result).isSameAs(generated);
+        assertThat(result.suggestedPrices()).isEqualTo(prices);
+        assertThat(result.generatedDescription()).isEqualTo(description);
+        assertThat(result.confidence()).isEqualTo("high");
         verify(priceSearchPort, times(1)).search(anyString(), anyInt());
         verify(aiClientPort, times(1)).generatePricing(any(), any(), any(), any());
+        verify(descriptionGeneratorPort, times(1)).generateDescription(any(), any(), any(), any());
 
         ArgumentCaptor<AiAssistResult> savedResult = ArgumentCaptor.forClass(AiAssistResult.class);
         verify(priceCachePort, times(1)).save(
                 eq("ELECTRONICS"), eq("macbook_pro_14_m3"), eq("A"), savedResult.capture());
-        assertThat(savedResult.getValue()).isSameAs(generated);
+        assertThat(savedResult.getValue().suggestedPrices()).isEqualTo(prices);
     }
 
     @Test
@@ -145,10 +154,11 @@ class AiAssistServiceCacheTest {
 
         when(priceSearchPort.search(anyString(), anyInt())).thenReturn(List.of());
 
-        AiAssistResult generated = new AiAssistResult(
-                new SuggestedPrices(10_000L, 20_000L, 30_000L),
-                "## 설명", "high", null);
-        when(aiClientPort.generatePricing(any(), any(), any(), any())).thenReturn(generated);
+        SuggestedPrices prices = new SuggestedPrices(10_000L, 20_000L, 30_000L);
+        when(aiClientPort.generatePricing(any(), any(), any(), any()))
+                .thenReturn(new PricingResult(prices, "high", null));
+        when(descriptionGeneratorPort.generateDescription(any(), any(), any(), any()))
+                .thenReturn("## 설명");
         when(outputGuardrailChain.validate(any(), any(), any())).thenReturn(OutputValidation.pass());
 
         // when

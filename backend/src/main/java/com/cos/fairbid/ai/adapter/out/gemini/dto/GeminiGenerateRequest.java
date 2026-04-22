@@ -69,5 +69,10 @@ public record GeminiGenerateRequest(
         public static GenerationConfig jsonOutput(Integer maxOutputTokens) {
             return new GenerationConfig(maxOutputTokens, "application/json");
         }
+
+        /** 마크다운/일반 텍스트 출력 (설명 생성 전용). */
+        public static GenerationConfig textOutput(Integer maxOutputTokens) {
+            return new GenerationConfig(maxOutputTokens, null);
+        }
     }
 }

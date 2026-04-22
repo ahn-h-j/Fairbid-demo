@@ -23,7 +23,7 @@ import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 import com.cos.fairbid.ai.application.dto.PriceItem;
 import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
-import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
 import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
@@ -92,7 +92,7 @@ public class ClaudeApiAdapter implements AiClientPort {
     }
 
     @Override
-    public AiAssistResult generatePricing(
+    public PricingResult generatePricing(
             AiAssistCommand command,
             ProductAnalysis analysis,
             List<PriceItem> priceItems,
@@ -108,7 +108,7 @@ public class ClaudeApiAdapter implements AiClientPort {
         try {
             response = callApi(request);
             String rawText = extractText(response);
-            AiAssistResult result = parseResult(rawText);
+            PricingResult result = parseResult(rawText);
             outcome = "success";
             return result;
         } catch (RuntimeException e) {
@@ -203,16 +203,20 @@ public class ClaudeApiAdapter implements AiClientPort {
     }
 
     /**
-     * Claude 가 출력한 JSON 문자열을 파싱해 도메인 객체로 변환한다.
+     * Claude 가 출력한 JSON 문자열을 파싱해 {@link PricingResult} 로 변환한다.
      *
-     * Claude 는 항상 JSON 으로 응답하되, status 필드로 성공/실패를 구분한다:
-     *   - status="success": suggestedPrices + generatedDescription 이 채워져 있음 → 정상 반환
-     *   - status!="success" (need_more_info, mismatch, image_unreadable 등):
-     *       userMessage 필드에 Claude 가 자기 말로 쓴 한국어 안내문이 있음 → 그대로 사용자에게 노출
+     * <p>Claude 는 항상 JSON 으로 응답하되, status 필드로 성공/실패를 구분한다:</p>
+     * <ul>
+     *   <li>status="success": suggestedPrices 가 채워져 있음 → 정상 반환</li>
+     *   <li>status!="success" (need_more_info, mismatch, image_unreadable 등):
+     *       userMessage 를 그대로 사용자에게 노출</li>
+     * </ul>
      *
-     * 내부 실패 사유(파싱 실패 / 필드 누락)는 로그에만 남긴다.
+     * <p>SPEC §19 옵션 B 적용으로 {@code generatedDescription} 필드는 파싱만 하고 버린다.
+     * 설명 생성은 {@code DescriptionGeneratorPort}(Gemini) 가 담당한다.
+     * 프롬프트 최적화(설명 지시 제거) 는 후속 PR 에서 진행한다.</p>
      */
-    private AiAssistResult parseResult(String rawText) {
+    private PricingResult parseResult(String rawText) {
         String json = stripCodeFence(rawText).trim();
         ParsedPayload parsed;
         try {
@@ -238,12 +242,11 @@ public class ClaudeApiAdapter implements AiClientPort {
             throw AiGenerationFailedException.fromAi(userMessage);
         }
 
-        // 성공 분기
+        // 성공 분기 — 설명 필드는 phase2b(Gemini) 로 분리되었으므로 필수 검증에서 제외
         if (parsed.suggestedPrices() == null
                 || parsed.suggestedPrices().low() == null
                 || parsed.suggestedPrices().mid() == null
-                || parsed.suggestedPrices().high() == null
-                || parsed.generatedDescription() == null) {
+                || parsed.suggestedPrices().high() == null) {
             log.warn("Claude 성공 응답 필수 필드 누락 - raw: {}", json);
             throw AiGenerationFailedException.of();
         }
@@ -265,7 +268,7 @@ public class ClaudeApiAdapter implements AiClientPort {
             log.info("Claude 낮은 신뢰도 응답 - reason={}", confidenceReason);
         }
 
-        return new AiAssistResult(prices, parsed.generatedDescription(), confidence, confidenceReason);
+        return new PricingResult(prices, confidence, confidenceReason);
     }
 
     /**

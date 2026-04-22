@@ -23,7 +23,7 @@ import com.cos.fairbid.ai.application.dto.AiAssistCommand;
 import com.cos.fairbid.ai.application.dto.PriceItem;
 import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
-import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.ai.domain.SuggestedPrices;
 import com.cos.fairbid.ai.domain.exception.AiGenerationFailedException;
 import com.cos.fairbid.ai.domain.exception.AiServiceUnavailableException;
@@ -90,7 +90,7 @@ public class GeminiApiAdapter implements AiClientPort {
     }
 
     @Override
-    public AiAssistResult generatePricing(
+    public PricingResult generatePricing(
             AiAssistCommand command,
             ProductAnalysis analysis,
             List<PriceItem> priceItems,
@@ -106,7 +106,7 @@ public class GeminiApiAdapter implements AiClientPort {
         try {
             response = callApi(request);
             String rawText = extractText(response);
-            AiAssistResult result = parseResult(rawText);
+            PricingResult result = parseResult(rawText);
             outcome = "success";
             return result;
         } catch (RuntimeException e) {
@@ -196,7 +196,7 @@ public class GeminiApiAdapter implements AiClientPort {
         return result;
     }
 
-    private AiAssistResult parseResult(String rawText) {
+    private PricingResult parseResult(String rawText) {
         String json = stripCodeFence(rawText).trim();
         ParsedPayload parsed;
         try {
@@ -224,8 +224,7 @@ public class GeminiApiAdapter implements AiClientPort {
         if (parsed.suggestedPrices() == null
                 || parsed.suggestedPrices().low() == null
                 || parsed.suggestedPrices().mid() == null
-                || parsed.suggestedPrices().high() == null
-                || parsed.generatedDescription() == null) {
+                || parsed.suggestedPrices().high() == null) {
             log.warn("Gemini 성공 응답 필수 필드 누락 - raw: {}", json);
             throw AiGenerationFailedException.of();
         }
@@ -242,7 +241,7 @@ public class GeminiApiAdapter implements AiClientPort {
         }
         String confidenceReason = "low".equalsIgnoreCase(confidence) ? parsed.confidenceReason() : null;
 
-        return new AiAssistResult(prices, parsed.generatedDescription(), confidence, confidenceReason);
+        return new PricingResult(prices, confidence, confidenceReason);
     }
 
     private String stripCodeFence(String text) {

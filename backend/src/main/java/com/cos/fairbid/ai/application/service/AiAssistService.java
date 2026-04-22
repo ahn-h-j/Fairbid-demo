@@ -14,28 +14,33 @@ import com.cos.fairbid.ai.application.dto.PriceItem;
 import com.cos.fairbid.ai.application.dto.ProductAnalysis;
 import com.cos.fairbid.ai.application.port.in.GenerateAuctionAssistUseCase;
 import com.cos.fairbid.ai.application.port.out.AiClientPort;
+import com.cos.fairbid.ai.application.port.out.DescriptionGeneratorPort;
 import com.cos.fairbid.ai.application.port.out.GuardrailFailurePort;
 import com.cos.fairbid.ai.application.port.out.PriceCachePort;
 import com.cos.fairbid.ai.application.port.out.PriceSearchPort;
 import com.cos.fairbid.ai.application.service.guardrail.InputGuardrailChain;
 import com.cos.fairbid.ai.application.service.guardrail.OutputGuardrailChain;
 import com.cos.fairbid.ai.domain.AiAssistResult;
+import com.cos.fairbid.ai.domain.PricingResult;
 import com.cos.fairbid.ai.domain.guardrail.GuardrailViolation;
 import com.cos.fairbid.ai.domain.guardrail.OutputValidation;
 
 /**
- * AI 경매 어시스턴트 UseCase 구현.
+ * AI 경매 어시스턴트 UseCase 구현 (SPEC §19 옵션 B 역할 분할 적용).
  *
- * 2단계 호출 + 시세 캐시 (Phase 2):
- *   1. 입력 가드레일 (프롬프트 인젝션 차단)
- *   2. 1차 Claude: 이미지 + memo → 상품 식별 + 등급 + 검색 키워드 + productKey
- *   3. Redis 시세 캐시 조회 (category + productKey + grade)
- *      HIT → 저장된 결과 반환 (네이버 검색 + 2차 Claude 스킵)
- *      MISS → 4 진행
- *   4. 네이버 검색
- *   5. 2차 Claude: 검색 결과 + 등급 → 추천가 + 설명 (confidence: high/low)
- *   6. 출력 가드레일: HARD 위반 → 재시도 1회, SOFT 위반 → DB 기록
- *   7. 캐시 적재 (high confidence 케이스만, 7일 TTL)
+ * <p>2단계 호출 + 시세 캐시:</p>
+ * <ol>
+ *   <li>입력 가드레일 (프롬프트 인젝션 차단)</li>
+ *   <li>phase1 Claude: 이미지 + memo → 상품 식별 + 등급 + 검색 키워드 + productKey</li>
+ *   <li>Redis 시세 캐시 조회 (category + productKey + grade) — HIT 시 가격+설명 함께 반환</li>
+ *   <li>네이버 검색</li>
+ *   <li>phase2a Claude: 검색 결과 + 등급 → 추천가 3구간 + confidence (설명은 미생성)</li>
+ *   <li>phase2b Gemini: 분석 결과 + 가격 + memo → Markdown 설명 (hidden_value 강조)</li>
+ *   <li>출력 가드레일: HARD 위반 → 재시도 (가격/설명 모두 재호출), SOFT 위반 → DB 기록</li>
+ *   <li>캐시 적재 (high confidence 케이스만, 7일 TTL)</li>
+ * </ol>
+ *
+ * <p>latency: 현재는 phase2a → phase2b 순차 호출. 병렬화는 후속 최적화.</p>
  */
 @Slf4j
 @Service
@@ -48,6 +53,7 @@ public class AiAssistService implements GenerateAuctionAssistUseCase {
     private static final int MAX_GUARDRAIL_ATTEMPTS = 2;
 
     private final AiClientPort aiClientPort;
+    private final DescriptionGeneratorPort descriptionGeneratorPort;
     private final PriceSearchPort priceSearchPort;
     private final PriceCachePort priceCachePort;
     private final InputGuardrailChain inputGuardrailChain;
@@ -84,18 +90,26 @@ public class AiAssistService implements GenerateAuctionAssistUseCase {
         // 3. 네이버 검색
         List<PriceItem> priceItems = searchPrices(analysis.searchKeyword());
 
-        // 4. 2차 Claude + 출력 가드레일 루프
+        // 4. phase2a(Claude 가격) + phase2b(Gemini 설명) + 출력 가드레일 루프
         AiAssistResult bestResult = null;
         List<GuardrailViolation> lastViolations = List.of();
 
         for (int attempt = 1; attempt <= MAX_GUARDRAIL_ATTEMPTS; attempt++) {
-            AiAssistResult result;
-            if (attempt == 1) {
-                result = aiClientPort.generatePricing(command, analysis, priceItems, null);
-            } else {
+            List<GuardrailViolation> retryViolations = attempt == 1 ? null : lastViolations;
+            if (attempt > 1) {
                 log.info("출력 가드레일 재시도 - attempt={}, violations={}", attempt, lastViolations.size());
-                result = aiClientPort.generatePricing(command, analysis, priceItems, lastViolations);
             }
+
+            PricingResult pricing = aiClientPort.generatePricing(command, analysis, priceItems, retryViolations);
+            String description = descriptionGeneratorPort.generateDescription(
+                    command, analysis, pricing.suggestedPrices(), retryViolations);
+
+            AiAssistResult result = new AiAssistResult(
+                    pricing.suggestedPrices(),
+                    description,
+                    pricing.confidence(),
+                    pricing.confidenceReason()
+            );
             bestResult = result;
 
             OutputValidation validation = outputGuardrailChain.validate(result, command, priceItems);

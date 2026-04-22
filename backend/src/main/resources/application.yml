@@ -146,6 +146,17 @@ ai:
     connect-timeout-ms: 5000
     read-timeout-ms: 60000
     max-tokens: 2000
+  # SPEC §19 옵션 B: 설명 생성 전용 Gemini (가격용 ai.gemini 와 별도)
+  # - 가격은 Claude (ai.provider=claude), 설명은 Gemini 2.5 Pro 로 역할 분할
+  # - api-key 는 기본 GEMINI_API_KEY 공유. base-url 도 동일
+  description:
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: ${AI_DESCRIPTION_GEMINI_MODEL:gemini-2.5-pro}
+      base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+      connect-timeout-ms: 5000
+      read-timeout-ms: 60000
+      max-tokens: 8000
 
 # Discord Webhook — AI 어시스턴트 가드레일 주간 리포트 전송
 # - webhook-url 미설정 시 리포트 전송 비활성화 (no-op)
