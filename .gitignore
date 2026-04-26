@@ -4,6 +4,9 @@ build/
 
 # 벤치마크 러너 기본 출력 (스모크/실험용). 영속화는 docs/benchmark-results/raw/ 로.
 docs/benchmark-results/runs/
+
+# MkDocs 빌드 산출물 (mkdocs.yml의 site_dir)
+docs/_site/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

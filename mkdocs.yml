@@ -1,0 +1,126 @@
+site_name: FairBid 온보딩
+site_description: 신규 개발자가 이 사이트 하나로 환경 셋업/기능 이해/장애 대응/기능 개선까지 가능한 온보딩 키트
+site_author: ahn-h-j
+docs_dir: docs/onboarding
+site_dir: docs/_site
+repo_url: https://github.com/ahn-h-j/Fairbid
+repo_name: ahn-h-j/Fairbid
+edit_uri: ""
+
+theme:
+  name: material
+  language: ko
+  features:
+    - navigation.tracking
+    - navigation.tabs            # 상단 탭
+    - navigation.sections        # 사이드바 섹션 펼침
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top             # 맨 위로 버튼
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy          # 코드 복사 버튼
+    - content.code.annotate
+    - toc.follow                 # 스크롤 따라가는 우측 TOC
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 다크 모드로
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: 라이트 모드로
+  font:
+    text: Pretendard
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+
+# 사이드바 네비게이션 (수동 큐레이션)
+nav:
+  - 홈: index.md
+  - 시작하기:
+      - 프로젝트 개요: 00-overview.md
+      - 환경 셋업: 01-setup.md
+  - 이해하기:
+      - 아키텍처: 03-architecture.md
+      - 인프라 토폴로지: 02-infra.md
+      - 데이터 모델: 04-data-model.md
+      - 도메인 용어집: GLOSSARY.md
+  - 작업하기:
+      - 컨벤션: 05-conventions.md
+      - "어디 있지?": 07-where-is-it.md
+      - 트러블슈팅: 06-troubleshooting.md
+  - 기능:
+      - 카탈로그: features/index.md
+      - 인증/사용자:
+          - OAuth 로그인: features/oauth-login.md
+          - 토큰 관리: features/token-management.md
+          - 온보딩: features/user-onboarding.md
+          - 프로필: features/user-profile.md
+          - 내 활동 내역: features/my-history.md
+      - 경매:
+          - 경매 등록: features/경매-등록.md
+          - 경매 조회: features/경매-목록-상세.md
+          - 경매 종료: features/경매-종료.md
+      - 입찰:
+          - 입찰: features/입찰.md
+          - 입찰 비동기 처리: features/입찰-비동기처리.md
+      - 거래:
+          - 거래 기본: features/거래-기본.md
+          - 직거래: features/직거래.md
+          - 택배: features/택배.md
+      - 알림: features/알림.md
+      - 관리자: features/관리자.md
+      - AI 어시스턴트: features/AI-경매-어시스턴트.md
+  - 키트 운영:
+      - 사용 가이드: USAGE.md
+
+markdown_extensions:
+  - admonition                   # !!! note, !!! warning 등 박스
+  - pymdownx.details             # ??? 접기 박스
+  - pymdownx.superfences:        # mermaid + 코드 블록
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:             # 탭 UI
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search:
+      lang: ko
+
+# 제외 파일 (md 아닌 것)
+exclude_docs: |
+  onboarding.profile.yaml
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ahn-h-j/FairBid

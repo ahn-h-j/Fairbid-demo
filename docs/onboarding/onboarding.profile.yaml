@@ -1,0 +1,100 @@
+# onboarding.profile.yaml
+# onboarding-architect 에이전트가 이 파일만 보고 동작한다.
+# 다른 프로젝트에서 재사용 시 이 파일만 갈아끼우면 됨.
+
+project:
+  name: FairBid
+  language: ko          # 문서 출력 언어
+
+stack:
+  language: java
+  language_version: "17"
+  framework: spring-boot
+  framework_version: "3.5.x"
+  build_tool: gradle
+  architecture: hexagonal
+  frontend:
+    dir: frontend/
+    framework: react
+    bundler: vite
+
+bounded_contexts:
+  - identity      # auth + user 묶음
+  - auction
+  - bid
+  - winning
+  - trade         # trade + delivery + direct_trade
+  - notification
+  - admin
+  - ai
+  - common        # 횡단 모듈
+
+source_layout:
+  base: backend/src/main/java/com/cos/fairbid/{ctx}/
+  domain:        "{base}/domain/"
+  policy:        "{base}/domain/policy/"
+  exception:     "{base}/domain/exception/"
+  event_def:     "{base}/domain/event/"
+  usecase:       "{base}/application/port/in/"
+  port_out:      "{base}/application/port/out/"
+  service:       "{base}/application/service/"
+  controller:    "{base}/adapter/in/controller/"
+  dto_in:        "{base}/adapter/in/dto/"
+  stream_in:     "{base}/adapter/in/stream/"
+  scheduler:     "{base}/adapter/in/scheduler/"
+  event_listen:  "{base}/adapter/in/event/"
+  persistence:   "{base}/adapter/out/persistence/"
+  entity:        "{base}/adapter/out/persistence/entity/"
+  cache_adapter: "{base}/adapter/out/cache/"
+  stream_adapter:"{base}/adapter/out/stream/"
+  event_publish: "{base}/adapter/out/event/"
+
+markers:
+  controller: "@RestController"
+  endpoint: ["@GetMapping", "@PostMapping", "@PutMapping", "@DeleteMapping", "@PatchMapping", "@RequestMapping"]
+  service: "@Service"
+  entity: "@Entity"
+  transaction: "@Transactional"
+  async: "@Async"
+  scheduled: "@Scheduled"
+  event_publish_call: "publishEvent"
+  event_listener: ["@EventListener", "@TransactionalEventListener"]
+  custom_guard: ["@RequireOnboarding", "@PreAuthorize", "@EnabledOnRole"]
+  exception_base: "DomainException"
+  usecase_naming: "*UseCase"
+
+config_files:
+  build: backend/build.gradle
+  app_config: backend/src/main/resources/application.yml
+  app_config_extra:
+    - backend/src/main/resources/application-sentinel.yml
+  containers: docker-compose.yml
+  readme: README.md
+  agent_rules: CLAUDE.md
+  layer_rules: backend/CLAUDE.md
+
+infra_components:
+  rdb: mysql
+  cache: redis
+  stream: redis-stream
+  pubsub: redis-pubsub
+  push: fcm
+  metrics: prometheus
+  dashboard: grafana
+  oauth_providers: [kakao, naver, google]
+  ai_providers: [anthropic, openai, gemini]
+
+conventions:
+  commit_skill: ".claude/skills/commit"
+  pr_skill: ".claude/skills/pr"
+  arch_check_skill: ".claude/skills/check-arch"
+  branch_pattern: "feat/{feature-name}"
+  test:
+    framework: cucumber
+    container: testcontainers
+    forbidden: ["h2"]
+
+output:
+  dir: docs/onboarding/
+  feature_subdir: docs/onboarding/features/
+  glossary: docs/onboarding/GLOSSARY.md
