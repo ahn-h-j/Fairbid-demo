@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import sqlite3
+import threading
 import time
 from dataclasses import dataclass
 from datetime import date
@@ -30,10 +31,13 @@ class StateStore:
     def __init__(self, db_path: str):
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         # check_same_thread=False: 비서 Bot의 question_handler가 asyncio.to_thread로
-        # 별도 스레드에서 store를 호출하기 때문. WAL 모드라 동시 read는 안전하고,
-        # write는 짧은 트랜잭션뿐이라 충돌 위험 낮음.
+        # 별도 스레드에서 store를 호출하기 때문. WAL은 multi-connection만 보호하고
+        # 동일 connection 동시 사용은 별개라, 모든 접근을 RLock으로 직렬화한다.
+        # aggregate_range 안에서 _avg_alert_duration을 부르는 식의 재진입이 있어
+        # Lock이 아닌 RLock을 쓴다.
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.conn.execute("PRAGMA journal_mode=WAL")
+        self._lock = threading.RLock()
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -101,35 +105,38 @@ class StateStore:
 
     def list_active(self) -> dict[str, ActiveAlert]:
         """현재 활성 알람 전체를 dict로 반환."""
-        cur = self.conn.execute(
-            "SELECT rule_key, fired_at, last_value, severity FROM active_alerts"
-        )
-        return {
-            row[0]: ActiveAlert(
-                rule_key=row[0], fired_at=row[1], last_value=row[2], severity=row[3]
+        with self._lock:
+            cur = self.conn.execute(
+                "SELECT rule_key, fired_at, last_value, severity FROM active_alerts"
             )
-            for row in cur.fetchall()
-        }
+            return {
+                row[0]: ActiveAlert(
+                    rule_key=row[0], fired_at=row[1], last_value=row[2], severity=row[3]
+                )
+                for row in cur.fetchall()
+            }
 
     def record_alert(self, rule_key: str, value: float, severity: str) -> None:
         """알람을 발송했음을 기록 (신규/재발송 모두). fired_at은 현재 시각으로 갱신."""
-        self.conn.execute(
-            """
-            INSERT INTO active_alerts(rule_key, fired_at, last_value, severity)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(rule_key) DO UPDATE SET
-                fired_at = excluded.fired_at,
-                last_value = excluded.last_value,
-                severity = excluded.severity
-            """,
-            (rule_key, int(time.time()), value, severity),
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                """
+                INSERT INTO active_alerts(rule_key, fired_at, last_value, severity)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(rule_key) DO UPDATE SET
+                    fired_at = excluded.fired_at,
+                    last_value = excluded.last_value,
+                    severity = excluded.severity
+                """,
+                (rule_key, int(time.time()), value, severity),
+            )
+            self.conn.commit()
 
     def clear_alert(self, rule_key: str) -> None:
         """위반 해소 시 활성 알람 목록에서 제거."""
-        self.conn.execute("DELETE FROM active_alerts WHERE rule_key = ?", (rule_key,))
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute("DELETE FROM active_alerts WHERE rule_key = ?", (rule_key,))
+            self.conn.commit()
 
     # === 알람 이력 (주간 evolver용) ===
 
@@ -149,15 +156,16 @@ class StateStore:
             새로 삽입된 row의 id
             (record_report FK + attach_discord_ids 용)
         """
-        cur = self.conn.execute(
-            """
-            INSERT INTO alert_history(rule_key, severity, kind, value, threshold, fired_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (rule_key, severity, kind, value, threshold, int(time.time())),
-        )
-        self.conn.commit()
-        return cur.lastrowid
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                INSERT INTO alert_history(rule_key, severity, kind, value, threshold, fired_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (rule_key, severity, kind, value, threshold, int(time.time())),
+            )
+            self.conn.commit()
+            return cur.lastrowid
 
     def attach_discord_ids(
         self, history_id: int, message_id: str, thread_id: str | None = None
@@ -166,30 +174,32 @@ class StateStore:
 
         비서 Bot이 스레드에서 질문 받을 때 thread_id → history_id 역조회.
         """
-        self.conn.execute(
-            """
-            UPDATE alert_history
-            SET discord_message_id = ?, discord_thread_id = ?
-            WHERE id = ?
-            """,
-            (message_id, thread_id, history_id),
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                """
+                UPDATE alert_history
+                SET discord_message_id = ?, discord_thread_id = ?
+                WHERE id = ?
+                """,
+                (message_id, thread_id, history_id),
+            )
+            self.conn.commit()
 
     def find_history_by_thread_id(self, thread_id: str) -> dict | None:
         """스레드 ID로 알람 이력 역조회.
 
         비서 Bot이 '이 스레드가 어떤 알람인지' 파악할 때 사용.
         """
-        cur = self.conn.execute(
-            """
-            SELECT id, rule_key, severity, kind, value, threshold, fired_at
-            FROM alert_history
-            WHERE discord_thread_id = ?
-            """,
-            (thread_id,),
-        )
-        row = cur.fetchone()
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                SELECT id, rule_key, severity, kind, value, threshold, fired_at
+                FROM alert_history
+                WHERE discord_thread_id = ?
+                """,
+                (thread_id,),
+            )
+            row = cur.fetchone()
         if not row:
             return None
         return {
@@ -205,17 +215,19 @@ class StateStore:
     def list_recent_history(self, hours: int, limit: int = 50) -> list[dict]:
         """최근 N시간 이력 반환 (비서 Bot 도구 `get_recent_alerts`용)."""
         since_ts = int(time.time()) - hours * 3600
-        cur = self.conn.execute(
-            """
-            SELECT id, rule_key, severity, kind, value, threshold, fired_at,
-                   discord_thread_id
-            FROM alert_history
-            WHERE fired_at >= ?
-            ORDER BY fired_at DESC
-            LIMIT ?
-            """,
-            (since_ts, limit),
-        )
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                SELECT id, rule_key, severity, kind, value, threshold, fired_at,
+                       discord_thread_id
+                FROM alert_history
+                WHERE fired_at >= ?
+                ORDER BY fired_at DESC
+                LIMIT ?
+                """,
+                (since_ts, limit),
+            )
+            rows = cur.fetchall()
         return [
             {
                 "id": r[0],
@@ -227,7 +239,7 @@ class StateStore:
                 "fired_at": r[6],
                 "discord_thread_id": r[7],
             }
-            for r in cur.fetchall()
+            for r in rows
         ]
 
     # === Claude 분석 리포트 (신규/악화 이벤트용) ===
@@ -248,37 +260,39 @@ class StateStore:
         이 테이블의 기록을 꺼내 쓴다.
         """
         import json as _json
-        self.conn.execute(
-            """
-            INSERT INTO alert_reports(
-                history_id, summary, diagnosis, causal_chain, evidence,
-                suggestions, related_metrics, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                history_id,
-                summary,
-                diagnosis,
-                _json.dumps(causal_chain, ensure_ascii=False),
-                _json.dumps(evidence, ensure_ascii=False),
-                _json.dumps(suggestions, ensure_ascii=False),
-                _json.dumps(related_metrics, ensure_ascii=False),
-                int(time.time()),
-            ),
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                """
+                INSERT INTO alert_reports(
+                    history_id, summary, diagnosis, causal_chain, evidence,
+                    suggestions, related_metrics, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    history_id,
+                    summary,
+                    diagnosis,
+                    _json.dumps(causal_chain, ensure_ascii=False),
+                    _json.dumps(evidence, ensure_ascii=False),
+                    _json.dumps(suggestions, ensure_ascii=False),
+                    _json.dumps(related_metrics, ensure_ascii=False),
+                    int(time.time()),
+                ),
+            )
+            self.conn.commit()
 
     def get_report_by_history_id(self, history_id: int) -> dict | None:
         """history_id에 연결된 분석 리포트 조회. 없으면 None."""
-        cur = self.conn.execute(
-            """
-            SELECT summary, diagnosis, causal_chain, evidence,
-                   suggestions, related_metrics, created_at
-            FROM alert_reports WHERE history_id = ?
-            """,
-            (history_id,),
-        )
-        row = cur.fetchone()
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                SELECT summary, diagnosis, causal_chain, evidence,
+                       suggestions, related_metrics, created_at
+                FROM alert_reports WHERE history_id = ?
+                """,
+                (history_id,),
+            )
+            row = cur.fetchone()
         if not row:
             return None
         import json as _json
@@ -303,19 +317,21 @@ class StateStore:
 
         야간 브리핑과 주간 evolver가 공유하는 집계 로직.
         """
-        cur = self.conn.execute(
-            """
-            SELECT rule_key, severity, kind, COUNT(*), MIN(value), MAX(value)
-            FROM alert_history
-            WHERE fired_at >= ? AND fired_at < ?
-            GROUP BY rule_key, severity, kind
-            """,
-            (start_ts, end_ts),
-        )
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                SELECT rule_key, severity, kind, COUNT(*), MIN(value), MAX(value)
+                FROM alert_history
+                WHERE fired_at >= ? AND fired_at < ?
+                GROUP BY rule_key, severity, kind
+                """,
+                (start_ts, end_ts),
+            )
+            rows = cur.fetchall()
 
         metric_map: dict[str, dict] = {}
         total = 0
-        for rule_key, severity, kind, count, vmin, vmax in cur.fetchall():
+        for rule_key, severity, kind, count, vmin, vmax in rows:
             total += count
             entry = metric_map.setdefault(
                 rule_key,
@@ -358,16 +374,17 @@ class StateStore:
         같은 rule_key에 대해 new와 recovery가 번갈아 발생한다고 가정하고
         시간순으로 짝지어 지속 시간을 평균낸다. unresolved한 new는 제외.
         """
-        cur = self.conn.execute(
-            """
-            SELECT kind, fired_at FROM alert_history
-            WHERE rule_key = ? AND fired_at >= ? AND fired_at < ?
-              AND kind IN ('new', 'recovery')
-            ORDER BY fired_at ASC
-            """,
-            (rule_key, start_ts, end_ts),
-        )
-        rows = cur.fetchall()
+        with self._lock:
+            cur = self.conn.execute(
+                """
+                SELECT kind, fired_at FROM alert_history
+                WHERE rule_key = ? AND fired_at >= ? AND fired_at < ?
+                  AND kind IN ('new', 'recovery')
+                ORDER BY fired_at ASC
+                """,
+                (rule_key, start_ts, end_ts),
+            )
+            rows = cur.fetchall()
         durations: list[int] = []
         current_new_at: int | None = None
         for kind, ts in rows:
@@ -387,37 +404,42 @@ class StateStore:
         from datetime import date as _date, timedelta
         today = _date.today()
         week_start = (today - timedelta(days=today.weekday())).isoformat()
-        cur = self.conn.execute(
-            "SELECT sent_at FROM evolve_runs WHERE run_date = ?", (week_start,)
-        )
-        return cur.fetchone() is not None
+        with self._lock:
+            cur = self.conn.execute(
+                "SELECT sent_at FROM evolve_runs WHERE run_date = ?", (week_start,)
+            )
+            return cur.fetchone() is not None
 
     def mark_evolve_sent(self) -> None:
         from datetime import date as _date, timedelta
         today = _date.today()
         week_start = (today - timedelta(days=today.weekday())).isoformat()
-        self.conn.execute(
-            "INSERT OR REPLACE INTO evolve_runs(run_date, sent_at) VALUES (?, ?)",
-            (week_start, int(time.time())),
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                "INSERT OR REPLACE INTO evolve_runs(run_date, sent_at) VALUES (?, ?)",
+                (week_start, int(time.time())),
+            )
+            self.conn.commit()
 
     # === 야간 브리핑 중복 방지 ===
 
     def is_night_report_sent_today(self) -> bool:
         today = date.today().isoformat()
-        cur = self.conn.execute(
-            "SELECT sent_at FROM night_reports WHERE report_date = ?", (today,)
-        )
-        return cur.fetchone() is not None
+        with self._lock:
+            cur = self.conn.execute(
+                "SELECT sent_at FROM night_reports WHERE report_date = ?", (today,)
+            )
+            return cur.fetchone() is not None
 
     def mark_night_report_sent(self) -> None:
         today = date.today().isoformat()
-        self.conn.execute(
-            "INSERT OR REPLACE INTO night_reports(report_date, sent_at) VALUES (?, ?)",
-            (today, int(time.time())),
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                "INSERT OR REPLACE INTO night_reports(report_date, sent_at) VALUES (?, ?)",
+                (today, int(time.time())),
+            )
+            self.conn.commit()
 
     def close(self) -> None:
-        self.conn.close()
+        with self._lock:
+            self.conn.close()

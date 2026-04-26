@@ -28,6 +28,8 @@ PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 MAX_TOOL_ROUNDS = 5
 # 스레드 내 이전 대화 최대 개수 (현재 질문은 별도 추가)
 THREAD_CONTEXT_LIMIT = 10
+# Claude API 호출 timeout(초). tool_use 5라운드 hang 방지용.
+CLAUDE_TIMEOUT_SECONDS = 30.0
 
 
 class QuestionHandler:
@@ -35,7 +37,9 @@ class QuestionHandler:
         self.settings = settings
         self.store = store
         self.executor = executor
-        self.client = Anthropic(api_key=settings.claude_api_key)
+        self.client = Anthropic(
+            api_key=settings.claude_api_key, timeout=CLAUDE_TIMEOUT_SECONDS
+        )
         self.system_prompt = (PROMPTS_DIR / "assistant.md").read_text(encoding="utf-8")
 
     async def answer(self, thread, question: str) -> str:
