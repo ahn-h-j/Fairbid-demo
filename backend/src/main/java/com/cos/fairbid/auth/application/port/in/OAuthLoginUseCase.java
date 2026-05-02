@@ -1,5 +1,6 @@
 package com.cos.fairbid.auth.application.port.in;
 
+import com.cos.fairbid.auth.application.port.out.OAuthUserInfo;
 import com.cos.fairbid.user.domain.OAuthProvider;
 import com.cos.fairbid.user.domain.User;
 
@@ -18,6 +19,16 @@ public interface OAuthLoginUseCase {
      * @return 로그인 결과 (토큰 + 사용자 정보)
      */
     LoginResult login(OAuthProvider provider, String code);
+
+    /**
+     * OAuth 사용자 정보로 로그인을 수행한다.
+     * Authorization Code → UserInfo 교환 단계를 건너뛰고, 이미 확보된 OAuthUserInfo로 로그인 흐름을 진행한다.
+     * 시뮬레이션/테스트 환경에서 외부 OAuth Provider 호출 없이 진짜 인증 흐름을 통과시킬 때 사용한다.
+     *
+     * @param userInfo OAuth Provider로부터 받은 사용자 정보 (또는 mock 데이터)
+     * @return 로그인 결과 (토큰 + 사용자 정보)
+     */
+    LoginResult loginWithUserInfo(OAuthUserInfo userInfo);
 
     /**
      * 로그인 결과 record

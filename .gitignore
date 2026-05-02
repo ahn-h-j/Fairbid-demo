@@ -44,8 +44,23 @@ out/
 
 # Claude Code — 개인 설정만 제외, 하네스(스킬/에이전트/훅)는 추적
 .claude/settings.local.json
+.claude/settings.local.json.bak
+# 세션 핸드오프 (개인 작업 흐름 기록)
+.claude/handoffs/
 # schedule 스킬 런타임 lock 파일 (sessionId, pid, 획득시간)
 .claude/scheduled_tasks.lock
+
+### Simulation 산출물 ###
+# 시뮬 회차별 raw (tokens.jsonl, seed.env 등 JWT 포함 → git 노출 금지)
+# 누적 종합본 findings.md 만 예외로 보존
+_workspace/*
+!_workspace/auction-sim/
+_workspace/auction-sim/*
+!_workspace/auction-sim/findings.md
+
+### 런타임 로그 ###
+logs/
+*.stackdump
 
 ### k6 Load Test ###
 k6/results/

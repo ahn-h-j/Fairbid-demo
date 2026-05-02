@@ -78,6 +78,8 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
 
                         // 개발용 테스트 엔드포인트 (ADMIN 역할 필요)
+                        // — 시뮬레이션 Mock 로그인(/api/v1/test/auth/**)은 SimulationSecurityConfig 에서
+                        //   @Profile("simulation") 격리된 별도 SecurityFilterChain 으로 처리한다.
                         .requestMatchers("/api/v1/test/**").hasRole("ADMIN")
 
                         // 관리자 전용 엔드포인트 (ADMIN 역할 필요)

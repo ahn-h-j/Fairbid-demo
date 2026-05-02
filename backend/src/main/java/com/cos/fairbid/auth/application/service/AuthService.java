@@ -85,11 +85,7 @@ public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, Logo
      *
      * 흐름:
      * 1. OAuth Provider에서 사용자 정보 조회
-     * 2. DB에서 기존 사용자 조회 (provider + providerId)
-     * 3. 없으면 신규 생성
-     * 4. 차단 상태 체크
-     * 5. JWT 토큰 발급 (Access + Refresh)
-     * 6. Refresh Token을 Redis에 저장 (단일 세션: 기존 토큰 덮어씀)
+     * 2. loginWithUserInfo() 위임 (사용자 조회/생성 + 토큰 발급 + Redis 저장)
      */
     @Override
     @Transactional
@@ -98,12 +94,33 @@ public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, Logo
         OAuthUserInfo userInfo = oAuthClientPort.getUserInfo(provider, code);
         log.debug("OAuth 로그인 시도: provider={}, email={}", provider, maskEmail(userInfo.email()));
 
-        // 2. 기존 사용자 조회
+        // 2. 사용자 정보 기반 로그인 흐름으로 위임
+        return loginWithUserInfo(userInfo);
+    }
+
+    /**
+     * OAuth 사용자 정보로 로그인을 수행한다.
+     *
+     * 흐름:
+     * 1. DB에서 기존 사용자 조회 (provider + providerId)
+     * 2. 없으면 신규 생성
+     * 3. 차단 상태 체크
+     * 4. JWT 토큰 발급 (Access + Refresh)
+     * 5. Refresh Token을 Redis에 저장 (단일 세션: 기존 토큰 덮어씀)
+     *
+     * 시뮬레이션/테스트 환경에서 OAuth Provider 호출 없이 인증 흐름을 통과시키기 위해 분리되었다.
+     */
+    @Override
+    @Transactional
+    public LoginResult loginWithUserInfo(OAuthUserInfo userInfo) {
+        OAuthProvider provider = userInfo.provider();
+
+        // 1. 기존 사용자 조회
         boolean isNewUser = false;
         User user = loadUserPort.findByProviderAndProviderId(provider, userInfo.providerId())
                 .orElse(null);
 
-        // 3. 신규 사용자 생성 또는 기존 사용자 역할 갱신
+        // 2. 신규 사용자 생성 또는 기존 사용자 역할 갱신
         if (user == null) {
             UserRole role = determineRole(userInfo.email());
             user = User.create(userInfo.email(), provider, userInfo.providerId(), role);
@@ -120,7 +137,7 @@ public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, Logo
             }
         }
 
-        // 4. 차단 상태 체크
+        // 3. 차단 상태 체크
         if (user.isBlocked()) {
             if (!user.isActive()) {
                 throw UserBlockedException.byDeactivation();
@@ -128,11 +145,11 @@ public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, Logo
             throw UserBlockedException.byWarningCount();
         }
 
-        // 5. JWT 토큰 발급
+        // 4. JWT 토큰 발급
         String accessToken = tokenProviderPort.generateAccessToken(user);
         String refreshToken = tokenProviderPort.generateRefreshToken(user);
 
-        // 6. Refresh Token Redis 저장 (단일 세션 정책: 기존 세션 무효화)
+        // 5. Refresh Token Redis 저장 (단일 세션 정책: 기존 세션 무효화)
         refreshTokenPort.save(user.getId(), refreshToken, tokenProviderPort.getRefreshExpirationSeconds());
 
         return new LoginResult(user, accessToken, refreshToken, isNewUser);
