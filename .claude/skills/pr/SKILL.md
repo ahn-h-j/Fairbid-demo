@@ -33,9 +33,20 @@ git remote -v
 `code-reviewer` 에이전트를 호출하여 브랜치 전체 변경분을 리뷰한다.
 
 - 입력: `git diff main...HEAD`
-- 에이전트가 변경 파일을 분류하고 해당하는 관점(Architecture / Domain Rules / Persistence)으로 리뷰
-- **Block 판정이 있으면**: 사용자에게 리뷰 결과를 보여주고 수정 여부 확인. PR 생성 중단 가능.
-- **Warning 이하**: 리뷰 결과를 PR 본문에 포함하고 계속 진행.
+- 에이전트가 변경 파일을 분류하고 해당하는 관점(Code Defects / Domain Rules / Persistence)으로 리뷰
+
+### 판정별 처리 정책
+
+- **Block** → PR 생성 중단. 사용자에게 결과 보여주고 즉시 수정 진행. 수정 후 가드레일/커밋 재실행하고 Step 1.5 재호출.
+- **Warning** → 항목별로 정리해서 사용자에게 보여주고 **즉시 수정이 디폴트**.
+  - 기본 흐름: 코드 수정 → 가드레일/커밋 재실행 → Step 1.5 재호출(또는 사용자 컨펌 후 다음 Step) → PR 생성
+  - 사용자가 명시적으로 "별도 이슈로 미룬다"고 결정한 항목만 `gh issue create`로 GitHub Issue를 **먼저 생성**하고, PR 본문 Risks/Follow-ups 섹션에 issue 번호로 링크. 즉 미루려면 issue가 우선 만들어져야 한다.
+  - **금지**: Warning 항목을 issue 없이 PR 본문에 글로만 적어놓고 머지하는 것. 트래킹 책임이 없는 글은 곧 잊힌다.
+- **Approve** → PR 본문 Risks/Follow-ups 섹션 자체 생략. 본문 안에 "code-reviewer 통과" 한 줄로만 표기 (또는 생략).
+
+### 의도
+
+하네스(code-reviewer)가 잡은 결함을 PR 본문에 "후속 이슈로 트래킹 권장"이라고 적기만 하고 머지하면, 그 글은 곧 파묻혀서 영영 안 고쳐진다. 잡은 시점에 고치는 게 디폴트다.
 
 ## Step 2: Push 여부 확인
 

@@ -34,13 +34,8 @@ class AiMonitorBot(commands.Bot):
         self.channel_id = channel_id
         self.question_handler = question_handler  # async (thread, question) -> str
 
-    async def on_ready(self):
-        logger.info("Bot logged in as %s (id=%s)", self.user, self.user.id)
-        try:
-            synced = await self.tree.sync()
-            logger.info("slash commands synced: %d", len(synced))
-        except Exception as e:
-            logger.warning("slash command sync failed: %s", e)
+    # on_ready는 main.py가 @bot.event로 등록한다 (slash sync + 주기 태스크 기동).
+    # discord.py가 데코레이터로 메서드를 덮어쓰므로 여기에 정의하면 dead code가 된다.
 
     async def on_message(self, message: discord.Message):
         """스레드 안에서 Bot이 멘션되면 질문 핸들러 호출."""

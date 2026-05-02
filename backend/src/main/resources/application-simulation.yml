@@ -1,0 +1,35 @@
+# 시뮬레이션 프로파일
+#
+# AI 에이전트 경매 시뮬레이션 전용 설정.
+# 활성화: SPRING_PROFILES_ACTIVE=simulation
+#
+# - TestAuthController(@Profile("simulation"))가 활성화되어 Mock OAuth 로그인 가능
+# - JWT 만료 시간을 길게 설정 (시뮬레이션 도중 토큰 만료 방지)
+# - 쿠키 secure 비활성화 (로컬 HTTP 환경)
+# - 매 재기동마다 스키마 재생성 (누적 user/auction id 충돌, FAILED 경매 락인 방지)
+#
+# 주의: 운영/스테이징 환경에서 절대 사용 금지
+
+# JWT 만료 시간 연장 (시뮬레이션은 보통 30분~1시간 진행)
+jwt:
+  access-expiration: 7200000      # 2시간
+  refresh-expiration: 86400000    # 24시간
+
+# 로컬 HTTP 환경
+app:
+  cookie:
+    secure: false
+
+# 시뮬레이션은 매 재기동마다 깨끗한 DB 상태에서 시작한다.
+# 재시딩 중 상태 꼬임(FAILED 락인, user id 중복 등)을 반복해서 겪어서
+# simulation 프로파일에서는 스키마를 통째로 다시 만드는 create-drop 으로 오버라이드한다.
+# Redis 도 컨테이너 재기동으로 함께 초기화되므로 RDB/Redis 정합성이 유지된다.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+logging:
+  level:
+    com.cos.fairbid.common.test: INFO
+    com.cos.fairbid.auth.application.service.AuthService: INFO
