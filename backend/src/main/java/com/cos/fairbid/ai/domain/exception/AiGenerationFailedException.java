@@ -26,7 +26,9 @@ public class AiGenerationFailedException extends DomainException {
 
     @Override
     public HttpStatus getStatus() {
-        return HttpStatus.BAD_GATEWAY;
+        // 422: AI가 요청은 이해했으나(이미지-설명 불일치 등) 추천을 생성하지 못한 비즈니스 케이스.
+        // 502 로 두면 Cloudflare/프록시가 자체 502 페이지로 덮어 사용자 친화 안내 메시지가 가려진다.
+        return HttpStatus.UNPROCESSABLE_ENTITY;
     }
 
     public static AiGenerationFailedException of() {
