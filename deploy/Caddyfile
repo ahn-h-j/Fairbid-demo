@@ -1,0 +1,13 @@
+# Caddy 리버스 프록시 — 자동 HTTPS (Let's Encrypt)
+#
+# DOMAIN 환경변수로 호스트네임을 주입한다.
+#  - 도메인이 없으면 sslip.io 사용 권장: 예) 140-238-1-2.sslip.io
+#    (공인 IP의 점을 하이픈으로 바꾼 형태. 별도 도메인 구매/DNS 설정 없이 IP에 HTTPS 가능)
+#  - DOMAIN 미설정 시 localhost (로컬 self-signed)
+{$DOMAIN:localhost} {
+	encode gzip zstd
+
+	# 모든 요청을 frontend(nginx)로 전달.
+	# nginx 가 / 정적(SPA) + /api, /ws 를 backend 로 프록시한다.
+	reverse_proxy frontend:80
+}

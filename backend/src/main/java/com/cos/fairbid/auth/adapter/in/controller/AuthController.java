@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.cos.fairbid.auth.adapter.in.dto.TokenResponse;
+import com.cos.fairbid.auth.application.port.in.GuestLoginUseCase;
 import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
 import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
 import com.cos.fairbid.auth.application.port.in.RefreshTokenUseCase;
@@ -51,6 +52,7 @@ public class AuthController {
     private final OAuthLoginUseCase oAuthLoginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
+    private final GuestLoginUseCase guestLoginUseCase;
     private final CookieUtils cookieUtils;
 
     @Value("${app.frontend-url:http://localhost:3000}")
@@ -135,6 +137,25 @@ public class AuthController {
         // 프론트에서 /auth/callback 로드 → POST /api/v1/auth/refresh 호출 → Access Token 수신
         String redirectUrl = frontendUrl + "/auth/callback";
         response.sendRedirect(redirectUrl);
+    }
+
+    /**
+     * 게스트 체험(데모) 로그인을 수행한다.
+     *
+     * 소셜 로그인 없이 임시 데모 계정을 즉석 발급한다. (이력서/포트폴리오 데모용)
+     * OAuth 콜백(리다이렉트)과 달리 프론트가 직접 POST 호출하므로, 응답 본문으로 Access Token을 바로 내려준다.
+     * Refresh Token은 OAuth 흐름과 동일하게 HttpOnly 쿠키로 설정한다.
+     */
+    @PostMapping("/demo-login")
+    public ResponseEntity<ApiResponse<TokenResponse>> demoLogin(HttpServletResponse response) {
+        OAuthLoginUseCase.LoginResult result = guestLoginUseCase.guestLogin();
+
+        // Refresh Token은 HttpOnly 쿠키로 (OAuth 흐름과 동일)
+        cookieUtils.setRefreshTokenCookie(response, result.refreshToken());
+
+        // 게스트는 온보딩 자동 완료 상태이므로 onboarded=true로 응답
+        return ResponseEntity.ok(ApiResponse.success(
+                new TokenResponse(result.accessToken(), result.user().isOnboarded())));
     }
 
     /**
@@ -279,6 +300,8 @@ public class AuthController {
                     + "&response_type=code"
                     + "&scope=email profile"
                     + "&state=" + state;
+            // DEMO(게스트)는 외부 인증 페이지가 없다. (별도 /demo-login 엔드포인트 사용)
+            case DEMO -> throw new IllegalArgumentException("DEMO provider는 인증 페이지 리다이렉트를 지원하지 않습니다.");
         };
     }
 }

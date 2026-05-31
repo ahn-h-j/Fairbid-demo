@@ -26,6 +26,8 @@ public class OAuthClientAdapter implements OAuthClientPort {
             case KAKAO -> kakaoOAuthClient.getUserInfo(code);
             case NAVER -> naverOAuthClient.getUserInfo(code);
             case GOOGLE -> googleOAuthClient.getUserInfo(code);
+            // DEMO(게스트)는 OAuth 코드 교환 흐름을 타지 않는다. (별도 /demo-login 엔드포인트 사용)
+            case DEMO -> throw new IllegalArgumentException("DEMO provider는 OAuth 코드 교환을 지원하지 않습니다.");
         };
     }
 }

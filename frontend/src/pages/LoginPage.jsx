@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth, AUTH_STATE } from '../contexts/AuthContext';
 
@@ -69,10 +69,14 @@ const ERROR_MESSAGES = {
  * OAuth Provider 선택 화면을 제공한다.
  */
 export default function LoginPage() {
-  const { authState } = useAuth();
+  const { authState, updateAuthFromToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+
+  // 게스트 로그인 진행 중 상태 (버튼 중복 클릭 방지 + 스피너 표시)
+  const [guestLoading, setGuestLoading] = useState(false);
+  const [guestError, setGuestError] = useState(null);
 
   const error = searchParams.get('error');
 
@@ -93,6 +97,37 @@ export default function LoginPage() {
     const redirectPath = location.state?.from || '/auctions';
     localStorage.setItem('redirectAfterLogin', redirectPath);
     window.location.href = `/api/v1/auth/oauth2/${providerId}`;
+  };
+
+  /**
+   * 게스트 체험(데모) 로그인
+   * 소셜 인증 없이 임시 데모 계정을 발급받아 곧바로 둘러보기 화면으로 이동한다.
+   * 서버가 응답 본문으로 Access Token을 바로 내려주므로 OAuth 콜백(리다이렉트) 없이 처리한다.
+   */
+  const handleGuestLogin = async () => {
+    setGuestError(null);
+    setGuestLoading(true);
+    try {
+      const response = await fetch('/api/v1/auth/demo-login', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('게스트 로그인 실패');
+      }
+      const data = await response.json();
+      const token = data?.data?.accessToken;
+      if (!token) {
+        throw new Error('토큰 발급 실패');
+      }
+      // AuthContext 상태 갱신 (refresh 재호출 없이 바로 토큰 적용)
+      updateAuthFromToken(token);
+      const redirectPath = location.state?.from || '/auctions';
+      navigate(redirectPath, { replace: true });
+    } catch {
+      setGuestError('게스트 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+      setGuestLoading(false);
+    }
   };
 
   return (
@@ -146,6 +181,43 @@ export default function LoginPage() {
             </button>
           ))}
         </div>
+
+        {/* 구분선 */}
+        <div className="flex items-center gap-3 my-6" aria-hidden="true">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400">또는</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* 게스트 체험 로그인 */}
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          disabled={guestLoading}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-[15px] text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+          aria-label="회원가입 없이 게스트로 둘러보기"
+        >
+          {guestLoading ? (
+            <>
+              <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>게스트 계정 발급 중…</span>
+            </>
+          ) : (
+            <span>회원가입 없이 둘러보기 (게스트 체험)</span>
+          )}
+        </button>
+        <p className="mt-2 text-center text-xs text-gray-400">
+          로그인 없이 전체 기능을 바로 체험할 수 있어요.
+        </p>
+
+        {guestError && (
+          <p className="mt-3 text-center text-sm text-red-600" role="alert" aria-live="polite">
+            {guestError}
+          </p>
+        )}
       </div>
     </div>
   );

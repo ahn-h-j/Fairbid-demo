@@ -1,0 +1,108 @@
+# =====================================================================
+# FairBid 데모 — 운영(Oracle Cloud VM) 배포용 구성
+# =====================================================================
+# docker-compose.demo.yml 과 달리:
+#  - 호스트 포트를 직접 노출하지 않는다 (Caddy 만 80/443 종단)
+#  - Caddy 리버스 프록시 + 자동 HTTPS 추가
+#  - COOKIE_SECURE=true, FRONTEND_URL=https://${DOMAIN} (HTTPS 쿠키)
+#
+# 실행 (VM 안에서):
+#   cd ~/FairBid
+#   docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --build
+#
+# 사전: .env 에 DOMAIN=<공인IP를 하이픈으로>.sslip.io 설정
+#       (예: 140-238-1-2.sslip.io)  + AI/DB 키들
+# =====================================================================
+services:
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${SPRING_DATASOURCE_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USER: ${SPRING_DATASOURCE_USER}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      # HTTPS 배포 → Secure 쿠키 활성
+      COOKIE_SECURE: "true"
+      FRONTEND_URL: https://${DOMAIN}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      AI_PROVIDER: ${AI_PROVIDER:-claude}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-5}
+      ANTHROPIC_WEB_SEARCH_ENABLED: ${ANTHROPIC_WEB_SEARCH_ENABLED:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      AI_ASSIST_USER_DAILY_LIMIT: ${AI_ASSIST_USER_DAILY_LIMIT:-1}
+      AI_ASSIST_GLOBAL_DAILY_LIMIT: ${AI_ASSIST_GLOBAL_DAILY_LIMIT:-100}
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME:-}
+        VITE_CLOUDINARY_UPLOAD_PRESET: ${VITE_CLOUDINARY_UPLOAD_PRESET:-}
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USER}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - prod_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - prod_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 자동 HTTPS 리버스 프록시 — 외부 노출은 이 컨테이너만.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - prod_caddy_data:/data
+      - prod_caddy_config:/config
+    depends_on:
+      - frontend
+
+volumes:
+  prod_mysql_data:
+  prod_redis_data:
+  prod_caddy_data:
+  prod_caddy_config:

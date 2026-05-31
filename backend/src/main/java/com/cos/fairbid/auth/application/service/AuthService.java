@@ -3,6 +3,7 @@ package com.cos.fairbid.auth.application.service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.cos.fairbid.auth.application.port.in.GuestLoginUseCase;
 import com.cos.fairbid.auth.application.port.in.LogoutUseCase;
 import com.cos.fairbid.auth.application.port.in.OAuthLoginUseCase;
 import com.cos.fairbid.auth.application.port.in.RefreshTokenUseCase;
@@ -40,7 +42,7 @@ import com.cos.fairbid.user.domain.exception.UserNotFoundException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, LogoutUseCase {
+public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, LogoutUseCase, GuestLoginUseCase {
 
     private final OAuthClientPort oAuthClientPort;
     private final LoadUserPort loadUserPort;
@@ -153,6 +155,45 @@ public class AuthService implements OAuthLoginUseCase, RefreshTokenUseCase, Logo
         refreshTokenPort.save(user.getId(), refreshToken, tokenProviderPort.getRefreshExpirationSeconds());
 
         return new LoginResult(user, accessToken, refreshToken, isNewUser);
+    }
+
+    /**
+     * 게스트 체험(데모) 로그인을 수행한다.
+     *
+     * 흐름:
+     * 1. 매 호출마다 충돌하지 않는 임시 식별자(UUID)로 게스트 User 생성
+     * 2. 닉네임/전화번호를 자동 채워 온보딩까지 완료 (추가 입력 없이 바로 사용 가능)
+     * 3. DB 저장 → JWT 발급 → Refresh Token Redis 저장
+     *
+     * 실제 OAuth Provider 호출이 없다는 점만 빼면 OAuth 로그인과 동일한 토큰 발급 경로를 탄다.
+     * 게스트 계정은 항상 신규 생성되므로 세션 간 데이터가 섞이지 않는다.
+     */
+    @Override
+    @Transactional
+    public LoginResult guestLogin() {
+        // 1. 충돌 없는 임시 식별자 생성 (이메일/providerId/닉네임/전화번호 모두 UK라 고유해야 함)
+        String token = UUID.randomUUID().toString().replace("-", "");
+        String shortId = token.substring(0, 8);
+
+        String email = "guest_" + shortId + "@demo.fairbid.local";
+        String providerId = "demo_" + token;
+        String nickname = "게스트" + shortId;
+        // 전화번호도 UK라 게스트마다 고유해야 한다. UUID 비트에서 숫자 8자리를 뽑아 010-XXXX-XXXX 형태로 만든다.
+        long num = Math.abs(UUID.randomUUID().getMostSignificantBits() % 100_000_000L);
+        String phoneNumber = String.format("010-%04d-%04d", num / 10000, num % 10000);
+
+        // 2. 게스트 User 생성 + 온보딩 자동 완료
+        User guest = User.create(email, OAuthProvider.DEMO, providerId, UserRole.USER);
+        guest.completeOnboarding(nickname, phoneNumber);
+        guest = saveUserPort.save(guest);
+        log.info("게스트 체험 계정 발급: userId={}, nickname={}", guest.getId(), nickname);
+
+        // 3. JWT 발급 + Refresh Token Redis 저장 (OAuth 로그인과 동일 경로)
+        String accessToken = tokenProviderPort.generateAccessToken(guest);
+        String refreshToken = tokenProviderPort.generateRefreshToken(guest);
+        refreshTokenPort.save(guest.getId(), refreshToken, tokenProviderPort.getRefreshExpirationSeconds());
+
+        return new LoginResult(guest, accessToken, refreshToken, true);
     }
 
     /**

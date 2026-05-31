@@ -1,0 +1,99 @@
+# =====================================================================
+# FairBid 데모(이력서/포트폴리오)용 경량 구성
+# =====================================================================
+# 운영용 docker-compose.yml 에서 데모에 불필요한 것을 모두 제거한 버전.
+#  - 제거: Redis HA(slave x2 + sentinel x3), Prometheus/Grafana/redis-exporter,
+#          ai-monitor(Discord 봇), Chroma 벡터DB(피드백 BC 전용)
+#  - 유지: backend + frontend + MySQL + 단일 Redis (AI 시작가/설명 추천 포함)
+#
+# 실행:  docker compose -f docker-compose.demo.yml up -d --build
+# 접속:  http://localhost:3000  (로그인 화면에서 "회원가입 없이 둘러보기")
+#
+# AI 추천(Claude 가격 + Gemini 설명 + 네이버 시세)을 쓰려면 .env 에
+# ANTHROPIC_API_KEY / GEMINI_API_KEY / NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 필요.
+# =====================================================================
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${SPRING_DATASOURCE_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USER: ${SPRING_DATASOURCE_USER}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      # 로컬 데모는 http 라 Secure 쿠키 비활성. (Railway 등 https 배포 시 true)
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      # --- OAuth (선택: 게스트 로그인만 쓰면 없어도 됨) ---
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # --- AI 시작가/설명 추천 ---
+      AI_PROVIDER: ${AI_PROVIDER:-claude}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-5}
+      # 데모 비용 절감: 웹검색 기본 off (호출당 비용 약 2배)
+      ANTHROPIC_WEB_SEARCH_ENABLED: ${ANTHROPIC_WEB_SEARCH_ENABLED:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # AI 추천 일일 한도 (데모 비용 방어). 성공한 호출만 카운트.
+      AI_ASSIST_USER_DAILY_LIMIT: ${AI_ASSIST_USER_DAILY_LIMIT:-1}
+      AI_ASSIST_GLOBAL_DAILY_LIMIT: ${AI_ASSIST_GLOBAL_DAILY_LIMIT:-100}
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME:-}
+        VITE_CLOUDINARY_UPLOAD_PRESET: ${VITE_CLOUDINARY_UPLOAD_PRESET:-}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USER}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - demo_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 단일 Redis (HA/replication 없음 — 데모용).
+  # 운영 compose 의 --min-replicas-to-write 옵션을 제거해야 slave 없이 단독 쓰기가 가능하다.
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - demo_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  demo_mysql_data:
+  demo_redis_data:
