@@ -85,8 +85,13 @@ public class SecurityConfig {
                         // 관리자 전용 엔드포인트 (ADMIN 역할 필요)
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-                        // 그 외 모든 요청은 인증 필요
-                        .anyRequest().authenticated()
+                        // 그 외 /api 요청은 인증 필요 (위에서 명시 허용한 경로 제외)
+                        .requestMatchers("/api/**").authenticated()
+
+                        // 단일 서비스(backend 가 React SPA 서빙) 배포 대응:
+                        // 정적 리소스(index.html, /assets/**)·클라이언트 라우트(/login, /auctions 등)는 공개.
+                        // 실제 데이터는 위 /api/** 인증 규칙으로 보호되므로 SPA 셸 공개는 안전하다.
+                        .anyRequest().permitAll()
                 )
 
                 // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
