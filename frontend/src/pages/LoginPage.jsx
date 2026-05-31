@@ -166,7 +166,9 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* OAuth 로그인 버튼 */}
+        {/* OAuth 로그인 버튼 — 데모 배포에서는 OAuth 리다이렉트 URI 미등록으로 숨김.
+            게스트 체험 로그인만 노출한다. OAuth 복구 시 아래 블록을 되살리면 됨.
+            (handleLogin/PROVIDERS 는 복구를 위해 그대로 둔다.)
         <div className="space-y-3">
           {PROVIDERS.map((provider) => (
             <button
@@ -181,15 +183,14 @@ export default function LoginPage() {
             </button>
           ))}
         </div>
-
-        {/* 구분선 */}
         <div className="flex items-center gap-3 my-6" aria-hidden="true">
           <div className="flex-1 h-px bg-gray-200" />
           <span className="text-xs text-gray-400">또는</span>
           <div className="flex-1 h-px bg-gray-200" />
         </div>
+        */}
 
-        {/* 게스트 체험 로그인 */}
+        {/* 게스트 체험 로그인 (데모 메인 로그인 수단) */}
         <button
           type="button"
           onClick={handleGuestLogin}
