@@ -1,0 +1,25 @@
+# 통합 Dockerfile(root) 빌드 컨텍스트 축소
+.git
+.gradle
+**/.gradle
+**/node_modules
+**/build
+**/dist
+backend/build
+frontend/dist
+.idea
+.claude
+.agent-os
+.specify
+.github
+docs
+k6
+monitoring
+imgs
+_workspace
+redis
+infra
+*.md
+**/*.log
+docker-compose*.yml
+deploy
