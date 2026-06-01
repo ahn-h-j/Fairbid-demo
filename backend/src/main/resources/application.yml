@@ -26,13 +26,15 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    # 운영(데모)에서는 SQL 로그를 끈다. 켜면 쿼리당 수~수십 줄이 stdout 으로 쏟아져
+    # Railway 의 500 logs/sec 한도를 쉽게 초과한다. 로컬 개발 시 JPA_SHOW_SQL=true 로 재활성화.
+    show-sql: ${JPA_SHOW_SQL:false}
     # OSIV 활성화: imageUrls 등 Lazy 컬렉션의 Controller 레벨 로딩에 필요
     # 주의: 요청 전체에 걸쳐 DB 커넥션을 점유하므로 고부하 시 HikariCP 고갈 가능성 있음
     open-in-view: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: ${JPA_FORMAT_SQL:false}
 
 server:
   port: 8080
@@ -48,7 +50,7 @@ spring.web.resources:
 
 logging:
   level:
-    org.hibernate.SQL: ${LOG_LEVEL_HIBERNATE_SQL:DEBUG}
+    org.hibernate.SQL: ${LOG_LEVEL_HIBERNATE_SQL:WARN}
     com.cos.fairbid.admin: ${LOG_LEVEL_ADMIN:INFO}
 
 # Actuator & Prometheus
